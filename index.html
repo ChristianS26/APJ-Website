@@ -1,52 +1,787 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APJ - Página en construcción</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: white;
-        }
-        .container {
-            text-align: center;
-            padding: 2rem;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            letter-spacing: 2px;
-        }
-        p {
-            font-size: 1.2rem;
-            opacity: 0.8;
-            margin-bottom: 2rem;
-        }
-        .status {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50px;
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APJ Padel | Asociación de Pádel Jalisco</title>
+  <meta name="description" content="Asociación de Pádel Jalisco (APJ) - Únete a la comunidad de pádel más grande de Jalisco. Torneos, rankings y más." />
+  <meta name="keywords" content="pádel, padel, jalisco, torneos, APJ, asociación, guadalajara, mexico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --bg: #0f0f0f;
+    --bg-2: #1a1a1a;
+    --bg-3: #252525;
+    --card: rgba(255,255,255,0.03);
+    --card-hover: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #ffffff;
+    --text-secondary: #a1a1a1;
+    --text-muted: #666666;
+    --primary: #10b981;
+    --primary-light: #34d399;
+    --primary-dark: #059669;
+    --primary-glow: rgba(16, 185, 129, 0.15);
+    --accent: #f59e0b;
+    --accent-light: #fbbf24;
+    --accent-glow: rgba(245, 158, 11, 0.15);
+    --stripe: #635bff;
+    --stripe-glow: rgba(99, 91, 255, 0.15);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --max-width: 900px;
+    --transition: 0.2s ease;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fafafa;
+      --bg-2: #ffffff;
+      --bg-3: #f5f5f5;
+      --card: rgba(255,255,255,0.8);
+      --card-hover: rgba(255,255,255,1);
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(0,0,0,0.15);
+      --text: #111111;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --primary-glow: rgba(16, 185, 129, 0.1);
+      --stripe-glow: rgba(99, 91, 255, 0.08);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Hero Header */
+  .hero {
+    position: relative;
+    padding: 72px 24px;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -10%;
+    width: 50%;
+    height: 150%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .hero-logo {
+    flex-shrink: 0;
+    width: 130px;
+    height: 130px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg), 0 0 60px rgba(16, 185, 129, 0.3);
+  }
+
+  .hero-logo-text {
+    color: #ffffff;
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-light);
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 550px;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-number {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-light);
+  }
+
+  .hero-stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    .hero {
+      padding: 56px 24px;
+    }
+
+    .hero-logo {
+      width: 110px;
+      height: 110px;
+    }
+
+    .hero-logo-text {
+      font-size: 2.25rem;
+    }
+
+    .hero-stats {
+      gap: 24px;
+    }
+  }
+
+  /* Main Content */
+  main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  section {
+    margin-bottom: 56px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2::before {
+    content: '';
+    width: 4px;
+    height: 28px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 20px 0 12px;
+    color: var(--text);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  ul, ol {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+
+  li strong {
+    color: var(--text);
+  }
+
+  a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  /* Feature Cards */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin: 28px 0;
+  }
+
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    transition: all var(--transition);
+  }
+
+  .feature-card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .feature-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+  }
+
+  .feature-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* App Section */
+  .app-section {
+    background: var(--primary-glow);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    text-align: center;
+  }
+
+  .app-section h2 {
+    justify-content: center;
+  }
+
+  .app-section h2::before {
+    display: none;
+  }
+
+  .app-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin: 28px 0;
+    text-align: left;
+  }
+
+  .app-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .app-feature-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .app-feature span {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .app-feature strong {
+    color: var(--text);
+  }
+
+  .app-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition);
+    margin-top: 8px;
+  }
+
+  .app-cta:hover {
+    background: var(--primary-dark);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Payment Section - Clear for Stripe but friendly */
+  .payment-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 36px;
+  }
+
+  .payment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .payment-header h2 {
+    margin: 0;
+  }
+
+  .stripe-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--stripe-glow);
+    border: 1px solid rgba(99, 91, 255, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .stripe-badge svg {
+    height: 18px;
+    width: auto;
+  }
+
+  .payment-intro {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  .payment-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .payment-type {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-2);
+    border-radius: var(--radius-md);
+  }
+
+  .payment-type-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-glow);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .payment-type-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .payment-type-text strong {
+    display: block;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--stripe-glow);
+    border-radius: var(--radius-md);
+    margin-top: 8px;
+  }
+
+  .security-note svg {
+    width: 20px;
+    height: 20px;
+    color: var(--stripe);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .security-note p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* Refund Policy */
+  .refund-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+
+  .refund-section h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  .refund-section ul {
+    margin-bottom: 0;
+  }
+
+  /* Contact Section */
+  .contact-section {
+    text-align: center;
+  }
+
+  .contact-section h2 {
+    justify-content: center;
+  }
+
+  .contact-section h2::before {
+    display: none;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-size: 15px;
+    transition: all var(--transition);
+  }
+
+  .contact-link:hover {
+    background: var(--card-hover);
+    border-color: var(--border-hover);
+    text-decoration: none;
+  }
+
+  .contact-link svg {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .footer-links a:hover {
+    color: var(--primary-light);
+  }
+
+  .copyright {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>APJ</h1>
-        <p>Sitio web en construcción</p>
-        <span class="status">Próximamente</span>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <span class="hero-logo-text">APJ</span>
     </div>
+    <div class="hero-content">
+      <span class="hero-badge">Pádel Oficial en Jalisco</span>
+      <h1>Asociación de Pádel Jalisco</h1>
+      <p class="hero-subtitle">La comunidad de pádel más grande del estado. Torneos para todos los niveles, ranking oficial y la mejor experiencia competitiva.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-number">+3,300</div>
+          <div class="hero-stat-label">Jugadores</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number">+60</div>
+          <div class="hero-stat-label">Clubes</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number">2023</div>
+          <div class="hero-stat-label">Fundación</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section>
+    <h2>Bienvenido a la APJ</h2>
+    <p>La <strong>Asociación de Pádel Jalisco</strong> nació con un objetivo claro: darle al pádel en Jalisco la estructura y profesionalismo que merece. Somos la primera asociación formal de pádel en el estado, con presencia en toda la Zona Metropolitana de Guadalajara y ciudades como Puerto Vallarta.</p>
+    <p>Nuestra misión es ser el circuito con mayor inclusión, donde jugadores de todos los niveles encuentren su lugar. Desde quienes apenas empiezan hasta los que buscan competir al más alto nivel, en la APJ hay espacio para todos.</p>
+  </section>
+
+  <section>
+    <h2>Nuestros Torneos</h2>
+    <p>Organizamos torneos durante todo el año con diferentes formatos para que siempre tengas dónde jugar:</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>Circuito APJ</h3>
+        <p>Nuestra serie principal de torneos. Acumula puntos, sube en el ranking y compite con los mejores de Jalisco.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Torneos Relámpago</h3>
+        <p>Torneos rápidos y dinámicos que también suman puntos al circuito. Perfectos para competir entre semana.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Todas las Categorías</h3>
+        <p>Desde 2da hasta categorías abiertas. Varonil, femenil y mixto. Encuentra tu nivel y diviértete compitiendo.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Premios en Efectivo</h3>
+        <p>Las categorías top tienen premios económicos desde semifinales. El pádel de alto nivel también puede ser tu profesión.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-section">
+    <h2>La App APJ Padel</h2>
+    <p>Todo lo que necesitas para competir en el Circuito APJ, en tu bolsillo.</p>
+
+    <div class="app-features">
+      <div class="app-feature">
+        <svg class="app-feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <span><strong>Calendario de torneos</strong> — Ve todos los eventos disponibles y elige dónde competir</span>
+      </div>
+      <div class="app-feature">
+        <svg class="app-feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+        <span><strong>Inscripción fácil</strong> — Regístrate con tu pareja en minutos</span>
+      </div>
+      <div class="app-feature">
+        <svg class="app-feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+        <span><strong>Pago seguro</strong> — Paga tu inscripción con tarjeta de forma rápida y segura</span>
+      </div>
+      <div class="app-feature">
+        <svg class="app-feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <span><strong>Tu ranking</strong> — Consulta tu posición y sigue tu progreso</span>
+      </div>
+    </div>
+
+    <a href="https://apps.apple.com/app/apj-padel/id6740519553" class="app-cta" target="_blank" rel="noopener">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Descargar en App Store
+    </a>
+  </section>
+
+  <!-- Payment Information Section - For Stripe Compliance -->
+  <section class="payment-section">
+    <div class="payment-header">
+      <h2>Pagos e Inscripciones</h2>
+      <div class="stripe-badge">
+        <svg viewBox="0 0 60 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 0C1.34315 0 0 1.34315 0 3V22C0 23.6569 1.34315 25 3 25H57C58.6569 25 60 23.6569 60 22V3C60 1.34315 58.6569 0 57 0H3ZM13.4291 10.2891C13.4291 9.68906 13.9391 9.44906 14.7691 9.44906C15.9491 9.44906 17.4291 9.83906 18.6091 10.4891V7.16906C17.3191 6.64906 16.0491 6.44906 14.7691 6.44906C11.7891 6.44906 9.80906 8.00906 9.80906 10.4691C9.80906 14.3491 15.1891 13.7191 15.1891 15.3891C15.1891 16.0891 14.5591 16.3291 13.6791 16.3291C12.3791 16.3291 10.7391 15.7991 9.42906 15.0691V18.4391C10.8791 19.0691 12.3491 19.3291 13.6791 19.3291C16.7391 19.3291 18.8391 17.8191 18.8391 15.3191C18.8191 11.1391 13.4291 11.8891 13.4291 10.2891ZM24.1091 4.20906L20.6091 4.94906V17.4091C20.6091 18.5591 21.5091 19.3291 22.6591 19.3291C23.2991 19.3291 23.7691 19.2291 24.0591 19.0991V16.4991C23.7791 16.5991 22.5391 16.9491 22.5391 15.7991V9.84906H24.0591V6.64906H22.5391L24.1091 4.20906ZM29.3791 7.31906L29.1491 6.64906H26.0691V19.1091H29.5891V10.5891C30.3691 9.56906 31.7091 9.74906 32.1191 9.88906V6.64906C31.6991 6.49906 30.1591 6.17906 29.3791 7.31906ZM33.2891 6.64906H36.8191V19.1091H33.2891V6.64906ZM33.2891 5.55906L36.8191 4.81906V1.74906L33.2891 2.48906V5.55906ZM45.0091 6.44906C43.5691 6.44906 42.6491 7.12906 42.1291 7.59906L41.9491 6.64906H38.7891V22.4991L42.3091 21.7691L42.3191 18.4691C42.8491 18.8491 43.6191 19.3291 44.9891 19.3291C47.7691 19.3291 50.2891 17.1391 50.2891 12.7491C50.2791 8.72906 47.7291 6.44906 45.0091 6.44906ZM44.1291 16.1791C43.2491 16.1791 42.7191 15.8491 42.3191 15.4491L42.3091 10.1491C42.7391 9.69906 43.2791 9.38906 44.1291 9.38906C45.5091 9.38906 46.4891 10.9191 46.4891 12.7691C46.4891 14.6691 45.5191 16.1791 44.1291 16.1791ZM56.9991 12.8991C56.9991 9.27906 55.2391 6.44906 51.8091 6.44906C48.3691 6.44906 46.2991 9.27906 46.2991 12.8691C46.2991 17.1191 48.7491 19.3291 52.2491 19.3291C53.9591 19.3291 55.2391 18.9091 56.2091 18.3191V15.5491C55.2391 16.0791 54.1291 16.4091 52.7191 16.4091C51.3391 16.4091 50.1091 15.9091 49.9491 14.2491H56.9591C56.9591 14.0591 56.9991 13.2991 56.9991 12.8991ZM49.8991 11.6591C49.8991 10.0691 50.9191 9.36906 51.7991 9.36906C52.6491 9.36906 53.6091 10.0691 53.6091 11.6591H49.8991Z" fill="#635bff"/>
+        </svg>
+        Pagos seguros
+      </div>
+    </div>
+
+    <p class="payment-intro">Para participar en los torneos de la APJ, el proceso de inscripción y pago se realiza directamente desde la app <strong>APJ Padel</strong>. La inscripción individual tiene un costo de <strong>$999 MXN</strong>. Todos los pagos son procesados de forma segura a través de <strong>Stripe</strong>.</p>
+
+    <div class="payment-types">
+      <div class="payment-type">
+        <div class="payment-type-icon">🎾</div>
+        <div class="payment-type-text">
+          <strong>Inscripciones a torneos</strong>
+          Circuito APJ, torneos abiertos y relámpago
+        </div>
+      </div>
+      <div class="payment-type">
+        <div class="payment-type-icon">👥</div>
+        <div class="payment-type-text">
+          <strong>Registro de parejas</strong>
+          Varonil, femenil y mixto
+        </div>
+      </div>
+      <div class="payment-type">
+        <div class="payment-type-icon">⭐</div>
+        <div class="payment-type-text">
+          <strong>Eventos especiales</strong>
+          Torneos invitacionales y masters
+        </div>
+      </div>
+      <div class="payment-type">
+        <div class="payment-type-icon">🎫</div>
+        <div class="payment-type-text">
+          <strong>Membresías APJ</strong>
+          Afiliación para acceso al circuito
+        </div>
+      </div>
+    </div>
+
+    <div class="security-note">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+      <p><strong>Tu seguridad es nuestra prioridad.</strong> Stripe encripta toda la información de pago con tecnología de grado bancario. Nunca almacenamos los datos de tu tarjeta en nuestros servidores. Aceptamos Visa, Mastercard y American Express.</p>
+    </div>
+  </section>
+
+  <section class="refund-section">
+    <h3>Política de Reembolsos</h3>
+    <ul>
+      <li><strong>Cancelación anticipada (72+ horas):</strong> Reembolso completo si cancelas al menos 72 horas antes del inicio del torneo.</li>
+      <li><strong>Cancelación tardía (-72 horas):</strong> Evaluamos cada caso de forma individual. Contáctanos para revisar tu situación.</li>
+      <li><strong>Torneo cancelado por la APJ:</strong> Reembolso completo automático a todos los inscritos.</li>
+      <li><strong>¿Necesitas ayuda?</strong> Escríbenos a <a href="mailto:apadeljalisco@gmail.com">apadeljalisco@gmail.com</a> con tu comprobante de pago.</li>
+    </ul>
+  </section>
+
+  <section class="contact-section">
+    <h2>¿Tienes dudas?</h2>
+    <p>Estamos aquí para ayudarte. Contáctanos por cualquiera de estos medios:</p>
+    <div class="contact-links">
+      <a href="mailto:apadeljalisco@gmail.com" class="contact-link">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        apadeljalisco@gmail.com
+      </a>
+      <a href="https://instagram.com/apadeljalisco" target="_blank" rel="noopener" class="contact-link">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @apadeljalisco
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Términos y Condiciones</a>
+      <a href="/privacy">Política de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociación de Pádel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
 </body>
 </html>

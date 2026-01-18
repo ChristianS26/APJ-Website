@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Términos y Condiciones | APJ Padel</title>
+  <meta name="description" content="Términos y condiciones de uso de APJ Padel - Asociación de Pádel Jalisco." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --bg: #0f0f0f;
+    --bg-2: #1a1a1a;
+    --bg-3: #252525;
+    --card: rgba(255,255,255,0.03);
+    --card-hover: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #ffffff;
+    --text-secondary: #a1a1a1;
+    --text-muted: #666666;
+    --primary: #10b981;
+    --primary-light: #34d399;
+    --primary-dark: #059669;
+    --primary-glow: rgba(16, 185, 129, 0.15);
+    --accent: #f59e0b;
+    --accent-glow: rgba(245, 158, 11, 0.15);
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --max-width: 900px;
+    --transition: 0.2s ease;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fafafa;
+      --bg-2: #ffffff;
+      --bg-3: #f5f5f5;
+      --card: rgba(255,255,255,0.8);
+      --card-hover: rgba(255,255,255,1);
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(0,0,0,0.15);
+      --text: #111111;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --primary-glow: rgba(16, 185, 129, 0.1);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .hero {
+    position: relative;
+    padding: 48px 24px;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -10%;
+    width: 50%;
+    height: 150%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .hero-logo {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md), 0 0 40px rgba(16, 185, 129, 0.2);
+  }
+
+  .hero-logo-text {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  @media (max-width: 600px) {
+    .hero-inner {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .hero-logo {
+      width: 80px;
+      height: 80px;
+    }
+
+    .hero-logo-text {
+      font-size: 1.75rem;
+    }
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  .last-updated {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  section {
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 20px 0 12px;
+    color: var(--text);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  ul, ol {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+
+  li {
+    margin-bottom: 8px;
+  }
+
+  a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  .highlight-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  .highlight-box.warning {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: var(--accent-glow);
+  }
+
+  .highlight-box.info {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .footer-links a:hover {
+    color: var(--primary-light);
+  }
+
+  .copyright {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <span class="hero-logo-text">APJ</span>
+    </div>
+    <div class="hero-content">
+      <h1>Términos y Condiciones</h1>
+      <div class="hero-subtitle">
+        <span>Asociación de Pádel Jalisco</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="last-updated">Última actualización: Enero 2026</div>
+
+  <section>
+    <h2>1. Aceptación de los Términos</h2>
+    <p>Al acceder y utilizar la aplicación APJ Padel y los servicios de la Asociación de Pádel Jalisco, usted acepta estar sujeto a estos términos y condiciones. Si no está de acuerdo con alguna parte de estos términos, no podrá acceder al servicio.</p>
+  </section>
+
+  <section>
+    <h2>2. Descripción del Servicio</h2>
+    <p>APJ Padel es una plataforma de gestión de ligas y torneos de pádel que permite:</p>
+    <ul>
+      <li>Gestión de temporadas y categorías del Circuito APJ</li>
+      <li>Registro y administración de jugadores</li>
+      <li>Inscripción a torneos y eventos</li>
+      <li>Seguimiento de resultados y rankings oficiales</li>
+      <li>Comunicación entre la APJ y jugadores</li>
+      <li>Procesamiento de pagos de inscripción</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. Registro y Cuentas</h2>
+    <h3>3.1 Requisitos de Registro</h3>
+    <p>Para utilizar nuestros servicios, debe:</p>
+    <ul>
+      <li>Ser mayor de 18 años o contar con autorización de un tutor legal</li>
+      <li>Proporcionar información veraz y actualizada</li>
+      <li>Mantener la confidencialidad de su cuenta y contraseña</li>
+      <li>Notificar inmediatamente cualquier uso no autorizado de su cuenta</li>
+    </ul>
+
+    <h3>3.2 Responsabilidad de la Cuenta</h3>
+    <p>Usted es responsable de todas las actividades que ocurran bajo su cuenta. No comparta sus credenciales de acceso con terceros.</p>
+  </section>
+
+  <section>
+    <h2>4. Uso del Servicio</h2>
+    <h3>4.1 Uso Aceptable</h3>
+    <p>Usted se compromete a utilizar el servicio de manera ética y legal, incluyendo:</p>
+    <ul>
+      <li>Respetar a otros jugadores y organizadores</li>
+      <li>No manipular resultados o rankings</li>
+      <li>No utilizar el servicio para fines ilegales</li>
+      <li>Cumplir con el reglamento deportivo de la APJ</li>
+    </ul>
+
+    <h3>4.2 Conducta Prohibida</h3>
+    <p>Está estrictamente prohibido:</p>
+    <ul>
+      <li>Crear cuentas falsas o suplantar identidades</li>
+      <li>Enviar contenido ofensivo, discriminatorio o ilegal</li>
+      <li>Intentar acceder a cuentas de otros usuarios</li>
+      <li>Utilizar bots o sistemas automatizados sin autorización</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>5. Pagos y Reembolsos</h2>
+    <h3>5.1 Procesamiento de Pagos</h3>
+    <p>Los pagos de inscripción se procesan a través de Stripe, un procesador de pagos seguro. Al realizar un pago, usted acepta los términos de servicio de Stripe.</p>
+
+    <h3>5.2 Política de Reembolsos</h3>
+    <div class="highlight-box warning">
+      <p><strong>Política de la APJ:</strong></p>
+      <ul>
+        <li><strong>Cancelación anticipada (72+ horas):</strong> Reembolso completo si cancela al menos 72 horas antes del inicio del torneo.</li>
+        <li><strong>Cancelación tardía (-72 horas):</strong> Evaluamos cada caso individualmente. Contáctenos para revisar su situación.</li>
+        <li><strong>Torneo cancelado por la APJ:</strong> Reembolso completo automático a todos los inscritos.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. Propiedad Intelectual</h2>
+    <p>Todo el contenido de APJ Padel, incluyendo pero no limitado a texto, gráficos, logotipos, iconos, imágenes y software, es propiedad de la Asociación de Pádel Jalisco o sus licenciantes y está protegido por las leyes de propiedad intelectual aplicables.</p>
+  </section>
+
+  <section>
+    <h2>7. Limitación de Responsabilidad</h2>
+    <div class="highlight-box info">
+      <p>APJ Padel se proporciona "tal cual" y "según disponibilidad". No garantizamos que el servicio sea ininterrumpido, seguro o libre de errores.</p>
+    </div>
+    <p>En ningún caso la APJ será responsable por:</p>
+    <ul>
+      <li>Daños indirectos, incidentales o consecuentes</li>
+      <li>Pérdida de datos o beneficios</li>
+      <li>Interrupciones del servicio</li>
+      <li>Lesiones durante eventos deportivos (los participantes asumen su propio riesgo)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>8. Modificaciones de los Términos</h2>
+    <p>Podemos actualizar estos términos ocasionalmente. Le notificaremos de cambios significativos a través de la aplicación o por correo electrónico. El uso continuado del servicio después de dichos cambios constituye su aceptación de los nuevos términos.</p>
+  </section>
+
+  <section>
+    <h2>9. Terminación</h2>
+    <p>Podemos terminar o suspender su acceso al servicio inmediatamente, sin previo aviso, por cualquier razón, incluyendo el incumplimiento de estos términos. Usted puede cancelar su cuenta en cualquier momento contactándonos.</p>
+  </section>
+
+  <section>
+    <h2>10. Ley Aplicable</h2>
+    <p>Estos términos se regirán e interpretarán de acuerdo con las leyes de los Estados Unidos Mexicanos, específicamente bajo la jurisdicción del estado de Jalisco.</p>
+  </section>
+
+  <section>
+    <h2>11. Contacto</h2>
+    <p>Si tiene preguntas sobre estos términos, puede contactarnos en:</p>
+    <ul>
+      <li>Email: <a href="mailto:apadeljalisco@gmail.com">apadeljalisco@gmail.com</a></li>
+      <li>Instagram: <a href="https://instagram.com/apadeljalisco" target="_blank" rel="noopener">@apadeljalisco</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Términos y Condiciones</a>
+      <a href="/privacy">Política de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociación de Pádel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+</body>
+</html>

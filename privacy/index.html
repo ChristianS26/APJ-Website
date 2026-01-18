@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Política de Privacidad | APJ Padel</title>
+  <meta name="description" content="Política de privacidad de APJ Padel - Cómo recopilamos, usamos y protegemos su información personal." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --bg: #0f0f0f;
+    --bg-2: #1a1a1a;
+    --bg-3: #252525;
+    --card: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.08);
+    --text: #ffffff;
+    --text-secondary: #a1a1a1;
+    --text-muted: #666666;
+    --primary: #10b981;
+    --primary-light: #34d399;
+    --primary-dark: #059669;
+    --primary-glow: rgba(16, 185, 129, 0.15);
+    --accent-glow: rgba(245, 158, 11, 0.15);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --max-width: 900px;
+    --transition: 0.2s ease;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fafafa;
+      --bg-2: #ffffff;
+      --bg-3: #f5f5f5;
+      --card: rgba(255,255,255,0.8);
+      --border: rgba(0,0,0,0.08);
+      --text: #111111;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --primary-glow: rgba(16, 185, 129, 0.1);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero {
+    position: relative;
+    padding: 48px 24px;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -10%;
+    width: 50%;
+    height: 150%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .hero-logo {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md), 0 0 40px rgba(16, 185, 129, 0.2);
+  }
+
+  .hero-logo-text {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-content { display: flex; flex-direction: column; gap: 8px; }
+
+  @media (max-width: 600px) {
+    .hero-inner { flex-direction: column; text-align: center; }
+    .hero-logo { width: 80px; height: 80px; }
+    .hero-logo-text { font-size: 1.75rem; }
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  .last-updated {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  section { margin-bottom: 40px; }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  ul {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+
+  li { margin-bottom: 8px; }
+
+  a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  .highlight-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .footer-inner { max-width: var(--max-width); margin: 0 auto; }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .copyright {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <span class="hero-logo-text">APJ</span>
+    </div>
+    <div class="hero-content">
+      <h1>Política de Privacidad</h1>
+      <div class="hero-subtitle">Asociación de Pádel Jalisco</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="last-updated">Última actualización: Enero 2026</div>
+
+  <section>
+    <h2>1. Información que Recopilamos</h2>
+    <p>APJ Padel recopila la siguiente información:</p>
+    <ul>
+      <li><strong>Información de cuenta:</strong> Nombre, correo electrónico, número de teléfono</li>
+      <li><strong>Fotos de perfil:</strong> Imágenes que usted sube voluntariamente</li>
+      <li><strong>Datos deportivos:</strong> Resultados de partidos, rankings, estadísticas de juego</li>
+      <li><strong>Información de pago:</strong> Procesada de forma segura por Stripe (no almacenamos datos de tarjetas)</li>
+      <li><strong>Datos de uso:</strong> Interacciones con la aplicación para mejorar el servicio</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>2. Cómo Usamos su Información</h2>
+    <ul>
+      <li>Proporcionar y mantener el servicio del Circuito APJ</li>
+      <li>Procesar inscripciones y pagos de torneos</li>
+      <li>Enviar notificaciones sobre partidos y actualizaciones del circuito</li>
+      <li>Mostrar rankings y resultados públicamente dentro del circuito</li>
+      <li>Mejorar y personalizar la experiencia del usuario</li>
+      <li>Comunicarnos con usted sobre su cuenta y eventos</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. Compartición de Datos</h2>
+    <p>No vendemos su información personal. Compartimos datos únicamente con:</p>
+    <ul>
+      <li><strong>Organizadores de torneos:</strong> Información necesaria para gestionar los eventos</li>
+      <li><strong>Otros jugadores:</strong> Nombre y resultados dentro del circuito (visibilidad pública en rankings)</li>
+      <li><strong>Proveedores de servicios:</strong> Stripe (pagos), servicios de almacenamiento de imágenes, servicios de autenticación</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. Sus Derechos</h2>
+    <p>Usted tiene derecho a:</p>
+    <ul>
+      <li>Acceder a sus datos personales</li>
+      <li>Corregir información inexacta</li>
+      <li>Solicitar la eliminación de su cuenta y datos</li>
+      <li>Exportar sus datos en formato legible</li>
+      <li>Retirar su consentimiento en cualquier momento</li>
+    </ul>
+    <p>Para ejercer estos derechos, contacte a <a href="mailto:apadeljalisco@gmail.com">apadeljalisco@gmail.com</a></p>
+  </section>
+
+  <section>
+    <h2>5. Retención de Datos</h2>
+    <p>Conservamos sus datos mientras su cuenta esté activa. Al eliminar su cuenta, sus datos personales serán eliminados en un plazo de 30 días, excepto cuando la ley requiera su conservación o sean necesarios para mantener el historial del circuito.</p>
+  </section>
+
+  <section>
+    <h2>6. Seguridad</h2>
+    <p>Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos, incluyendo encriptación en tránsito y almacenamiento seguro. Sin embargo, ningún método de transmisión por Internet es 100% seguro.</p>
+  </section>
+
+  <section>
+    <h2>7. Menores de Edad</h2>
+    <p>El servicio no está dirigido a menores de 13 años. Los menores de 18 años deben contar con autorización de un tutor legal para participar. No recopilamos intencionalmente información de niños menores de 13 años.</p>
+  </section>
+
+  <section>
+    <h2>8. Cambios a esta Política</h2>
+    <p>Podemos actualizar esta política ocasionalmente. Le notificaremos de cambios significativos a través de la aplicación o por correo electrónico.</p>
+  </section>
+
+  <section>
+    <h2>9. Contacto</h2>
+    <p>Si tiene preguntas sobre esta política de privacidad, contáctenos:</p>
+    <ul>
+      <li>Email: <a href="mailto:apadeljalisco@gmail.com">apadeljalisco@gmail.com</a></li>
+      <li>Instagram: <a href="https://instagram.com/apadeljalisco" target="_blank" rel="noopener">@apadeljalisco</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Términos y Condiciones</a>
+      <a href="/privacy">Política de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociación de Pádel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+</body>
+</html>
