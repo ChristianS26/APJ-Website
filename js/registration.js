@@ -1,0 +1,761 @@
+// APJ Padel - Tournament Registration
+
+const APJRegistration = (function() {
+  // State
+  let currentStep = 1;
+  let selectedCategory = null;
+  let selectedPartner = null;
+  let paymentMethod = 'card'; // 'card' or 'code'
+  let paidFor = '1'; // '1' = just me, '2' = both
+  let discountCode = null;
+  let discountData = null;
+  let searchTimeout = null;
+
+  /**
+   * Initialize registration flow
+   */
+  async function init() {
+    // Check if on registration page
+    if (!document.getElementById('registration-container')) return;
+
+    // Check auth
+    if (!APJApi.isAuthenticated()) {
+      APJAuth.showLogin();
+      window.addEventListener('apj:auth:login', () => {
+        location.reload();
+      }, { once: true });
+      return;
+    }
+
+    bindEvents();
+    await loadTournamentData();
+    updateUI();
+  }
+
+  /**
+   * Load tournament and category data
+   */
+  async function loadTournamentData() {
+    const loadingEl = document.getElementById('loading-state');
+    const contentEl = document.getElementById('step-content');
+
+    if (loadingEl) loadingEl.classList.remove('hidden');
+    if (contentEl) contentEl.classList.add('hidden');
+
+    try {
+      await APJTournaments.loadTournaments();
+      const tournament = APJTournaments.getActiveTournament();
+
+      if (!tournament) {
+        showNoTournament();
+        return;
+      }
+
+      // Update tournament info
+      const tournamentNameEl = document.getElementById('tournament-name');
+      if (tournamentNameEl) {
+        tournamentNameEl.textContent = tournament.name || tournament.tournament_name || 'Torneo APJ';
+      }
+
+      // Load categories
+      await APJTournaments.loadCategories(
+        tournament.id || tournament.tournament_id,
+        tournament.type || tournament.tournament_type || 'regular'
+      );
+
+      renderCategories();
+
+      if (loadingEl) loadingEl.classList.add('hidden');
+      if (contentEl) contentEl.classList.remove('hidden');
+    } catch (error) {
+      console.error('Error loading tournament data:', error);
+      APJToast.error('Error', 'No se pudo cargar la informacion del torneo');
+    }
+  }
+
+  /**
+   * Show no tournament available message
+   */
+  function showNoTournament() {
+    const container = document.getElementById('registration-container');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📅</div>
+        <h2>No hay torneos disponibles</h2>
+        <p>No hay torneos con inscripciones abiertas en este momento. Visita nuestra app para ver el calendario completo.</p>
+        <a href="/" class="btn btn-primary" style="margin-top: 20px;">Volver al inicio</a>
+      </div>
+    `;
+  }
+
+  /**
+   * Render category cards
+   */
+  function renderCategories() {
+    const container = document.getElementById('category-list');
+    if (!container) return;
+
+    const categories = APJTournaments.getCategories();
+
+    if (!categories || categories.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p>No hay categorias disponibles para este torneo.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = categories.map(cat => `
+      <div class="category-card" data-category-id="${cat.id || cat.category_id}">
+        <div class="category-info">
+          <h4>${cat.name || cat.category_name}</h4>
+          <p>${cat.description || ''}</p>
+        </div>
+        <div class="category-price">
+          ${APJTournaments.formatPrice(cat.price || cat.price_cents || 99900)}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Bind event handlers
+   */
+  function bindEvents() {
+    // Category selection
+    document.addEventListener('click', e => {
+      const categoryCard = e.target.closest('.category-card');
+      if (categoryCard) {
+        selectCategory(categoryCard.dataset.categoryId);
+      }
+    });
+
+    // Partner search
+    const searchInput = document.getElementById('partner-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', e => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+
+        if (query.length < APJConfig.VALIDATION.MIN_SEARCH_LENGTH) {
+          document.getElementById('search-results').innerHTML = '';
+          return;
+        }
+
+        searchTimeout = setTimeout(() => searchPartners(query), 300);
+      });
+    }
+
+    // Search result selection
+    document.addEventListener('click', e => {
+      const resultEl = e.target.closest('.search-result');
+      if (resultEl) {
+        selectPartner(resultEl.dataset.userId);
+      }
+    });
+
+    // Remove partner
+    document.addEventListener('click', e => {
+      if (e.target.closest('.remove-partner')) {
+        removePartner();
+      }
+    });
+
+    // Payment method selection
+    document.addEventListener('click', e => {
+      const option = e.target.closest('.payment-option');
+      if (option) {
+        setPaymentMethod(option.dataset.method);
+      }
+    });
+
+    // Paid for selection
+    document.addEventListener('change', e => {
+      if (e.target.name === 'paid-for') {
+        setPaidFor(e.target.value);
+      }
+    });
+
+    // Discount code
+    document.getElementById('apply-discount')?.addEventListener('click', applyDiscountCode);
+    document.addEventListener('click', e => {
+      if (e.target.closest('.discount-remove')) {
+        removeDiscount();
+      }
+    });
+
+    // Navigation buttons
+    document.getElementById('btn-next')?.addEventListener('click', nextStep);
+    document.getElementById('btn-prev')?.addEventListener('click', prevStep);
+
+    // Submit registration code
+    document.getElementById('submit-code')?.addEventListener('click', submitRegistrationCode);
+
+    // Submit payment
+    document.getElementById('submit-payment')?.addEventListener('click', submitPayment);
+  }
+
+  /**
+   * Select category
+   */
+  function selectCategory(categoryId) {
+    selectedCategory = APJTournaments.getCategoryById(parseInt(categoryId) || categoryId);
+
+    // Update UI
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.classList.toggle('selected', card.dataset.categoryId === categoryId.toString());
+    });
+
+    // Clear discount when category changes
+    removeDiscount();
+
+    updateUI();
+  }
+
+  /**
+   * Search for partners
+   */
+  async function searchPartners(query) {
+    const resultsContainer = document.getElementById('search-results');
+    if (!resultsContainer) return;
+
+    try {
+      const users = await APJApi.searchUsers(query);
+      const currentUser = APJApi.getUserData();
+
+      // Filter out current user
+      const filteredUsers = users.filter(u =>
+        u.uid !== currentUser?.uid &&
+        u.id !== currentUser?.id
+      );
+
+      if (filteredUsers.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="search-result" style="cursor: default;">
+            <span style="color: var(--text-muted);">No se encontraron usuarios</span>
+          </div>
+        `;
+        return;
+      }
+
+      resultsContainer.innerHTML = filteredUsers.map(user => {
+        const name = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Usuario';
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+        return `
+          <div class="search-result" data-user-id="${user.uid || user.id}" data-user='${JSON.stringify(user).replace(/'/g, "\\'")}'>
+            <div class="search-result-avatar">
+              ${user.photo_url ? `<img src="${user.photo_url}" alt="${name}">` : initials}
+            </div>
+            <div>
+              <div class="search-result-name">${name}</div>
+              <div class="search-result-email">${user.email || ''}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (error) {
+      console.error('Error searching users:', error);
+      resultsContainer.innerHTML = `
+        <div class="search-result" style="cursor: default;">
+          <span style="color: var(--error);">Error al buscar usuarios</span>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Select partner
+   */
+  function selectPartner(userId) {
+    const resultEl = document.querySelector(`.search-result[data-user-id="${userId}"]`);
+    if (!resultEl) return;
+
+    try {
+      selectedPartner = JSON.parse(resultEl.dataset.user);
+    } catch (e) {
+      console.error('Error parsing user data:', e);
+      return;
+    }
+
+    // Update UI
+    const searchContainer = document.getElementById('partner-search-container');
+    const selectedContainer = document.getElementById('selected-partner');
+
+    if (searchContainer) searchContainer.classList.add('hidden');
+    if (selectedContainer) {
+      const name = `${selectedPartner.first_name || ''} ${selectedPartner.last_name || ''}`.trim() || 'Usuario';
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+      selectedContainer.classList.remove('hidden');
+      selectedContainer.innerHTML = `
+        <div class="selected-partner-info">
+          <div class="search-result-avatar">
+            ${selectedPartner.photo_url ? `<img src="${selectedPartner.photo_url}" alt="${name}">` : initials}
+          </div>
+          <div>
+            <div class="search-result-name">${name}</div>
+            <div class="search-result-email">${selectedPartner.email || ''}</div>
+          </div>
+        </div>
+        <span class="remove-partner">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </span>
+      `;
+    }
+
+    updateUI();
+  }
+
+  /**
+   * Remove selected partner
+   */
+  function removePartner() {
+    selectedPartner = null;
+
+    const searchContainer = document.getElementById('partner-search-container');
+    const selectedContainer = document.getElementById('selected-partner');
+    const searchInput = document.getElementById('partner-search');
+    const searchResults = document.getElementById('search-results');
+
+    if (searchContainer) searchContainer.classList.remove('hidden');
+    if (selectedContainer) selectedContainer.classList.add('hidden');
+    if (searchInput) searchInput.value = '';
+    if (searchResults) searchResults.innerHTML = '';
+
+    updateUI();
+  }
+
+  /**
+   * Set payment method
+   */
+  function setPaymentMethod(method) {
+    paymentMethod = method;
+
+    document.querySelectorAll('.payment-option').forEach(opt => {
+      opt.classList.toggle('selected', opt.dataset.method === method);
+    });
+
+    // Show/hide relevant sections
+    const cardSection = document.getElementById('card-payment-section');
+    const codeSection = document.getElementById('code-payment-section');
+
+    if (cardSection) cardSection.classList.toggle('hidden', method !== 'card');
+    if (codeSection) codeSection.classList.toggle('hidden', method !== 'code');
+
+    updateUI();
+  }
+
+  /**
+   * Set paid for option
+   */
+  function setPaidFor(value) {
+    paidFor = value;
+
+    // Discount not available when paying for both
+    const discountSection = document.getElementById('discount-section');
+    if (discountSection) {
+      discountSection.classList.toggle('hidden', paidFor === '2');
+    }
+
+    // Clear discount if switching to pay for both
+    if (paidFor === '2') {
+      removeDiscount();
+    }
+
+    updatePriceSummary();
+  }
+
+  /**
+   * Apply discount code
+   */
+  async function applyDiscountCode() {
+    const codeInput = document.getElementById('discount-code');
+    const code = codeInput?.value.trim();
+
+    if (!code) {
+      APJToast.error('Error', 'Ingresa un codigo de descuento');
+      return;
+    }
+
+    if (!selectedCategory) {
+      APJToast.error('Error', 'Primero selecciona una categoria');
+      return;
+    }
+
+    const applyBtn = document.getElementById('apply-discount');
+    if (applyBtn) {
+      applyBtn.disabled = true;
+      applyBtn.innerHTML = '<span class="spinner"></span>';
+    }
+
+    try {
+      const amount = selectedCategory.price || selectedCategory.price_cents || 99900;
+      discountData = await APJApi.validateDiscountCode(code, amount);
+
+      if (discountData.valid) {
+        discountCode = code;
+        showDiscountApplied();
+        APJToast.success('Codigo aplicado', `Descuento de ${APJTournaments.formatPrice(discountData.discount_applied)} aplicado`);
+      } else {
+        APJToast.error('Codigo invalido', 'El codigo ingresado no es valido');
+      }
+    } catch (error) {
+      APJToast.error('Error', error.message || 'No se pudo validar el codigo');
+    } finally {
+      if (applyBtn) {
+        applyBtn.disabled = false;
+        applyBtn.textContent = 'Aplicar';
+      }
+    }
+
+    updatePriceSummary();
+  }
+
+  /**
+   * Show discount applied UI
+   */
+  function showDiscountApplied() {
+    const discountRow = document.getElementById('discount-input-row');
+    const appliedRow = document.getElementById('discount-applied');
+
+    if (discountRow) discountRow.classList.add('hidden');
+    if (appliedRow) {
+      appliedRow.classList.remove('hidden');
+
+      const discountText = discountData.discount_type === 'percentage'
+        ? `${discountData.discount_value}% de descuento`
+        : APJTournaments.formatPrice(discountData.discount_applied) + ' de descuento';
+
+      appliedRow.innerHTML = `
+        <span class="discount-applied-text">${discountCode}: ${discountText}</span>
+        <span class="discount-remove">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </span>
+      `;
+    }
+  }
+
+  /**
+   * Remove discount
+   */
+  function removeDiscount() {
+    discountCode = null;
+    discountData = null;
+
+    const codeInput = document.getElementById('discount-code');
+    const discountRow = document.getElementById('discount-input-row');
+    const appliedRow = document.getElementById('discount-applied');
+
+    if (codeInput) codeInput.value = '';
+    if (discountRow) discountRow.classList.remove('hidden');
+    if (appliedRow) appliedRow.classList.add('hidden');
+
+    updatePriceSummary();
+  }
+
+  /**
+   * Update price summary
+   */
+  function updatePriceSummary() {
+    if (!selectedCategory) return;
+
+    const basePrice = selectedCategory.price || selectedCategory.price_cents || 99900;
+    const quantity = paidFor === '2' ? 2 : 1;
+    let subtotal = basePrice * quantity;
+    let discount = 0;
+    let total = subtotal;
+
+    if (discountData && paidFor === '1') {
+      discount = discountData.discount_applied || 0;
+      total = discountData.final_amount || (subtotal - discount);
+    }
+
+    // Update price summary UI
+    const subtotalEl = document.getElementById('price-subtotal');
+    const discountEl = document.getElementById('price-discount');
+    const totalEl = document.getElementById('price-total');
+
+    if (subtotalEl) {
+      subtotalEl.textContent = `${APJTournaments.formatPrice(basePrice)} x ${quantity}`;
+    }
+
+    if (discountEl) {
+      if (discount > 0) {
+        discountEl.parentElement.classList.remove('hidden');
+        discountEl.textContent = `-${APJTournaments.formatPrice(discount)}`;
+      } else {
+        discountEl.parentElement.classList.add('hidden');
+      }
+    }
+
+    if (totalEl) {
+      totalEl.textContent = APJTournaments.formatPrice(total);
+    }
+
+    // Update submit button text
+    const submitBtn = document.getElementById('submit-payment');
+    if (submitBtn) {
+      if (total === 0) {
+        submitBtn.textContent = 'Completar Inscripcion Gratis';
+        submitBtn.classList.remove('btn-stripe');
+        submitBtn.classList.add('btn-primary');
+      } else {
+        submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg> Pagar ${APJTournaments.formatPrice(total)}`;
+        submitBtn.classList.add('btn-stripe');
+        submitBtn.classList.remove('btn-primary');
+      }
+    }
+  }
+
+  /**
+   * Next step
+   */
+  function nextStep() {
+    if (!validateCurrentStep()) return;
+
+    currentStep++;
+    updateUI();
+
+    // Initialize payment on step 3
+    if (currentStep === 3 && paymentMethod === 'card') {
+      APJPayment.initStripe();
+    }
+  }
+
+  /**
+   * Previous step
+   */
+  function prevStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      updateUI();
+    }
+  }
+
+  /**
+   * Validate current step
+   */
+  function validateCurrentStep() {
+    switch (currentStep) {
+      case 1:
+        if (!selectedCategory) {
+          APJToast.error('Selecciona una categoria', 'Debes elegir una categoria para continuar');
+          return false;
+        }
+        return true;
+
+      case 2:
+        if (!selectedPartner) {
+          APJToast.error('Selecciona una pareja', 'Debes elegir una pareja para continuar');
+          return false;
+        }
+        return true;
+
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * Submit registration with code
+   */
+  async function submitRegistrationCode() {
+    const codeInput = document.getElementById('registration-code');
+    const code = codeInput?.value.trim();
+
+    if (!code) {
+      APJToast.error('Error', 'Ingresa tu codigo de registro');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submit-code');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Validando...';
+    }
+
+    try {
+      const tournament = APJTournaments.getActiveTournament();
+      const userData = APJApi.getUserData();
+
+      await APJApi.redeemCode(code, {
+        tournamentId: tournament.id || tournament.tournament_id,
+        categoryId: selectedCategory.id || selectedCategory.category_id,
+        playerUid: userData.uid || userData.id,
+        partnerUid: selectedPartner.uid || selectedPartner.id
+      });
+
+      showSuccess();
+    } catch (error) {
+      APJToast.error('Error', error.message || 'Codigo invalido');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Registrar con Codigo';
+      }
+    }
+  }
+
+  /**
+   * Submit payment
+   */
+  async function submitPayment() {
+    const tournament = APJTournaments.getActiveTournament();
+    const userData = APJApi.getUserData();
+    const basePrice = selectedCategory.price || selectedCategory.price_cents || 99900;
+    const quantity = paidFor === '2' ? 2 : 1;
+    let amount = basePrice * quantity;
+
+    if (discountData && paidFor === '1') {
+      amount = discountData.final_amount;
+    }
+
+    const paymentData = {
+      amount: amount,
+      currency: 'mxn',
+      playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
+      playerUid: userData.uid || userData.id,
+      partnerUid: selectedPartner.uid || selectedPartner.id,
+      tournamentId: tournament.id || tournament.tournament_id,
+      categoryId: selectedCategory.id || selectedCategory.category_id,
+      email: userData.email,
+      paidFor: paidFor
+    };
+
+    if (discountCode && paidFor === '1') {
+      paymentData.discount_code = discountCode;
+    }
+
+    // If free registration
+    if (amount === 0) {
+      await completeFreeRegistration(paymentData);
+      return;
+    }
+
+    // Otherwise use Stripe
+    await APJPayment.processPayment(paymentData);
+  }
+
+  /**
+   * Complete free registration (100% discount)
+   */
+  async function completeFreeRegistration(paymentData) {
+    const submitBtn = document.getElementById('submit-payment');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Procesando...';
+    }
+
+    try {
+      const response = await APJApi.createPaymentIntent(paymentData);
+
+      if (response.free_registration) {
+        showSuccess();
+      } else {
+        APJToast.error('Error', 'Ocurrio un error al procesar tu inscripcion');
+      }
+    } catch (error) {
+      APJToast.error('Error', error.message);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Completar Inscripcion Gratis';
+      }
+    }
+  }
+
+  /**
+   * Show success state
+   */
+  function showSuccess() {
+    currentStep = 4; // Success step
+    updateUI();
+
+    const contentEl = document.getElementById('step-content');
+    if (contentEl) {
+      contentEl.innerHTML = `
+        <div class="success-state">
+          <div class="success-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h2>Inscripcion Exitosa</h2>
+          <p>Tu inscripcion al torneo ha sido completada. Recibiras un correo de confirmacion con los detalles.</p>
+          <a href="/" class="btn btn-primary" style="margin-top: 24px;">Volver al Inicio</a>
+        </div>
+      `;
+    }
+
+    // Hide steps
+    const stepsEl = document.querySelector('.steps');
+    if (stepsEl) stepsEl.classList.add('hidden');
+  }
+
+  /**
+   * Update UI based on current step
+   */
+  function updateUI() {
+    // Update step indicators
+    document.querySelectorAll('.step').forEach((step, idx) => {
+      const stepNum = idx + 1;
+      step.classList.toggle('active', stepNum === currentStep);
+      step.classList.toggle('completed', stepNum < currentStep);
+    });
+
+    // Show/hide step content
+    document.querySelectorAll('.step-content').forEach(content => {
+      const stepNum = parseInt(content.dataset.step);
+      content.classList.toggle('active', stepNum === currentStep);
+    });
+
+    // Update navigation buttons
+    const prevBtn = document.getElementById('btn-prev');
+    const nextBtn = document.getElementById('btn-next');
+
+    if (prevBtn) {
+      prevBtn.classList.toggle('hidden', currentStep === 1);
+    }
+
+    if (nextBtn) {
+      nextBtn.classList.toggle('hidden', currentStep >= 3);
+      nextBtn.disabled = (currentStep === 1 && !selectedCategory) ||
+                         (currentStep === 2 && !selectedPartner);
+    }
+
+    // Update price summary when on step 3
+    if (currentStep === 3) {
+      updatePriceSummary();
+    }
+  }
+
+  /**
+   * Get current state (for payment module)
+   */
+  function getState() {
+    return {
+      selectedCategory,
+      selectedPartner,
+      paymentMethod,
+      paidFor,
+      discountCode,
+      discountData
+    };
+  }
+
+  // Public API
+  return {
+    init,
+    getState,
+    showSuccess,
+    updatePriceSummary
+  };
+})();

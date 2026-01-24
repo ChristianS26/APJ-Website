@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscripcion a Torneo | APJ Padel</title>
+  <meta name="description" content="Inscribete al proximo torneo de la Asociacion de Padel Jalisco. Elige tu categoria, busca tu pareja y paga de forma segura." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="registration-page">
+
+<header class="registration-header">
+  <div class="registration-header-inner">
+    <a href="/" class="registration-logo">
+      <div class="registration-logo-icon">APJ</div>
+      <span class="registration-logo-text">APJ Padel</span>
+    </a>
+    <div class="header-nav">
+      <div id="auth-buttons">
+        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
+        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
+      </div>
+      <div id="user-menu" class="user-menu hidden"></div>
+    </div>
+  </div>
+</header>
+
+<main class="registration-container" id="registration-container">
+
+  <!-- Loading State -->
+  <div id="loading-state" class="empty-state">
+    <div class="spinner" style="width: 48px; height: 48px; margin: 0 auto 16px;"></div>
+    <p>Cargando informacion del torneo...</p>
+  </div>
+
+  <!-- Step Content -->
+  <div id="step-content" class="hidden">
+
+    <!-- Steps Indicator -->
+    <div class="steps">
+      <div class="step active" data-step="1">
+        <div class="step-number">1</div>
+        <span class="step-label">Categoria</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step" data-step="2">
+        <div class="step-number">2</div>
+        <span class="step-label">Pareja</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step" data-step="3">
+        <div class="step-number">3</div>
+        <span class="step-label">Pago</span>
+      </div>
+    </div>
+
+    <!-- Tournament Name -->
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px;">
+      <span id="tournament-name">Torneo APJ</span>
+    </p>
+
+    <!-- Step 1: Select Category -->
+    <div class="step-content active" data-step="1">
+      <h2 class="step-title">Selecciona tu Categoria</h2>
+      <p class="step-subtitle">Elige la categoria en la que deseas competir</p>
+
+      <div id="category-list" class="category-list">
+        <!-- Categories will be loaded dynamically -->
+      </div>
+
+      <div class="step-navigation">
+        <button class="btn btn-secondary hidden" id="btn-prev">Anterior</button>
+        <button class="btn btn-primary" id="btn-next" disabled>Continuar</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Select Partner -->
+    <div class="step-content" data-step="2">
+      <h2 class="step-title">Busca tu Pareja</h2>
+      <p class="step-subtitle">Busca y selecciona a tu compañero de equipo</p>
+
+      <div id="partner-search-container">
+        <div class="form-group">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="partner-search" class="form-input" placeholder="Buscar por nombre o correo...">
+          </div>
+          <p class="form-hint">Escribe al menos 3 caracteres para buscar</p>
+        </div>
+
+        <div id="search-results" class="search-results"></div>
+      </div>
+
+      <div id="selected-partner" class="hidden"></div>
+
+      <div class="step-navigation">
+        <button class="btn btn-secondary" id="btn-prev">Anterior</button>
+        <button class="btn btn-primary" id="btn-next" disabled>Continuar</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Payment -->
+    <div class="step-content" data-step="3">
+      <h2 class="step-title">Metodo de Pago</h2>
+      <p class="step-subtitle">Elige como deseas pagar tu inscripcion</p>
+
+      <!-- Payment Method Selection -->
+      <div class="payment-options">
+        <div class="payment-option selected" data-method="card">
+          <div class="payment-option-radio"></div>
+          <span class="payment-option-label">Pagar con tarjeta</span>
+        </div>
+        <div class="payment-option" data-method="code">
+          <div class="payment-option-radio"></div>
+          <span class="payment-option-label">Tengo un codigo de registro</span>
+        </div>
+      </div>
+
+      <!-- Card Payment Section -->
+      <div id="card-payment-section">
+        <!-- Paid For Selection -->
+        <div class="form-group">
+          <label class="form-label">Pagar por:</label>
+          <div class="payment-options">
+            <label class="payment-option selected" data-method="1">
+              <input type="radio" name="paid-for" value="1" checked>
+              <div class="payment-option-radio"></div>
+              <span class="payment-option-label">Solo por mi</span>
+            </label>
+            <label class="payment-option" data-method="2">
+              <input type="radio" name="paid-for" value="2">
+              <div class="payment-option-radio"></div>
+              <span class="payment-option-label">Por mi y mi pareja</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Discount Code Section -->
+        <div id="discount-section" class="discount-section">
+          <label class="form-label">Codigo de descuento (opcional)</label>
+          <div id="discount-input-row" class="discount-row">
+            <input type="text" id="discount-code" class="form-input" placeholder="CODIGO20">
+            <button type="button" id="apply-discount" class="btn btn-secondary">Aplicar</button>
+          </div>
+          <div id="discount-applied" class="discount-applied hidden"></div>
+        </div>
+
+        <!-- Price Summary -->
+        <div class="price-summary">
+          <div class="price-row">
+            <span>Subtotal</span>
+            <span id="price-subtotal">$999.00 x 1</span>
+          </div>
+          <div class="price-row discount hidden">
+            <span>Descuento</span>
+            <span id="price-discount">-$0.00</span>
+          </div>
+          <div class="price-row">
+            <span>Total</span>
+            <span id="price-total">$999.00</span>
+          </div>
+        </div>
+
+        <!-- Stripe Payment Element -->
+        <div id="stripe-payment-element"></div>
+
+        <!-- Submit Payment -->
+        <button type="button" id="submit-payment" class="btn btn-stripe btn-block btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+          </svg>
+          Pagar $999.00
+        </button>
+
+        <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 16px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          Pagos seguros procesados por Stripe
+        </p>
+      </div>
+
+      <!-- Code Payment Section -->
+      <div id="code-payment-section" class="hidden">
+        <div class="code-input-section">
+          <p style="color: var(--text-secondary); margin-bottom: 24px;">
+            Ingresa tu codigo de registro proporcionado por la organizacion.
+          </p>
+          <input type="text" id="registration-code" class="form-input" placeholder="XXXXXX">
+          <button type="button" id="submit-code" class="btn btn-primary btn-block btn-lg">
+            Registrar con Codigo
+          </button>
+        </div>
+      </div>
+
+      <div class="step-navigation">
+        <button class="btn btn-secondary" id="btn-prev">Anterior</button>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Terminos y Condiciones</a>
+      <a href="/privacy">Politica de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/tournaments.js"></script>
+<script src="/js/registration.js"></script>
+<script src="/js/payment.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
