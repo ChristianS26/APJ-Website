@@ -157,9 +157,17 @@ const APJRegistration = (function() {
   function renderCategoryCard(cat, isRegistered) {
     const categoryId = cat.id || cat.category_id;
     const registration = isRegistered ? APJTournaments.getRegistrationForCategory(categoryId) : null;
+
+    // Debug logging
+    console.log('[APJ] Rendering category:', cat.name || cat.category_name, 'ID:', categoryId);
+    console.log('[APJ] Registration data:', registration);
+
     const partner = registration?.partner;
-    const paidByMe = registration?.paidByMe || registration?.paid_by_me;
-    const paidByPartner = registration?.paidByPartner || registration?.paid_by_partner;
+    // API returns snake_case: paid_by_me, paid_by_partner
+    const paidByMe = registration?.paid_by_me === true;
+    const paidByPartner = registration?.paid_by_partner === true;
+
+    console.log('[APJ] Payment status - paidByMe:', paidByMe, 'paidByPartner:', paidByPartner);
 
     let statusHtml = '';
     let cardClass = 'category-card';
@@ -350,11 +358,14 @@ const APJRegistration = (function() {
    */
   function selectCategory(categoryId) {
     const catId = parseInt(categoryId) || categoryId;
+    console.log('[APJ] selectCategory called with:', categoryId, 'parsed:', catId);
 
-    // Check if category is fully paid (disabled)
+    // Check if category is non-clickable (fully paid or waiting for partner)
     const card = document.querySelector(`.category-card[data-category-id="${categoryId}"]`);
-    if (card && card.classList.contains('disabled') && !card.classList.contains('needs-payment')) {
-      APJToast.error('Categoria no disponible', 'Ya estas inscrito en esta categoria');
+    console.log('[APJ] Card classes:', card?.className);
+
+    if (card && card.classList.contains('non-clickable')) {
+      APJToast.error('Categoria no disponible', 'Ya estas inscrito en esta categoria o esperando pago de tu pareja');
       return;
     }
 

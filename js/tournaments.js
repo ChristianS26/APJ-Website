@@ -104,13 +104,30 @@ const APJTournaments = (function() {
   }
 
   /**
+   * Helper to compare category IDs (handles int/string mismatch)
+   */
+  function categoryIdMatches(itemCategoryId, targetId) {
+    // Convert both to numbers for comparison
+    const itemId = parseInt(itemCategoryId);
+    const target = parseInt(targetId);
+    return !isNaN(itemId) && !isNaN(target) && itemId === target;
+  }
+
+  /**
    * Check if user is registered in a category
    */
   function isRegisteredInCategory(categoryId) {
-    if (!myRegistrations || !myRegistrations.items) return false;
-    return myRegistrations.items.some(item =>
-      item.category?.id === categoryId || item.category?.category_id === categoryId
-    );
+    if (!myRegistrations || !myRegistrations.items) {
+      console.log('[APJ] No registrations data available');
+      return false;
+    }
+    const found = myRegistrations.items.some(item => {
+      const itemCatId = item.category?.id || item.category?.category_id;
+      const matches = categoryIdMatches(itemCatId, categoryId);
+      console.log('[APJ] Checking category match:', itemCatId, 'vs', categoryId, '=', matches);
+      return matches;
+    });
+    return found;
   }
 
   /**
@@ -118,9 +135,10 @@ const APJTournaments = (function() {
    */
   function getPartnerForCategory(categoryId) {
     if (!myRegistrations || !myRegistrations.items) return null;
-    const reg = myRegistrations.items.find(item =>
-      item.category?.id === categoryId || item.category?.category_id === categoryId
-    );
+    const reg = myRegistrations.items.find(item => {
+      const itemCatId = item.category?.id || item.category?.category_id;
+      return categoryIdMatches(itemCatId, categoryId);
+    });
     return reg?.partner || null;
   }
 
@@ -129,9 +147,12 @@ const APJTournaments = (function() {
    */
   function getRegistrationForCategory(categoryId) {
     if (!myRegistrations || !myRegistrations.items) return null;
-    return myRegistrations.items.find(item =>
-      item.category?.id === categoryId || item.category?.category_id === categoryId
-    );
+    const reg = myRegistrations.items.find(item => {
+      const itemCatId = item.category?.id || item.category?.category_id;
+      return categoryIdMatches(itemCatId, categoryId);
+    });
+    console.log('[APJ] getRegistrationForCategory', categoryId, '=', reg);
+    return reg;
   }
 
   // Public API
