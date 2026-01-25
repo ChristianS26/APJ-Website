@@ -416,8 +416,11 @@ const APJRegistration = (function() {
       currentStep = 2;
       updateUI();
       updatePartnerUI();
-      // Clear flag after current event loop completes
-      setTimeout(() => { justAutoAdvanced = false; }, 0);
+      // Clear flag after a short delay to ensure click events are processed
+      setTimeout(() => {
+        justAutoAdvanced = false;
+        console.log('[APJ] justAutoAdvanced flag cleared');
+      }, 100);
     }
   }
 
