@@ -182,7 +182,8 @@ const APJAuth = (function() {
       if (e.target.matches('[data-logout]')) {
         e.preventDefault();
         APJApi.logout();
-        window.location.href = '/';
+        // Use replace to prevent back button returning to authenticated pages
+        window.location.replace('/');
       }
 
       if (e.target.matches('[data-close-modal]') || e.target.closest('[data-close-modal]')) {
