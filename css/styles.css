@@ -198,20 +198,64 @@ h1 {
 
 @media (max-width: 600px) {
   .hero {
-    padding: 56px 24px;
+    padding: 16px 16px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-nav {
+    position: relative;
+    top: 0;
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-nav .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  #auth-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .user-menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .header-register-btn {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 8px;
   }
 
   .hero-logo {
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
   }
 
   .hero-logo-text {
-    font-size: 2.25rem;
+    font-size: 2rem;
   }
 
   .hero-stats {
-    gap: 24px;
+    gap: 20px;
+  }
+
+  .hero-stat-number {
+    font-size: 1.5rem;
   }
 }
 
