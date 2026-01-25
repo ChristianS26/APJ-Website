@@ -166,10 +166,14 @@ const APJPayment = (function() {
   }
 
   /**
-   * Process payment
+   * Process payment - creates intent and handles full payment flow
    */
   async function processPayment(paymentData) {
-    if (!stripe || !elements) {
+    if (!stripe) {
+      initStripe();
+    }
+
+    if (!stripe) {
       APJToast.error('Error', 'El sistema de pagos no esta listo');
       return;
     }
@@ -177,45 +181,50 @@ const APJPayment = (function() {
     const submitBtn = document.getElementById('submit-payment');
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="spinner"></span> Procesando pago...';
+      submitBtn.innerHTML = '<span class="spinner"></span> Procesando...';
     }
 
     try {
-      // If we don't have a client secret yet, create the payment intent
-      if (!clientSecret) {
-        const response = await APJApi.createPaymentIntent(paymentData);
+      // Step 1: Create payment intent
+      console.log('[APJ Payment] Creating payment intent...');
+      const response = await APJApi.createPaymentIntent(paymentData);
 
-        if (response.free_registration) {
-          APJRegistration.showSuccess();
-          return;
-        }
-
-        clientSecret = response.clientSecret || response.client_secret;
-      }
-
-      // Confirm payment
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/inscripcion/?success=true`,
-          receipt_email: paymentData.email
-        },
-        redirect: 'if_required'
-      });
-
-      if (error) {
-        if (error.type === 'card_error' || error.type === 'validation_error') {
-          APJToast.error('Error de pago', error.message);
-        } else {
-          APJToast.error('Error', 'Ocurrio un error inesperado');
-        }
+      // Check if free registration (100% discount)
+      if (response.free_registration) {
+        APJRegistration.showSuccess();
         return;
       }
 
-      // Payment succeeded
-      if (paymentIntent && paymentIntent.status === 'succeeded') {
-        APJRegistration.showSuccess();
+      clientSecret = response.clientSecret || response.client_secret;
+
+      if (!clientSecret) {
+        throw new Error('No se recibio la clave de pago');
       }
+
+      // Step 2: Create Elements and mount Payment Element
+      console.log('[APJ Payment] Creating Stripe Elements...');
+      elements = stripe.elements({
+        clientSecret: clientSecret,
+        appearance: getStripeAppearance()
+      });
+
+      paymentElement = elements.create('payment', { layout: 'tabs' });
+
+      const container = document.getElementById('stripe-payment-element');
+      if (container) {
+        container.innerHTML = '';
+        paymentElement.mount('#stripe-payment-element');
+      }
+
+      // Step 3: Wait for element to be ready, then show confirm button
+      paymentElement.on('ready', () => {
+        console.log('[APJ Payment] Payment element ready');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg> Confirmar Pago`;
+          submitBtn.onclick = () => confirmPayment(paymentData.email);
+        }
+      });
 
     } catch (error) {
       console.error('Payment error:', error);
@@ -233,19 +242,65 @@ const APJPayment = (function() {
       }
 
       APJToast.error(errorTitle, error.message || 'Error al procesar el pago');
-    } finally {
+
       if (submitBtn) {
         submitBtn.disabled = false;
-        const state = APJRegistration.getState();
-        const basePrice = state.selectedCategory?.price || state.selectedCategory?.price_cents || 99900;
-        const quantity = state.paidFor === '2' ? 2 : 1;
-        let amount = basePrice * quantity;
+        submitBtn.textContent = 'Reintentar';
+      }
+    }
+  }
 
-        if (state.discountData && state.paidFor === '1') {
-          amount = state.discountData.final_amount;
+  /**
+   * Confirm payment after user enters card details
+   */
+  async function confirmPayment(email) {
+    if (!stripe || !elements) {
+      APJToast.error('Error', 'El sistema de pagos no esta listo');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submit-payment');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Procesando pago...';
+    }
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/inscripcion/?success=true`,
+          receipt_email: email
+        },
+        redirect: 'if_required'
+      });
+
+      if (error) {
+        if (error.type === 'card_error' || error.type === 'validation_error') {
+          APJToast.error('Error de pago', error.message);
+        } else {
+          APJToast.error('Error', 'Ocurrio un error inesperado');
         }
 
-        submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg> Pagar ${APJTournaments.formatPrice(amount)}`;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg> Reintentar`;
+        }
+        return;
+      }
+
+      // Payment succeeded
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        APJRegistration.showSuccess();
+      }
+
+    } catch (error) {
+      console.error('Payment confirmation error:', error);
+      APJToast.error('Error', error.message || 'Error al confirmar el pago');
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg> Reintentar`;
       }
     }
   }

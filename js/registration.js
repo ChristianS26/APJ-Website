@@ -795,12 +795,10 @@ const APJRegistration = (function() {
     console.log('[APJ] nextStep advancing to:', currentStep);
     updateUI();
 
-    // Initialize payment on step 3
+    // Initialize Stripe on step 3 (but don't create payment intent yet)
     if (currentStep === 3 && paymentMethod === 'card') {
-      console.log('[APJ] Dispatching step 3 event');
+      console.log('[APJ] Entering step 3 - initializing Stripe');
       APJPayment.initStripe();
-      // Dispatch event for app.js to create payment element
-      window.dispatchEvent(new CustomEvent('apj:registration:step3'));
     }
   }
 
