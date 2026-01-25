@@ -182,6 +182,13 @@ const APJApi = (function() {
   }
 
   /**
+   * Get my registrations for a tournament
+   */
+  async function getMyRegistrationsByTournament(tournamentId) {
+    return request(`/api/teams/me/by-tournament?tournamentId=${encodeURIComponent(tournamentId)}`);
+  }
+
+  /**
    * Get category prices for a tournament
    */
   async function getCategoryPrices(tournamentId, tournamentType) {
@@ -235,6 +242,7 @@ const APJApi = (function() {
     logout,
     searchUsers,
     getTournaments,
+    getMyRegistrationsByTournament,
     getCategoryPrices,
     validateDiscountCode,
     createPaymentIntent,

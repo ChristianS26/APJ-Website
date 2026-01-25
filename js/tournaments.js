@@ -4,6 +4,7 @@ const APJTournaments = (function() {
   let tournaments = [];
   let activeTournament = null;
   let categories = [];
+  let myRegistrations = null; // User's existing registrations for active tournament
 
   /**
    * Load tournaments from API
@@ -80,6 +81,59 @@ const APJTournaments = (function() {
     return tournaments;
   }
 
+  /**
+   * Load user's registrations for a tournament
+   */
+  async function loadMyRegistrations(tournamentId) {
+    try {
+      myRegistrations = await APJApi.getMyRegistrationsByTournament(tournamentId);
+      console.log('[APJ] My registrations loaded:', myRegistrations);
+      return myRegistrations;
+    } catch (error) {
+      console.error('Error loading my registrations:', error);
+      myRegistrations = { items: [] };
+      return myRegistrations;
+    }
+  }
+
+  /**
+   * Get user's registrations
+   */
+  function getMyRegistrations() {
+    return myRegistrations;
+  }
+
+  /**
+   * Check if user is registered in a category
+   */
+  function isRegisteredInCategory(categoryId) {
+    if (!myRegistrations || !myRegistrations.items) return false;
+    return myRegistrations.items.some(item =>
+      item.category?.id === categoryId || item.category?.category_id === categoryId
+    );
+  }
+
+  /**
+   * Get partner info for a category (if already registered)
+   */
+  function getPartnerForCategory(categoryId) {
+    if (!myRegistrations || !myRegistrations.items) return null;
+    const reg = myRegistrations.items.find(item =>
+      item.category?.id === categoryId || item.category?.category_id === categoryId
+    );
+    return reg?.partner || null;
+  }
+
+  /**
+   * Get registration info for a category
+   */
+  function getRegistrationForCategory(categoryId) {
+    if (!myRegistrations || !myRegistrations.items) return null;
+    return myRegistrations.items.find(item =>
+      item.category?.id === categoryId || item.category?.category_id === categoryId
+    );
+  }
+
   // Public API
   return {
     loadTournaments,
@@ -89,6 +143,11 @@ const APJTournaments = (function() {
     getCategories,
     getCategoryById,
     formatPrice,
-    getAllTournaments
+    getAllTournaments,
+    loadMyRegistrations,
+    getMyRegistrations,
+    isRegisteredInCategory,
+    getPartnerForCategory,
+    getRegistrationForCategory
   };
 })();

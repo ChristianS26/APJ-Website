@@ -1217,6 +1217,45 @@ footer {
   background: var(--primary-glow);
 }
 
+.category-card.registered {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.category-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.category-card.needs-payment {
+  border-color: var(--stripe);
+  background: var(--stripe-glow);
+}
+
+.category-status {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.category-status.paid {
+  background: var(--success-glow);
+  color: var(--success);
+}
+
+.category-status.pending {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.category-status.needs-payment {
+  background: var(--stripe-glow);
+  color: var(--stripe);
+  font-weight: 600;
+}
+
 .category-info h4 {
   font-size: 1rem;
   font-weight: 600;

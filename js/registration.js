@@ -5,6 +5,7 @@ const APJRegistration = (function() {
   let currentStep = 1;
   let selectedCategory = null;
   let selectedPartner = null;
+  let partnerIsLocked = false; // True if partner is locked due to existing registration
   let paymentMethod = 'card'; // 'card' or 'code'
   let paidFor = '1'; // '1' = just me, '2' = both
   let discountCode = null;
@@ -63,6 +64,9 @@ const APJRegistration = (function() {
         tournament.type || tournament.tournament_type || 'regular'
       );
 
+      // Load user's existing registrations for this tournament
+      await APJTournaments.loadMyRegistrations(tournament.id || tournament.tournament_id);
+
       renderCategories();
 
       if (loadingEl) loadingEl.classList.add('hidden');
@@ -108,17 +112,52 @@ const APJRegistration = (function() {
       return;
     }
 
-    container.innerHTML = categories.map(cat => `
-      <div class="category-card" data-category-id="${cat.id || cat.category_id}">
-        <div class="category-info">
-          <h4>${cat.name || cat.category_name}</h4>
-          <p>${cat.description || ''}</p>
+    container.innerHTML = categories.map(cat => {
+      const categoryId = cat.id || cat.category_id;
+      const isRegistered = APJTournaments.isRegisteredInCategory(categoryId);
+      const registration = APJTournaments.getRegistrationForCategory(categoryId);
+      const partner = registration?.partner;
+      const paidByMe = registration?.paidByMe || registration?.paid_by_me;
+      const paidByPartner = registration?.paidByPartner || registration?.paid_by_partner;
+
+      let statusHtml = '';
+      let cardClass = 'category-card';
+
+      if (isRegistered) {
+        const partnerName = partner ? `${partner.firstName || partner.first_name || ''} ${partner.lastName || partner.last_name || ''}`.trim() : 'Sin pareja';
+
+        if (paidByMe && paidByPartner) {
+          // Fully paid - can't register again
+          statusHtml = `<span class="category-status paid">Inscrito con ${partnerName}</span>`;
+          cardClass += ' registered disabled';
+        } else if (paidByMe) {
+          // I paid, waiting for partner
+          statusHtml = `<span class="category-status pending">Esperando pago de ${partnerName}</span>`;
+          cardClass += ' registered disabled';
+        } else if (paidByPartner) {
+          // Partner paid, I need to pay
+          statusHtml = `<span class="category-status needs-payment">Pagar mi inscripcion (${partnerName} ya pago)</span>`;
+          cardClass += ' registered needs-payment';
+        } else {
+          // Registered but neither has paid
+          statusHtml = `<span class="category-status pending">Pendiente de pago con ${partnerName}</span>`;
+          cardClass += ' registered';
+        }
+      }
+
+      return `
+        <div class="${cardClass}" data-category-id="${categoryId}">
+          <div class="category-info">
+            <h4>${cat.name || cat.category_name}</h4>
+            <p>${cat.description || ''}</p>
+            ${statusHtml}
+          </div>
+          <div class="category-price">
+            ${APJTournaments.formatPrice(cat.price || cat.price_cents || 99900)}
+          </div>
         </div>
-        <div class="category-price">
-          ${APJTournaments.formatPrice(cat.price || cat.price_cents || 99900)}
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   /**
@@ -210,7 +249,40 @@ const APJRegistration = (function() {
    * Select category
    */
   function selectCategory(categoryId) {
-    selectedCategory = APJTournaments.getCategoryById(parseInt(categoryId) || categoryId);
+    const catId = parseInt(categoryId) || categoryId;
+
+    // Check if category is fully paid (disabled)
+    const card = document.querySelector(`.category-card[data-category-id="${categoryId}"]`);
+    if (card && card.classList.contains('disabled') && !card.classList.contains('needs-payment')) {
+      APJToast.error('Categoria no disponible', 'Ya estas inscrito en esta categoria');
+      return;
+    }
+
+    selectedCategory = APJTournaments.getCategoryById(catId);
+
+    // Check if already registered in this category
+    const isRegistered = APJTournaments.isRegisteredInCategory(catId);
+    const existingPartner = APJTournaments.getPartnerForCategory(catId);
+
+    if (isRegistered && existingPartner) {
+      // Lock the partner to the existing one
+      selectedPartner = {
+        uid: existingPartner.uid,
+        id: existingPartner.uid,
+        first_name: existingPartner.firstName || existingPartner.first_name,
+        last_name: existingPartner.lastName || existingPartner.last_name,
+        email: existingPartner.email,
+        photo_url: existingPartner.photoUrl || existingPartner.photo_url
+      };
+      partnerIsLocked = true;
+      console.log('[APJ] Partner locked to existing registration:', selectedPartner);
+    } else {
+      // Clear partner if switching to a new category
+      if (partnerIsLocked) {
+        selectedPartner = null;
+        partnerIsLocked = false;
+      }
+    }
 
     // Update UI
     document.querySelectorAll('.category-card').forEach(card => {
@@ -221,6 +293,42 @@ const APJRegistration = (function() {
     removeDiscount();
 
     updateUI();
+    updatePartnerUI();
+  }
+
+  /**
+   * Update partner UI based on locked state
+   */
+  function updatePartnerUI() {
+    const searchContainer = document.getElementById('partner-search-container');
+    const selectedContainer = document.getElementById('selected-partner');
+
+    if (partnerIsLocked && selectedPartner) {
+      // Show locked partner
+      const name = `${selectedPartner.first_name || ''} ${selectedPartner.last_name || ''}`.trim() || 'Pareja';
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+      if (searchContainer) searchContainer.classList.add('hidden');
+      if (selectedContainer) {
+        selectedContainer.classList.remove('hidden');
+        selectedContainer.innerHTML = `
+          <div class="selected-partner-info">
+            <div class="search-result-avatar">
+              ${selectedPartner.photo_url ? `<img src="${selectedPartner.photo_url}" alt="${name}">` : initials}
+            </div>
+            <div>
+              <div class="search-result-name">${name}</div>
+              <div class="search-result-email">${selectedPartner.email || ''}</div>
+              <small style="color: var(--accent);">Pareja fija (ya inscrito en esta categoria)</small>
+            </div>
+          </div>
+        `;
+      }
+    } else if (!selectedPartner) {
+      // Show search
+      if (searchContainer) searchContainer.classList.remove('hidden');
+      if (selectedContainer) selectedContainer.classList.add('hidden');
+    }
   }
 
   /**
