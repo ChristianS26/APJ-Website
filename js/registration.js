@@ -783,8 +783,16 @@ const APJRegistration = (function() {
   /**
    * Next step
    */
+  let isAdvancingStep = false; // Prevent double-click on Continuar
+
   function nextStep() {
-    console.log('[APJ] nextStep called, currentStep before:', currentStep, 'justAutoAdvanced:', justAutoAdvanced);
+    console.log('[APJ] nextStep called, currentStep before:', currentStep);
+
+    // Prevent double-click
+    if (isAdvancingStep) {
+      console.log('[APJ] Step advance already in progress, ignoring');
+      return;
+    }
 
     // Prevent double-advance when auto-advancing from category selection
     if (justAutoAdvanced) {
@@ -794,9 +802,13 @@ const APJRegistration = (function() {
 
     if (!validateCurrentStep()) return;
 
+    isAdvancingStep = true;
     currentStep++;
     console.log('[APJ] nextStep advancing to:', currentStep);
     updateUI();
+
+    // Reset flag after UI update
+    setTimeout(() => { isAdvancingStep = false; }, 100);
 
     // Initialize Stripe on step 3 (but don't create payment intent yet)
     if (currentStep === 3 && paymentMethod === 'card') {
@@ -894,7 +906,22 @@ const APJRegistration = (function() {
   /**
    * Submit payment
    */
+  let isSubmittingPayment = false; // Prevent double-click
+
   async function submitPayment() {
+    // Prevent double-click
+    if (isSubmittingPayment) {
+      console.log('[APJ] Payment already in progress, ignoring click');
+      return;
+    }
+    isSubmittingPayment = true;
+
+    const submitBtn = document.getElementById('submit-payment');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Procesando...';
+    }
+
     const tournament = APJTournaments.getActiveTournament();
     const userData = APJApi.getUserData();
     // Price is in full value (799 = 799 MXN), not cents
@@ -927,14 +954,24 @@ const APJRegistration = (function() {
 
     console.log('[APJ] Payment data:', paymentData);
 
-    // If free registration
-    if (amount === 0) {
-      await completeFreeRegistration(paymentData);
-      return;
-    }
+    try {
+      // If free registration
+      if (amount === 0) {
+        await completeFreeRegistration(paymentData);
+        return;
+      }
 
-    // Otherwise use Stripe
-    await APJPayment.processPayment(paymentData);
+      // Otherwise use Stripe
+      await APJPayment.processPayment(paymentData);
+    } catch (error) {
+      console.error('[APJ] Payment error:', error);
+      // Re-enable button on error
+      isSubmittingPayment = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Reintentar';
+      }
+    }
   }
 
   /**
