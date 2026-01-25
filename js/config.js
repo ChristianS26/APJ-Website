@@ -3,7 +3,7 @@
 // =============================================
 // ENVIRONMENT SWITCH - Change this to switch environments
 // =============================================
-const ENV = 'stage'; // 'stage' or 'prod'
+const ENV = 'prod'; // 'stage' or 'prod'
 
 // Environment-specific configurations
 const ENVIRONMENTS = {
