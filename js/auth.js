@@ -182,6 +182,7 @@ const APJAuth = (function() {
       if (e.target.matches('[data-logout]')) {
         e.preventDefault();
         APJApi.logout();
+        window.location.href = '/';
       }
 
       if (e.target.matches('[data-close-modal]') || e.target.closest('[data-close-modal]')) {
