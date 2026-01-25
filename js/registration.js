@@ -250,11 +250,13 @@ const APJRegistration = (function() {
       const currentUser = APJApi.getUserData();
       console.log('[APJ] Current user:', currentUser);
 
-      // Filter out current user
+      // Filter out current user (only compare if values exist)
       const filteredUsers = Array.isArray(users) ? users.filter(u => {
-        const dominated = u.uid === currentUser?.uid || u.id === currentUser?.id;
-        console.log('[APJ] User', u.email, 'excluded:', dominated);
-        return !dominated;
+        const sameUid = currentUser?.uid && u.uid === currentUser.uid;
+        const sameId = currentUser?.id && u.id === currentUser.id;
+        const isCurrentUser = sameUid || sameId;
+        console.log('[APJ] User', u.email, 'isCurrentUser:', isCurrentUser);
+        return !isCurrentUser;
       }) : [];
 
       console.log('[APJ] Filtered users:', filteredUsers.length);
