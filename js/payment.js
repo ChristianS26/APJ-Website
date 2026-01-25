@@ -186,18 +186,23 @@ const APJPayment = (function() {
 
     try {
       // Step 1: Create payment intent
-      console.log('[APJ Payment] Creating payment intent...');
+      console.log('[APJ Payment] Creating payment intent with data:', JSON.stringify(paymentData, null, 2));
       const response = await APJApi.createPaymentIntent(paymentData);
+      console.log('[APJ Payment] API Response:', response);
 
       // Check if free registration (100% discount)
       if (response.free_registration) {
+        console.log('[APJ Payment] Free registration - no payment needed');
         APJRegistration.showSuccess();
         return;
       }
 
-      clientSecret = response.clientSecret || response.client_secret;
+      // Backend returns payment_intent_client_secret (snake_case)
+      clientSecret = response.payment_intent_client_secret || response.clientSecret || response.client_secret;
+      console.log('[APJ Payment] Client secret received:', clientSecret ? 'yes' : 'no');
 
       if (!clientSecret) {
+        console.error('[APJ Payment] No client secret in response. Full response:', response);
         throw new Error('No se recibio la clave de pago');
       }
 
