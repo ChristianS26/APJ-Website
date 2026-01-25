@@ -41,21 +41,28 @@ const APJPayment = (function() {
       const state = APJRegistration.getState();
       const tournament = APJTournaments.getActiveTournament();
 
+      console.log('[APJ Payment] userData:', userData);
+      console.log('[APJ Payment] state:', state);
+      console.log('[APJ Payment] tournament:', tournament);
+
+      // Build payment data with correct types
       const paymentData = {
-        amount: amount,
+        amount: Number(amount),
         currency: currency,
         playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
-        playerUid: userData.uid || userData.id,
-        partnerUid: state.selectedPartner?.uid || state.selectedPartner?.id,
-        tournamentId: tournament.id || tournament.tournament_id,
-        categoryId: state.selectedCategory.id || state.selectedCategory.category_id,
-        email: userData.email,
-        paidFor: state.paidFor
+        playerUid: String(userData.uid || userData.id),
+        partnerUid: String(state.selectedPartner?.uid || state.selectedPartner?.id),
+        tournamentId: String(tournament.id || tournament.tournament_id),
+        categoryId: Number(state.selectedCategory.category_id || state.selectedCategory.id),
+        email: String(userData.email),
+        paidFor: String(state.paidFor || '1')
       };
 
       if (state.discountCode && state.paidFor === '1') {
         paymentData.discount_code = state.discountCode;
       }
+
+      console.log('[APJ Payment] Sending paymentData:', JSON.stringify(paymentData, null, 2));
 
       const response = await APJApi.createPaymentIntent(paymentData);
 
