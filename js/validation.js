@@ -70,13 +70,17 @@ const APJValidation = (function() {
   }
 
   /**
-   * Validate shirt size - Required (all sizes available for everyone)
+   * Validate shirt size - Required (all sizes with gender suffix)
    */
   function isValidShirtSize(size) {
     if (!size || typeof size !== 'string') return false;
     if (size.trim() === '') return false;
 
-    const allSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+    const allSizes = [
+      'XS-MUJER', 'S-MUJER', 'M-MUJER', 'L-MUJER',
+      'XS-HOMBRE', 'S-HOMBRE', 'M-HOMBRE', 'L-HOMBRE',
+      'XL-HOMBRE', '2XL-HOMBRE', '3XL-HOMBRE', '4XL-HOMBRE', '5XL-HOMBRE', '6XL-HOMBRE'
+    ];
     return allSizes.includes(size.toUpperCase());
   }
 

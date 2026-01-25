@@ -141,16 +141,24 @@ const APJAuth = (function() {
                   <label class="form-label" for="register-shirt_size">Talla de playera <span class="required">*</span></label>
                   <select id="register-shirt_size" class="form-select" required>
                     <option value="">Seleccionar</option>
-                    <option value="XS">XS</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="2XL">2XL</option>
-                    <option value="3XL">3XL</option>
-                    <option value="4XL">4XL</option>
-                    <option value="5XL">5XL</option>
-                    <option value="6XL">6XL</option>
+                    <optgroup label="Mujer">
+                      <option value="XS-MUJER">XS - Mujer</option>
+                      <option value="S-MUJER">S - Mujer</option>
+                      <option value="M-MUJER">M - Mujer</option>
+                      <option value="L-MUJER">L - Mujer</option>
+                    </optgroup>
+                    <optgroup label="Hombre">
+                      <option value="XS-HOMBRE">XS - Hombre</option>
+                      <option value="S-HOMBRE">S - Hombre</option>
+                      <option value="M-HOMBRE">M - Hombre</option>
+                      <option value="L-HOMBRE">L - Hombre</option>
+                      <option value="XL-HOMBRE">XL - Hombre</option>
+                      <option value="2XL-HOMBRE">2XL - Hombre</option>
+                      <option value="3XL-HOMBRE">3XL - Hombre</option>
+                      <option value="4XL-HOMBRE">4XL - Hombre</option>
+                      <option value="5XL-HOMBRE">5XL - Hombre</option>
+                      <option value="6XL-HOMBRE">6XL - Hombre</option>
+                    </optgroup>
                   </select>
                   <div class="form-error"></div>
                 </div>
