@@ -845,7 +845,19 @@ const APJRegistration = (function() {
 
       showSuccess();
     } catch (error) {
-      APJToast.error('Error', error.message || 'Codigo invalido');
+      // Handle specific API errors based on status code
+      const status = error.status || 0;
+      let errorTitle = 'Error';
+
+      if (status === 423) {
+        errorTitle = 'Pareja no disponible';
+      } else if (status === 409) {
+        errorTitle = 'Ya inscrito';
+      } else if (status === 400) {
+        errorTitle = 'Código inválido';
+      }
+
+      APJToast.error(errorTitle, error.message || 'No se pudo procesar el código');
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;

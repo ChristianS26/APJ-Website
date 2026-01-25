@@ -95,10 +95,36 @@ const APJPayment = (function() {
 
     } catch (error) {
       console.error('Error creating payment element:', error);
+
+      // Handle specific API errors based on status code
+      const status = error.status || 0;
+      let errorTitle = 'Error';
+      let errorMessage = error.message || 'Error al cargar el método de pago';
+      let showRetry = true;
+
+      if (status === 423) {
+        // Partner already registered with someone else
+        errorTitle = 'Pareja no disponible';
+        showRetry = false;
+      } else if (status === 409) {
+        // Already registered and paid
+        errorTitle = 'Ya inscrito';
+        showRetry = false;
+      } else if (status === 400) {
+        // Already registered with different partner
+        errorTitle = 'Conflicto de inscripción';
+        showRetry = false;
+      }
+
+      // Show toast with specific error
+      APJToast.error(errorTitle, errorMessage);
+
+      // Update container UI
       container.innerHTML = `
         <div style="text-align: center; padding: 20px; color: var(--error);">
-          <p>Error al cargar el metodo de pago</p>
-          <button class="btn btn-sm btn-outline" onclick="APJPayment.retryPaymentElement()" style="margin-top: 12px;">Reintentar</button>
+          <p style="font-weight: 600; margin-bottom: 8px;">${errorTitle}</p>
+          <p style="color: var(--text-muted);">${errorMessage}</p>
+          ${showRetry ? `<button class="btn btn-sm btn-outline" onclick="APJPayment.retryPaymentElement()" style="margin-top: 12px;">Reintentar</button>` : `<a href="/inscripcion/" class="btn btn-sm btn-outline" style="margin-top: 12px;">Volver a intentar</a>`}
         </div>
       `;
     }
@@ -193,7 +219,20 @@ const APJPayment = (function() {
 
     } catch (error) {
       console.error('Payment error:', error);
-      APJToast.error('Error', error.message || 'Error al procesar el pago');
+
+      // Handle specific API errors based on status code
+      const status = error.status || 0;
+      let errorTitle = 'Error';
+
+      if (status === 423) {
+        errorTitle = 'Pareja no disponible';
+      } else if (status === 409) {
+        errorTitle = 'Ya inscrito';
+      } else if (status === 400) {
+        errorTitle = 'Conflicto de inscripción';
+      }
+
+      APJToast.error(errorTitle, error.message || 'Error al procesar el pago');
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
