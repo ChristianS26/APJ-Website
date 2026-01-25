@@ -407,7 +407,9 @@ const APJRegistration = (function() {
     updatePartnerUI();
 
     // Auto-advance to step 2 after selecting a valid category
+    // Only advance if we're still on step 1
     if (selectedCategory && currentStep === 1) {
+      console.log('[APJ] Auto-advancing from step 1 to step 2');
       currentStep = 2;
       updateUI();
       updatePartnerUI();
@@ -774,13 +776,16 @@ const APJRegistration = (function() {
    * Next step
    */
   function nextStep() {
+    console.log('[APJ] nextStep called, currentStep before:', currentStep);
     if (!validateCurrentStep()) return;
 
     currentStep++;
+    console.log('[APJ] nextStep advancing to:', currentStep);
     updateUI();
 
     // Initialize payment on step 3
     if (currentStep === 3 && paymentMethod === 'card') {
+      console.log('[APJ] Dispatching step 3 event');
       APJPayment.initStripe();
       // Dispatch event for app.js to create payment element
       window.dispatchEvent(new CustomEvent('apj:registration:step3'));

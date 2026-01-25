@@ -22,6 +22,7 @@ const APJApp = (function() {
 
     // Listen for step 3 to initialize Stripe payment element
     window.addEventListener('apj:registration:step3', () => {
+      console.log('[APJ App] Step 3 event received - creating payment element');
       const state = APJRegistration.getState();
       const basePrice = state.selectedCategory?.price || state.selectedCategory?.price_cents || 99900;
       const quantity = state.paidFor === '2' ? 2 : 1;
