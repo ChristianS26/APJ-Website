@@ -104,41 +104,60 @@ const APJTournaments = (function() {
   }
 
   /**
-   * Helper to compare category IDs (handles int/string mismatch)
+   * Find registration for a category by matching ID or name
+   * The API returns different ID types:
+   * - Categories from getCategoryPrices have UUID ids
+   * - Categories in registrations have integer ids
+   * So we need to match by name as fallback
    */
-  function categoryIdMatches(itemCategoryId, targetId) {
-    // Convert both to numbers for comparison
-    const itemId = parseInt(itemCategoryId);
-    const target = parseInt(targetId);
-    return !isNaN(itemId) && !isNaN(target) && itemId === target;
+  function findRegistrationForCategory(category) {
+    if (!myRegistrations || !myRegistrations.items || !category) return null;
+
+    const targetId = category.id || category.category_id;
+    const targetName = (category.name || category.category_name || '').toLowerCase().trim();
+
+    console.log('[APJ] Finding registration for category:', targetName, 'ID:', targetId);
+
+    const reg = myRegistrations.items.find(item => {
+      const itemCat = item.category;
+      if (!itemCat) return false;
+
+      // Try to match by name (most reliable since IDs are different types)
+      const itemName = (itemCat.name || itemCat.category_name || '').toLowerCase().trim();
+      const nameMatches = itemName && targetName && itemName === targetName;
+
+      // Also try direct ID match as backup
+      const itemId = itemCat.id || itemCat.category_id;
+      const idMatches = itemId && targetId && String(itemId) === String(targetId);
+
+      console.log('[APJ] Comparing:', itemName, '(' + itemId + ') vs', targetName, '(' + targetId + ') => name:', nameMatches, 'id:', idMatches);
+
+      return nameMatches || idMatches;
+    });
+
+    return reg;
   }
 
   /**
    * Check if user is registered in a category
    */
   function isRegisteredInCategory(categoryId) {
-    if (!myRegistrations || !myRegistrations.items) {
-      console.log('[APJ] No registrations data available');
+    // Get the full category object to match by name
+    const category = getCategoryById(categoryId);
+    if (!category) {
+      console.log('[APJ] Category not found for ID:', categoryId);
       return false;
     }
-    const found = myRegistrations.items.some(item => {
-      const itemCatId = item.category?.id || item.category?.category_id;
-      const matches = categoryIdMatches(itemCatId, categoryId);
-      console.log('[APJ] Checking category match:', itemCatId, 'vs', categoryId, '=', matches);
-      return matches;
-    });
-    return found;
+    return findRegistrationForCategory(category) !== null;
   }
 
   /**
    * Get partner info for a category (if already registered)
    */
   function getPartnerForCategory(categoryId) {
-    if (!myRegistrations || !myRegistrations.items) return null;
-    const reg = myRegistrations.items.find(item => {
-      const itemCatId = item.category?.id || item.category?.category_id;
-      return categoryIdMatches(itemCatId, categoryId);
-    });
+    const category = getCategoryById(categoryId);
+    if (!category) return null;
+    const reg = findRegistrationForCategory(category);
     return reg?.partner || null;
   }
 
@@ -146,11 +165,9 @@ const APJTournaments = (function() {
    * Get registration info for a category
    */
   function getRegistrationForCategory(categoryId) {
-    if (!myRegistrations || !myRegistrations.items) return null;
-    const reg = myRegistrations.items.find(item => {
-      const itemCatId = item.category?.id || item.category?.category_id;
-      return categoryIdMatches(itemCatId, categoryId);
-    });
+    const category = getCategoryById(categoryId);
+    if (!category) return null;
+    const reg = findRegistrationForCategory(category);
     console.log('[APJ] getRegistrationForCategory', categoryId, '=', reg);
     return reg;
   }
