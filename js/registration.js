@@ -276,6 +276,7 @@ const APJRegistration = (function() {
     document.addEventListener('click', e => {
       const categoryCard = e.target.closest('.category-card');
       if (categoryCard) {
+        e.stopImmediatePropagation(); // Prevent other document click handlers from running
         selectCategory(categoryCard.dataset.categoryId);
       }
     });
