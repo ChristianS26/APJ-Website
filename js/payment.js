@@ -135,7 +135,7 @@ const APJPayment = (function() {
    */
   function retryPaymentElement() {
     const state = APJRegistration.getState();
-    const basePrice = state.selectedCategory?.price || state.selectedCategory?.price_cents || 99900;
+    const basePrice = state.selectedCategory?.price || 999;
     const quantity = state.paidFor === '2' ? 2 : 1;
     let amount = basePrice * quantity;
 

@@ -65,9 +65,9 @@ const APJTournaments = (function() {
 
   /**
    * Format price for display
+   * Note: API returns full value (799 = 799 MXN), NOT cents
    */
-  function formatPrice(amountInCents, currency = 'MXN') {
-    const amount = amountInCents / 100;
+  function formatPrice(amount, currency = 'MXN') {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: currency

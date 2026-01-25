@@ -261,7 +261,7 @@ const APJRegistration = (function() {
         </div>
         <div class="category-action">
           <div class="category-price">
-            ${APJTournaments.formatPrice(cat.price || cat.price_cents || 99900)}
+            ${APJTournaments.formatPrice(cat.price || 999)}
           </div>
           ${isClickable ? `<span class="category-cta">${actionText} →</span>` : `<span class="category-cta disabled">${actionText}</span>`}
         </div>
@@ -657,7 +657,7 @@ const APJRegistration = (function() {
     }
 
     try {
-      const amount = selectedCategory.price || selectedCategory.price_cents || 99900;
+      const amount = selectedCategory.price || 999;
       discountData = await APJApi.validateDiscountCode(code, amount);
 
       if (discountData.valid) {
@@ -729,7 +729,7 @@ const APJRegistration = (function() {
   function updatePriceSummary() {
     if (!selectedCategory) return;
 
-    const basePrice = selectedCategory.price || selectedCategory.price_cents || 99900;
+    const basePrice = selectedCategory.price || 999;
     const quantity = paidFor === '2' ? 2 : 1;
     let subtotal = basePrice * quantity;
     let discount = 0;
@@ -894,29 +894,35 @@ const APJRegistration = (function() {
   async function submitPayment() {
     const tournament = APJTournaments.getActiveTournament();
     const userData = APJApi.getUserData();
-    const basePrice = selectedCategory.price || selectedCategory.price_cents || 99900;
-    const quantity = paidFor === '2' ? 2 : 1;
+    // Price is in full value (799 = 799 MXN), not cents
+    const basePrice = selectedCategory.price || 999;
+    const paidForInt = parseInt(paidFor) || 1; // Backend expects integer: 1 or 2
+    const quantity = paidForInt === 2 ? 2 : 1;
     let amount = basePrice * quantity;
 
-    if (discountData && paidFor === '1') {
+    if (discountData && paidForInt === 1) {
       amount = discountData.final_amount;
     }
 
+    // Build payment request matching Android's PaymentRequestDto structure
     const paymentData = {
-      amount: amount,
+      amount: amount,                                    // Full value, not cents
       currency: 'mxn',
+      restriction: '',                                   // Required by backend
       playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
-      playerUid: userData.uid || userData.id,
-      partnerUid: selectedPartner.uid || selectedPartner.id,
-      tournamentId: tournament.id || tournament.tournament_id,
-      categoryId: selectedCategory.id || selectedCategory.category_id,
-      email: userData.email,
-      paidFor: paidFor
+      playerUid: String(userData.uid || userData.id),
+      partnerUid: String(selectedPartner.uid || selectedPartner.id),
+      tournamentId: String(tournament.id || tournament.tournament_id),
+      categoryId: selectedCategory.category_id,          // Integer category ID
+      email: String(userData.email),
+      paidFor: paidForInt                                // Integer: 1 or 2
     };
 
-    if (discountCode && paidFor === '1') {
+    if (discountCode && paidForInt === 1) {
       paymentData.discount_code = discountCode;
     }
+
+    console.log('[APJ] Payment data:', paymentData);
 
     // If free registration
     if (amount === 0) {
