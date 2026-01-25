@@ -141,6 +141,16 @@ const APJAuth = (function() {
                   <label class="form-label" for="register-shirt_size">Talla de playera <span class="required">*</span></label>
                   <select id="register-shirt_size" class="form-select" required>
                     <option value="">Seleccionar</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="2XL">2XL</option>
+                    <option value="3XL">3XL</option>
+                    <option value="4XL">4XL</option>
+                    <option value="5XL">5XL</option>
+                    <option value="6XL">6XL</option>
                   </select>
                   <div class="form-error"></div>
                 </div>
@@ -215,11 +225,8 @@ const APJAuth = (function() {
     // Register form submit
     document.getElementById('register-form')?.addEventListener('submit', handleRegister);
 
-    // Gender change - update shirt sizes and validate
-    document.getElementById('register-gender')?.addEventListener('change', e => {
-      updateShirtSizes(e.target.value);
-      validateRegisterForm();
-    });
+    // Gender change - validate form
+    document.getElementById('register-gender')?.addEventListener('change', validateRegisterForm);
 
     // Validate register form on input
     const registerForm = document.getElementById('register-form');
@@ -257,26 +264,30 @@ const APJAuth = (function() {
     const isGenderValid = ['Masculino', 'Femenino', 'Otro'].includes(gender);
     const isShirtSizeValid = shirtSize !== '';
 
+    // Show/hide password mismatch error
+    const confirmPasswordField = document.getElementById('register-confirm_password');
+    const confirmPasswordGroup = confirmPasswordField?.closest('.form-group');
+    const confirmPasswordError = confirmPasswordGroup?.querySelector('.form-error');
+
+    if (confirmPassword.length > 0 && password !== confirmPassword) {
+      confirmPasswordGroup?.classList.add('has-error');
+      confirmPasswordField?.classList.add('error');
+      if (confirmPasswordError) {
+        confirmPasswordError.textContent = 'Las contrasenas no coinciden';
+      }
+    } else {
+      confirmPasswordGroup?.classList.remove('has-error');
+      confirmPasswordField?.classList.remove('error');
+      if (confirmPasswordError) {
+        confirmPasswordError.textContent = '';
+      }
+    }
+
     const isFormValid = isFirstNameValid && isLastNameValid && isEmailValid &&
                         isPasswordValid && isConfirmPasswordValid && isPhoneValid &&
                         isBirthdateValid && isGenderValid && isShirtSizeValid;
 
     submitBtn.disabled = !isFormValid;
-  }
-
-  /**
-   * Update shirt size options based on gender
-   */
-  function updateShirtSizes(gender) {
-    const select = document.getElementById('register-shirt_size');
-    if (!select) return;
-
-    const sizes = APJValidation.getShirtSizesForGender(gender);
-
-    select.innerHTML = '<option value="">Seleccionar</option>';
-    sizes.forEach(size => {
-      select.insertAdjacentHTML('beforeend', `<option value="${size}">${size}</option>`);
-    });
   }
 
   /**
@@ -295,8 +306,6 @@ const APJAuth = (function() {
     closeModals();
     registerModal?.classList.add('active');
     document.getElementById('register-first_name')?.focus();
-    // Clear shirt sizes until gender is selected
-    updateShirtSizes('');
   }
 
   /**

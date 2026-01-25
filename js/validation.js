@@ -70,16 +70,14 @@ const APJValidation = (function() {
   }
 
   /**
-   * Validate shirt size based on gender - Required
+   * Validate shirt size - Required (all sizes available for everyone)
    */
-  function isValidShirtSize(size, gender) {
+  function isValidShirtSize(size) {
     if (!size || typeof size !== 'string') return false;
     if (size.trim() === '') return false;
 
-    const validGender = gender || 'Masculino';
-    const validSizes = APJConfig.SHIRT_SIZES[validGender] || APJConfig.SHIRT_SIZES.Masculino;
-
-    return validSizes.includes(size.toUpperCase());
+    const allSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+    return allSizes.includes(size.toUpperCase());
   }
 
   /**
@@ -124,7 +122,7 @@ const APJValidation = (function() {
       errors.gender = 'Selecciona tu genero';
     }
 
-    if (!isValidShirtSize(data.shirt_size, data.gender)) {
+    if (!isValidShirtSize(data.shirt_size)) {
       errors.shirt_size = 'Selecciona tu talla de playera';
     }
 
