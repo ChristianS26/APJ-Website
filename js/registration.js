@@ -98,7 +98,7 @@ const APJRegistration = (function() {
   }
 
   /**
-   * Render category cards - grouped by registration status (like Android)
+   * Render category cards - single list in original order
    */
   function renderCategories() {
     const container = document.getElementById('category-list');
@@ -115,41 +115,12 @@ const APJRegistration = (function() {
       return;
     }
 
-    // Separate categories into registered and available (like Android's "Tuyas" and "Otras")
-    const registeredCategories = [];
-    const availableCategories = [];
-
-    categories.forEach(cat => {
+    // Render all categories in original order
+    const html = categories.map(cat => {
       const categoryId = cat.id || cat.category_id;
       const isRegistered = APJTournaments.isRegisteredInCategory(categoryId);
-      if (isRegistered) {
-        registeredCategories.push(cat);
-      } else {
-        availableCategories.push(cat);
-      }
-    });
-
-    let html = '';
-
-    // Registered categories section ("Tuyas" in Android)
-    if (registeredCategories.length > 0) {
-      html += `
-        <div class="category-section">
-          <h3 class="category-section-title">Mis Inscripciones</h3>
-          ${registeredCategories.map(cat => renderCategoryCard(cat, true)).join('')}
-        </div>
-      `;
-    }
-
-    // Available categories section ("Otras" in Android)
-    if (availableCategories.length > 0) {
-      html += `
-        <div class="category-section">
-          <h3 class="category-section-title">${registeredCategories.length > 0 ? 'Otras Categorias' : 'Categorias Disponibles'}</h3>
-          ${availableCategories.map(cat => renderCategoryCard(cat, false)).join('')}
-        </div>
-      `;
-    }
+      return renderCategoryCard(cat, isRegistered);
+    }).join('');
 
     container.innerHTML = html;
   }
@@ -199,14 +170,14 @@ const APJRegistration = (function() {
         actionText = 'Ya registrado';
         isClickable = false;
       } else if (paidByMe) {
-        // I paid, waiting for partner
+        // I paid, waiting for partner - PURPLE
         statusHtml = `
           <div class="category-status-row">
-            <span class="category-status pending">
+            <span class="category-status waiting-partner">
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              Esperando pago
+              Pago pendiente de tu compañero
             </span>
           </div>
           <p class="category-partner">Pareja: ${partnerName}</p>
@@ -215,14 +186,14 @@ const APJRegistration = (function() {
         actionText = 'Esperando a tu pareja';
         isClickable = false;
       } else if (paidByPartner) {
-        // Partner paid, I need to pay - ACTIONABLE
+        // Partner paid, I need to pay - YELLOW - ACTIONABLE
         statusHtml = `
           <div class="category-status-row">
             <span class="category-status needs-payment">
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              Pagar mi inscripcion
+              Tu inscripcion esta pendiente de pago
             </span>
           </div>
           <p class="category-partner">${partnerName} ya pago su parte</p>

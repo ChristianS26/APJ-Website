@@ -1289,11 +1289,16 @@ footer {
 }
 
 .category-card.waiting-partner {
+  background: var(--stripe-glow);
+  border-color: var(--stripe);
+}
+
+.category-card.pending-payment {
   background: var(--accent-glow);
   border-color: var(--accent);
 }
 
-.category-card.pending-payment {
+.category-card.needs-payment {
   background: var(--accent-glow);
   border-color: var(--accent);
 }
@@ -1332,9 +1337,14 @@ footer {
   color: var(--accent);
 }
 
-.category-status.needs-payment {
+.category-status.waiting-partner {
   background: var(--stripe-glow);
   color: var(--stripe);
+}
+
+.category-status.needs-payment {
+  background: var(--accent-glow);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -1369,11 +1379,11 @@ footer {
 }
 
 .category-card.needs-payment .category-cta {
-  color: var(--stripe);
+  color: var(--accent);
 }
 
 .category-card.needs-payment:hover .category-cta {
-  color: var(--stripe);
+  color: var(--accent);
   filter: brightness(1.2);
 }
 
