@@ -955,11 +955,8 @@ const APJRegistration = (function() {
     const basePrice = selectedCategory.price || 999;
     const paidForInt = parseInt(paidFor) || 1; // Backend expects integer: 1 or 2
     const quantity = paidForInt === 2 ? 2 : 1;
-    let amount = basePrice * quantity;
-
-    if (discountData && paidForInt === 1) {
-      amount = discountData.final_amount;
-    }
+    // Always send original amount - backend will apply discount
+    const amount = basePrice * quantity;
 
     // Build payment request matching Android's PaymentRequestDto structure
     const paymentData = {
