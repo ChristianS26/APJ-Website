@@ -360,7 +360,7 @@ const APJRegistration = (function() {
     console.log('[APJ] Card classes:', card?.className);
 
     if (card && card.classList.contains('non-clickable')) {
-      APJToast.error('Categoria no disponible', 'Ya estas inscrito en esta categoria o esperando pago de tu pareja');
+      // Silently ignore clicks on non-clickable categories
       return;
     }
 
