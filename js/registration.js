@@ -556,6 +556,8 @@ const APJRegistration = (function() {
     // Initialize payment on step 3
     if (currentStep === 3 && paymentMethod === 'card') {
       APJPayment.initStripe();
+      // Dispatch event for app.js to create payment element
+      window.dispatchEvent(new CustomEvent('apj:registration:step3'));
     }
   }
 
