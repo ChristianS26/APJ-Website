@@ -245,13 +245,19 @@ const APJRegistration = (function() {
     try {
       const users = await APJApi.searchUsers(query);
       console.log('[APJ] Search results:', users);
+      console.log('[APJ] Search results type:', typeof users, Array.isArray(users));
+
       const currentUser = APJApi.getUserData();
+      console.log('[APJ] Current user:', currentUser);
 
       // Filter out current user
-      const filteredUsers = users.filter(u =>
-        u.uid !== currentUser?.uid &&
-        u.id !== currentUser?.id
-      );
+      const filteredUsers = Array.isArray(users) ? users.filter(u => {
+        const dominated = u.uid === currentUser?.uid || u.id === currentUser?.id;
+        console.log('[APJ] User', u.email, 'excluded:', dominated);
+        return !dominated;
+      }) : [];
+
+      console.log('[APJ] Filtered users:', filteredUsers.length);
 
       if (filteredUsers.length === 0) {
         resultsContainer.innerHTML = `
