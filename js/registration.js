@@ -7,6 +7,7 @@ const APJRegistration = (function() {
   let selectedCategory = null;
   let selectedPartner = null;
   let partnerIsLocked = false; // True if partner is locked due to existing registration
+  let partnerAlreadyPaid = false; // True if partner already paid their part (user only needs to pay for self)
   let paymentMethod = 'card'; // 'card' or 'code'
   let paidFor = '1'; // '1' = just me, '2' = both
   let discountCode = null;
@@ -323,6 +324,12 @@ const APJRegistration = (function() {
       const option = e.target.closest('.payment-option');
       if (!option) return;
 
+      // Skip if option is disabled
+      if (option.classList.contains('disabled')) {
+        console.log('[APJ] Payment option is disabled, ignoring click');
+        return;
+      }
+
       const method = option.dataset.method;
       if (!method) return;
 
@@ -337,10 +344,10 @@ const APJRegistration = (function() {
         // Paid-for selection (just me vs both)
         e.stopPropagation();
         const radio = option.querySelector('input[type="radio"]');
-        if (radio) {
+        if (radio && !radio.disabled) {
           radio.checked = true;
+          setPaidFor(method);
         }
-        setPaidFor(method);
       }
     });
 
@@ -392,6 +399,7 @@ const APJRegistration = (function() {
     // Check if already registered in this category
     const isRegistered = APJTournaments.isRegisteredInCategory(catId);
     const existingPartner = APJTournaments.getPartnerForCategory(catId);
+    const registration = APJTournaments.getRegistrationForCategory(catId);
 
     if (isRegistered && existingPartner) {
       // Lock the partner to the existing one
@@ -404,13 +412,17 @@ const APJRegistration = (function() {
         photo_url: existingPartner.photoUrl || existingPartner.photo_url
       };
       partnerIsLocked = true;
-      console.log('[APJ] Partner locked to existing registration:', selectedPartner);
+
+      // Check if partner already paid - if so, user can only pay for themselves
+      partnerAlreadyPaid = registration?.paid_by_partner === true;
+      console.log('[APJ] Partner locked to existing registration:', selectedPartner, 'partnerAlreadyPaid:', partnerAlreadyPaid);
     } else {
       // Clear partner if switching to a new category
       if (partnerIsLocked) {
         selectedPartner = null;
         partnerIsLocked = false;
       }
+      partnerAlreadyPaid = false;
     }
 
     // Update UI
@@ -1100,9 +1112,54 @@ const APJRegistration = (function() {
       }
     }
 
-    // Update price summary when on step 3
+    // Update price summary and paid-for options when on step 3
     if (currentStep === 3) {
+      updatePaidForOptions();
       updatePriceSummary();
+    }
+  }
+
+  /**
+   * Update paid-for options based on registration state
+   */
+  function updatePaidForOptions() {
+    const payForBothOption = document.querySelector('.payment-option[data-method="2"]');
+    const payForBothRadio = payForBothOption?.querySelector('input[type="radio"]');
+
+    if (partnerAlreadyPaid) {
+      // Partner already paid - disable "pay for both" option
+      if (payForBothOption) {
+        payForBothOption.classList.add('disabled');
+        payForBothOption.style.opacity = '0.5';
+        payForBothOption.style.pointerEvents = 'none';
+      }
+      if (payForBothRadio) {
+        payForBothRadio.disabled = true;
+      }
+
+      // Ensure "pay for self" is selected
+      paidFor = '1';
+      const payForSelfOption = document.querySelector('.payment-option[data-method="1"]');
+      const payForSelfRadio = payForSelfOption?.querySelector('input[type="radio"]');
+      if (payForSelfOption) {
+        payForSelfOption.classList.add('selected');
+      }
+      if (payForSelfRadio) {
+        payForSelfRadio.checked = true;
+      }
+      if (payForBothOption) {
+        payForBothOption.classList.remove('selected');
+      }
+    } else {
+      // Normal case - enable both options
+      if (payForBothOption) {
+        payForBothOption.classList.remove('disabled');
+        payForBothOption.style.opacity = '';
+        payForBothOption.style.pointerEvents = '';
+      }
+      if (payForBothRadio) {
+        payForBothRadio.disabled = false;
+      }
     }
   }
 
