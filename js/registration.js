@@ -373,8 +373,9 @@ const APJRegistration = (function() {
    * Select category
    */
   function selectCategory(categoryId) {
-    const catId = parseInt(categoryId) || categoryId;
-    console.log('[APJ] selectCategory called with:', categoryId, 'parsed:', catId);
+    // Don't use parseInt - categoryId can be a UUID string
+    const catId = String(categoryId);
+    console.log('[APJ] selectCategory called with:', categoryId);
 
     // Check if category is non-clickable (fully paid or waiting for partner)
     const card = document.querySelector(`.category-card[data-category-id="${categoryId}"]`);
@@ -386,6 +387,7 @@ const APJRegistration = (function() {
     }
 
     selectedCategory = APJTournaments.getCategoryById(catId);
+    console.log('[APJ] selectedCategory:', selectedCategory);
 
     // Check if already registered in this category
     const isRegistered = APJTournaments.isRegisteredInCategory(catId);
