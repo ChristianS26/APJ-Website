@@ -462,9 +462,11 @@ const APJAuth = (function() {
       userMenu.classList.remove('hidden');
       userMenu.innerHTML = `
         <a href="/inscripcion/" class="btn btn-sm btn-primary header-register-btn">Inscribirse al Torneo</a>
-        <span class="user-name">${userName}</span>
-        <div class="user-avatar">${initials}</div>
-        <button class="btn btn-sm btn-outline" data-logout>Salir</button>
+        <div class="user-menu-row">
+          <div class="user-avatar">${initials}</div>
+          <span class="user-name">${userName}</span>
+          <button class="btn btn-sm btn-outline" data-logout>Salir</button>
+        </div>
       `;
     } else {
       authButtons.classList.remove('hidden');
