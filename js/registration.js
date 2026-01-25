@@ -892,15 +892,20 @@ const APJRegistration = (function() {
       const tournament = APJTournaments.getActiveTournament();
       const userData = APJApi.getUserData();
 
-      // Build request matching backend's RedeemCodeRequest structure
-      // categoryId must be an integer, not UUID
-      await APJApi.redeemCode(code, {
-        tournamentId: String(tournament.id || tournament.tournament_id),
-        categoryId: selectedCategory.category_id, // Integer category ID
+      // Build request matching backend's RegisterWithCodeRequest structure
+      const redeemRequest = {
+        code: code,
         playerUid: String(userData.uid || userData.id),
         partnerUid: String(selectedPartner.uid || selectedPartner.id),
-        playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
-      });
+        categoryId: selectedCategory.category_id, // Integer category ID
+        tournamentId: String(tournament.id || tournament.tournament_id),
+        playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
+        restriction: '' // Required field
+      };
+
+      console.log('[APJ] Redeem code request:', JSON.stringify(redeemRequest, null, 2));
+
+      await APJApi.redeemCodeDirect(redeemRequest);
 
       showSuccess();
     } catch (error) {

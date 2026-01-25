@@ -216,12 +216,22 @@ const APJApi = (function() {
   }
 
   /**
-   * Redeem registration code
+   * Redeem registration code (legacy)
    */
   async function redeemCode(code, registrationData) {
     return request('/api/payments/redeem-code', {
       method: 'POST',
       body: JSON.stringify({ code, ...registrationData })
+    });
+  }
+
+  /**
+   * Redeem registration code - sends request object directly
+   */
+  async function redeemCodeDirect(requestData) {
+    return request('/api/payments/redeem-code', {
+      method: 'POST',
+      body: JSON.stringify(requestData)
     });
   }
 
@@ -247,6 +257,7 @@ const APJApi = (function() {
     validateDiscountCode,
     createPaymentIntent,
     redeemCode,
+    redeemCodeDirect,
 
     // Error class
     ApiError
