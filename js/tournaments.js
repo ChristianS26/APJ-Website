@@ -104,60 +104,27 @@ const APJTournaments = (function() {
   }
 
   /**
-   * Find registration for a category by matching ID or name
-   * The API returns different ID types:
-   * - Categories from getCategoryPrices have UUID ids
-   * - Categories in registrations have integer ids
-   * So we need to match by name as fallback
-   */
-  function findRegistrationForCategory(category) {
-    if (!myRegistrations || !myRegistrations.items || !category) return null;
-
-    const targetId = category.id || category.category_id;
-    const targetName = (category.name || category.category_name || '').toLowerCase().trim();
-
-    console.log('[APJ] Finding registration for category:', targetName, 'ID:', targetId);
-
-    const reg = myRegistrations.items.find(item => {
-      const itemCat = item.category;
-      if (!itemCat) return false;
-
-      // Try to match by name (most reliable since IDs are different types)
-      const itemName = (itemCat.name || itemCat.category_name || '').toLowerCase().trim();
-      const nameMatches = itemName && targetName && itemName === targetName;
-
-      // Also try direct ID match as backup
-      const itemId = itemCat.id || itemCat.category_id;
-      const idMatches = itemId && targetId && String(itemId) === String(targetId);
-
-      console.log('[APJ] Comparing:', itemName, '(' + itemId + ') vs', targetName, '(' + targetId + ') => name:', nameMatches, 'id:', idMatches);
-
-      return nameMatches || idMatches;
-    });
-
-    return reg;
-  }
-
-  /**
    * Check if user is registered in a category
+   * Matches by category_id (integer) from category prices against category.id from registrations
    */
   function isRegisteredInCategory(categoryId) {
-    // Get the full category object to match by name
+    if (!myRegistrations || !myRegistrations.items) return false;
+
+    // Get the category to find its integer category_id
     const category = getCategoryById(categoryId);
-    if (!category) {
-      console.log('[APJ] Category not found for ID:', categoryId);
-      return false;
-    }
-    return findRegistrationForCategory(category) !== null;
+    if (!category) return false;
+
+    // category_id is the integer ID used for matching (not the UUID 'id')
+    const targetCategoryId = category.category_id;
+
+    return myRegistrations.items.some(item => item.category?.id === targetCategoryId);
   }
 
   /**
    * Get partner info for a category (if already registered)
    */
   function getPartnerForCategory(categoryId) {
-    const category = getCategoryById(categoryId);
-    if (!category) return null;
-    const reg = findRegistrationForCategory(category);
+    const reg = getRegistrationForCategory(categoryId);
     return reg?.partner || null;
   }
 
@@ -165,11 +132,15 @@ const APJTournaments = (function() {
    * Get registration info for a category
    */
   function getRegistrationForCategory(categoryId) {
+    if (!myRegistrations || !myRegistrations.items) return null;
+
     const category = getCategoryById(categoryId);
     if (!category) return null;
-    const reg = findRegistrationForCategory(category);
-    console.log('[APJ] getRegistrationForCategory', categoryId, '=', reg);
-    return reg;
+
+    // Match by integer category_id
+    const targetCategoryId = category.category_id;
+
+    return myRegistrations.items.find(item => item.category?.id === targetCategoryId);
   }
 
   // Public API
