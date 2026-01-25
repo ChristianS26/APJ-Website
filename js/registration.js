@@ -405,6 +405,13 @@ const APJRegistration = (function() {
 
     updateUI();
     updatePartnerUI();
+
+    // Auto-advance to step 2 after selecting a valid category
+    if (selectedCategory && currentStep === 1) {
+      currentStep = 2;
+      updateUI();
+      updatePartnerUI();
+    }
   }
 
   /**
