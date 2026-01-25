@@ -27,20 +27,20 @@ const APJValidation = (function() {
   }
 
   /**
-   * Validate phone (E.164 format)
+   * Validate phone (E.164 format) - Required
    */
   function isValidPhone(phone) {
-    if (!phone || typeof phone !== 'string') return true; // Optional field
-    if (phone.trim() === '') return true;
+    if (!phone || typeof phone !== 'string') return false;
+    if (phone.trim() === '') return false;
     return APJConfig.VALIDATION.PHONE_REGEX.test(phone.trim());
   }
 
   /**
-   * Validate birthdate (YYYY-MM-DD format)
+   * Validate birthdate (YYYY-MM-DD format) - Required
    */
   function isValidBirthdate(date) {
-    if (!date || typeof date !== 'string') return true; // Optional field
-    if (date.trim() === '') return true;
+    if (!date || typeof date !== 'string') return false;
+    if (date.trim() === '') return false;
 
     if (!APJConfig.VALIDATION.DATE_REGEX.test(date)) return false;
 
@@ -52,32 +52,32 @@ const APJValidation = (function() {
   }
 
   /**
-   * Validate country ISO code
+   * Validate country ISO code - Required
    */
   function isValidCountryIso(code) {
-    if (!code || typeof code !== 'string') return true; // Optional field
-    if (code.trim() === '') return true;
+    if (!code || typeof code !== 'string') return false;
+    if (code.trim() === '') return false;
     return APJConfig.VALIDATION.COUNTRY_ISO_REGEX.test(code.toUpperCase());
   }
 
   /**
-   * Validate gender
+   * Validate gender - Required (Masculino, Femenino, Otro)
    */
   function isValidGender(gender) {
-    if (!gender || typeof gender !== 'string') return true; // Optional field
-    if (gender.trim() === '') return true;
-    return ['masculino', 'femenino', 'otro'].includes(gender.toLowerCase());
+    if (!gender || typeof gender !== 'string') return false;
+    if (gender.trim() === '') return false;
+    return ['Masculino', 'Femenino', 'Otro'].includes(gender);
   }
 
   /**
-   * Validate shirt size based on gender
+   * Validate shirt size based on gender - Required
    */
   function isValidShirtSize(size, gender) {
-    if (!size || typeof size !== 'string') return true; // Optional field
-    if (size.trim() === '') return true;
+    if (!size || typeof size !== 'string') return false;
+    if (size.trim() === '') return false;
 
-    const validGender = gender || 'masculino';
-    const validSizes = APJConfig.SHIRT_SIZES[validGender] || APJConfig.SHIRT_SIZES.masculino;
+    const validGender = gender || 'Masculino';
+    const validSizes = APJConfig.SHIRT_SIZES[validGender] || APJConfig.SHIRT_SIZES.Masculino;
 
     return validSizes.includes(size.toUpperCase());
   }
@@ -86,11 +86,11 @@ const APJValidation = (function() {
    * Get available shirt sizes for gender
    */
   function getShirtSizesForGender(gender) {
-    return APJConfig.SHIRT_SIZES[gender] || APJConfig.SHIRT_SIZES.masculino;
+    return APJConfig.SHIRT_SIZES[gender] || APJConfig.SHIRT_SIZES.Masculino;
   }
 
   /**
-   * Validate registration form data
+   * Validate registration form data - All fields required
    */
   function validateRegistration(data) {
     const errors = {};
@@ -112,25 +112,20 @@ const APJValidation = (function() {
       errors.last_name = `El apellido debe tener al menos ${APJConfig.VALIDATION.MIN_NAME_LENGTH} caracteres`;
     }
 
-    // Optional fields
     if (!isValidPhone(data.phone)) {
-      errors.phone = 'Ingresa un telefono valido en formato internacional (+52...)';
+      errors.phone = 'Ingresa un telefono valido (minimo 8 digitos)';
     }
 
     if (!isValidBirthdate(data.birthdate)) {
-      errors.birthdate = 'Ingresa una fecha valida (YYYY-MM-DD)';
-    }
-
-    if (!isValidCountryIso(data.country_iso)) {
-      errors.country_iso = 'Ingresa un codigo de pais valido (ej: MX, US)';
+      errors.birthdate = 'Selecciona tu fecha de nacimiento';
     }
 
     if (!isValidGender(data.gender)) {
-      errors.gender = 'Selecciona un genero valido';
+      errors.gender = 'Selecciona tu genero';
     }
 
     if (!isValidShirtSize(data.shirt_size, data.gender)) {
-      errors.shirt_size = 'Selecciona una talla valida';
+      errors.shirt_size = 'Selecciona tu talla de playera';
     }
 
     return {

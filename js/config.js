@@ -25,18 +25,18 @@ const APJConfig = {
     COUNTRY_ISO_REGEX: /^[A-Z]{2}$/
   },
 
-  // Shirt Sizes by Gender
+  // Shirt Sizes by Gender (keys match backend values: Masculino, Femenino, Otro)
   SHIRT_SIZES: {
-    femenino: ['XS', 'S', 'M', 'L'],
-    masculino: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'],
-    otro: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL']
+    Femenino: ['XS', 'S', 'M', 'L'],
+    Masculino: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'],
+    Otro: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL']
   },
 
-  // Gender Options
+  // Gender Options (values match backend: Masculino, Femenino, Otro)
   GENDERS: [
-    { value: 'masculino', label: 'Masculino' },
-    { value: 'femenino', label: 'Femenino' },
-    { value: 'otro', label: 'Otro' }
+    { value: 'Masculino', label: 'Masculino' },
+    { value: 'Femenino', label: 'Femenino' },
+    { value: 'Otro', label: 'Otro' }
   ],
 
   // Common Countries

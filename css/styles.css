@@ -842,6 +842,22 @@ footer {
   }
 }
 
+/* Phone Input with Country Code */
+.phone-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.country-code-select {
+  width: auto;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.phone-number-input {
+  flex: 1;
+}
+
 /* ==========================================
    MODALS
    ========================================== */

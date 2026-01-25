@@ -96,51 +96,48 @@ const APJAuth = (function() {
                 <div class="form-error"></div>
               </div>
 
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label" for="register-phone">Telefono</label>
-                  <input type="tel" id="register-phone" class="form-input" placeholder="+52 1234567890">
-                  <div class="form-error"></div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="register-birthdate">Fecha de nacimiento</label>
-                  <input type="date" id="register-birthdate" class="form-input">
-                  <div class="form-error"></div>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label" for="register-gender">Genero</label>
-                  <select id="register-gender" class="form-select">
-                    <option value="">Seleccionar</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="femenino">Femenino</option>
-                    <option value="otro">Otro</option>
+              <div class="form-group">
+                <label class="form-label">Telefono <span class="required">*</span></label>
+                <div class="phone-input-group">
+                  <select id="register-country_code" class="form-select country-code-select" required>
+                    <option value="MX|+52" selected>MX +52</option>
+                    <option value="US|+1">US +1</option>
+                    <option value="CA|+1">CA +1</option>
+                    <option value="AR|+54">AR +54</option>
+                    <option value="CO|+57">CO +57</option>
+                    <option value="CL|+56">CL +56</option>
+                    <option value="PE|+51">PE +51</option>
+                    <option value="ES|+34">ES +34</option>
                   </select>
-                  <div class="form-error"></div>
+                  <input type="tel" id="register-phone" class="form-input phone-number-input" placeholder="1234567890" required>
                 </div>
-                <div class="form-group">
-                  <label class="form-label" for="register-shirt_size">Talla de playera</label>
-                  <select id="register-shirt_size" class="form-select">
-                    <option value="">Seleccionar</option>
-                  </select>
-                  <div class="form-error"></div>
-                </div>
+                <div class="form-error" id="register-phone-error"></div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="register-country_iso">Pais</label>
-                <select id="register-country_iso" class="form-select">
-                  <option value="">Seleccionar</option>
-                  <option value="MX">Mexico</option>
-                  <option value="US">Estados Unidos</option>
-                  <option value="ES">Espana</option>
-                  <option value="AR">Argentina</option>
-                  <option value="CO">Colombia</option>
-                  <option value="CL">Chile</option>
-                </select>
+                <label class="form-label" for="register-birthdate">Fecha de nacimiento <span class="required">*</span></label>
+                <input type="date" id="register-birthdate" class="form-input" required>
                 <div class="form-error"></div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="register-gender">Genero <span class="required">*</span></label>
+                  <select id="register-gender" class="form-select" required>
+                    <option value="">Seleccionar</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                  <div class="form-error"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="register-shirt_size">Talla de playera <span class="required">*</span></label>
+                  <select id="register-shirt_size" class="form-select" required>
+                    <option value="">Seleccionar</option>
+                  </select>
+                  <div class="form-error"></div>
+                </div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-block" id="register-submit">
@@ -249,8 +246,8 @@ const APJAuth = (function() {
     closeModals();
     registerModal?.classList.add('active');
     document.getElementById('register-first_name')?.focus();
-    // Initialize shirt sizes with default gender
-    updateShirtSizes('masculino');
+    // Clear shirt sizes until gender is selected
+    updateShirtSizes('');
   }
 
   /**
@@ -308,24 +305,26 @@ const APJAuth = (function() {
   async function handleRegister(e) {
     e.preventDefault();
 
+    // Get country code and dial code from select
+    const countryCodeSelect = document.getElementById('register-country_code');
+    const countryCodeValue = countryCodeSelect.value; // e.g., "MX|+52"
+    const [countryIso, dialCode] = countryCodeValue.split('|');
+    const phoneNumber = document.getElementById('register-phone').value.trim();
+
+    // Build full phone in E.164 format (dialCode + number)
+    const fullPhone = phoneNumber ? `${dialCode}${phoneNumber.replace(/\D/g, '')}` : '';
+
     const formData = {
       first_name: document.getElementById('register-first_name').value.trim(),
       last_name: document.getElementById('register-last_name').value.trim(),
       email: document.getElementById('register-email').value.trim(),
       password: document.getElementById('register-password').value,
-      phone: document.getElementById('register-phone').value.trim() || undefined,
-      birthdate: document.getElementById('register-birthdate').value || undefined,
-      gender: document.getElementById('register-gender').value || undefined,
-      shirt_size: document.getElementById('register-shirt_size').value || undefined,
-      country_iso: document.getElementById('register-country_iso').value || undefined
+      phone: fullPhone,
+      birthdate: document.getElementById('register-birthdate').value,
+      gender: document.getElementById('register-gender').value,
+      shirt_size: document.getElementById('register-shirt_size').value,
+      country_iso: countryIso
     };
-
-    // Clean undefined values
-    Object.keys(formData).forEach(key => {
-      if (formData[key] === undefined || formData[key] === '') {
-        delete formData[key];
-      }
-    });
 
     // Validate
     APJValidation.clearFormErrors('register-form');
