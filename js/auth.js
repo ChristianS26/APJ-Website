@@ -97,6 +97,12 @@ const APJAuth = (function() {
               </div>
 
               <div class="form-group">
+                <label class="form-label" for="register-confirm_password">Confirmar contrasena <span class="required">*</span></label>
+                <input type="password" id="register-confirm_password" class="form-input" placeholder="Repite tu contrasena" required>
+                <div class="form-error"></div>
+              </div>
+
+              <div class="form-group">
                 <label class="form-label">Telefono <span class="required">*</span></label>
                 <div class="phone-input-group">
                   <select id="register-country_code" class="form-select country-code-select" required>
@@ -140,7 +146,7 @@ const APJAuth = (function() {
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-block" id="register-submit">
+              <button type="submit" class="btn btn-primary btn-block" id="register-submit" disabled>
                 Crear Cuenta
               </button>
             </form>
@@ -209,10 +215,53 @@ const APJAuth = (function() {
     // Register form submit
     document.getElementById('register-form')?.addEventListener('submit', handleRegister);
 
-    // Gender change - update shirt sizes
+    // Gender change - update shirt sizes and validate
     document.getElementById('register-gender')?.addEventListener('change', e => {
       updateShirtSizes(e.target.value);
+      validateRegisterForm();
     });
+
+    // Validate register form on input
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('input', validateRegisterForm);
+      registerForm.addEventListener('change', validateRegisterForm);
+    }
+  }
+
+  /**
+   * Validate register form and enable/disable submit button
+   */
+  function validateRegisterForm() {
+    const submitBtn = document.getElementById('register-submit');
+    if (!submitBtn) return;
+
+    const firstName = document.getElementById('register-first_name')?.value.trim() || '';
+    const lastName = document.getElementById('register-last_name')?.value.trim() || '';
+    const email = document.getElementById('register-email')?.value.trim() || '';
+    const password = document.getElementById('register-password')?.value || '';
+    const confirmPassword = document.getElementById('register-confirm_password')?.value || '';
+    const phone = document.getElementById('register-phone')?.value.trim() || '';
+    const birthdate = document.getElementById('register-birthdate')?.value || '';
+    const gender = document.getElementById('register-gender')?.value || '';
+    const shirtSize = document.getElementById('register-shirt_size')?.value || '';
+
+    // Check all required fields
+    const isFirstNameValid = firstName.length >= 2;
+    const isLastNameValid = lastName.length >= 2;
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isPasswordValid = password.length >= 8;
+    const isConfirmPasswordValid = confirmPassword === password && confirmPassword.length >= 8;
+    const isPhoneValid = phone.replace(/\D/g, '').length >= 8;
+    const isBirthdateValid = birthdate !== '';
+    const isGenderValid = ['Masculino', 'Femenino', 'Otro'].includes(gender);
+    const isShirtSizeValid = shirtSize !== '';
+
+    const isFormValid = isFirstNameValid && isLastNameValid && isEmailValid &&
+                        isPasswordValid && isConfirmPasswordValid && isPhoneValid &&
+                        isBirthdateValid && isGenderValid && isShirtSizeValid;
+
+    submitBtn.disabled = !isFormValid;
   }
 
   /**
@@ -314,11 +363,21 @@ const APJAuth = (function() {
     // Build full phone in E.164 format (dialCode + number)
     const fullPhone = phoneNumber ? `${dialCode}${phoneNumber.replace(/\D/g, '')}` : '';
 
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm_password').value;
+
+    // Validate passwords match
+    APJValidation.clearFormErrors('register-form');
+    if (password !== confirmPassword) {
+      APJValidation.showFieldError('register-confirm_password', 'Las contrasenas no coinciden');
+      return;
+    }
+
     const formData = {
       first_name: document.getElementById('register-first_name').value.trim(),
       last_name: document.getElementById('register-last_name').value.trim(),
       email: document.getElementById('register-email').value.trim(),
-      password: document.getElementById('register-password').value,
+      password: password,
       phone: fullPhone,
       birthdate: document.getElementById('register-birthdate').value,
       gender: document.getElementById('register-gender').value,
@@ -326,8 +385,7 @@ const APJAuth = (function() {
       country_iso: countryIso
     };
 
-    // Validate
-    APJValidation.clearFormErrors('register-form');
+    // Validate all fields
     const validation = APJValidation.validateRegistration(formData);
 
     if (!validation.isValid) {
