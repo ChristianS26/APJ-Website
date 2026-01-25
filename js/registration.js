@@ -1,4 +1,5 @@
 // APJ Padel - Tournament Registration
+console.log('[APJ] registration.js loaded');
 
 const APJRegistration = (function() {
   // State
@@ -273,6 +274,8 @@ const APJRegistration = (function() {
    * Bind event handlers
    */
   function bindEvents() {
+    console.log('[APJ] bindEvents called');
+
     // Category selection
     document.addEventListener('click', e => {
       const categoryCard = e.target.closest('.category-card');
@@ -315,18 +318,29 @@ const APJRegistration = (function() {
       }
     });
 
-    // Payment method selection
+    // Unified handler for all payment options (card/code and paid-for 1/2)
     document.addEventListener('click', e => {
       const option = e.target.closest('.payment-option');
-      if (option) {
-        setPaymentMethod(option.dataset.method);
-      }
-    });
+      if (!option) return;
 
-    // Paid for selection
-    document.addEventListener('change', e => {
-      if (e.target.name === 'paid-for') {
-        setPaidFor(e.target.value);
+      const method = option.dataset.method;
+      if (!method) return;
+
+      console.log('[APJ] Payment option clicked, method:', method);
+
+      // Determine which type of option was clicked based on method value
+      if (method === 'card' || method === 'code') {
+        // Payment method selection (card vs code)
+        e.stopPropagation();
+        setPaymentMethod(method);
+      } else if (method === '1' || method === '2') {
+        // Paid-for selection (just me vs both)
+        e.stopPropagation();
+        const radio = option.querySelector('input[type="radio"]');
+        if (radio) {
+          radio.checked = true;
+        }
+        setPaidFor(method);
       }
     });
 
@@ -602,7 +616,8 @@ const APJRegistration = (function() {
   function setPaymentMethod(method) {
     paymentMethod = method;
 
-    document.querySelectorAll('.payment-option').forEach(opt => {
+    // Only update payment method options (card/code), not paid-for options (1/2)
+    document.querySelectorAll('.payment-option[data-method="card"], .payment-option[data-method="code"]').forEach(opt => {
       opt.classList.toggle('selected', opt.dataset.method === method);
     });
 
@@ -620,12 +635,31 @@ const APJRegistration = (function() {
    * Set paid for option
    */
   function setPaidFor(value) {
+    console.log('[APJ] setPaidFor called with value:', value);
     paidFor = value;
+
+    // Update selected class on paid-for options - explicitly add/remove for clarity
+    const paidForOptions = document.querySelectorAll('.payment-option[data-method="1"], .payment-option[data-method="2"]');
+    console.log('[APJ] Found paid-for options:', paidForOptions.length);
+
+    paidForOptions.forEach(opt => {
+      const isSelected = opt.dataset.method === value;
+      console.log('[APJ] Option method:', opt.dataset.method, 'isSelected:', isSelected);
+      if (isSelected) {
+        opt.classList.add('selected');
+      } else {
+        opt.classList.remove('selected');
+      }
+    });
 
     // Discount not available when paying for both
     const discountSection = document.getElementById('discount-section');
     if (discountSection) {
-      discountSection.classList.toggle('hidden', paidFor === '2');
+      if (paidFor === '2') {
+        discountSection.classList.add('hidden');
+      } else {
+        discountSection.classList.remove('hidden');
+      }
     }
 
     // Clear discount if switching to pay for both

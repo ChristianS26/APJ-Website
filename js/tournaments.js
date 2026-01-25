@@ -58,9 +58,14 @@ const APJTournaments = (function() {
 
   /**
    * Get category by ID
+   * Handles both string and integer comparisons
    */
   function getCategoryById(categoryId) {
-    return categories.find(c => c.id === categoryId || c.category_id === categoryId);
+    // Convert to string for consistent comparison
+    const searchId = String(categoryId);
+    return categories.find(c =>
+      String(c.id) === searchId || String(c.category_id) === searchId
+    );
   }
 
   /**
@@ -115,9 +120,10 @@ const APJTournaments = (function() {
     if (!category) return false;
 
     // category_id is the integer ID used for matching (not the UUID 'id')
-    const targetCategoryId = category.category_id;
+    // Use string comparison for type safety
+    const targetCategoryId = String(category.category_id);
 
-    return myRegistrations.items.some(item => item.category?.id === targetCategoryId);
+    return myRegistrations.items.some(item => String(item.category?.id) === targetCategoryId);
   }
 
   /**
@@ -137,10 +143,10 @@ const APJTournaments = (function() {
     const category = getCategoryById(categoryId);
     if (!category) return null;
 
-    // Match by integer category_id
-    const targetCategoryId = category.category_id;
+    // Match by integer category_id - use string comparison for type safety
+    const targetCategoryId = String(category.category_id);
 
-    return myRegistrations.items.find(item => item.category?.id === targetCategoryId);
+    return myRegistrations.items.find(item => String(item.category?.id) === targetCategoryId);
   }
 
   // Public API
