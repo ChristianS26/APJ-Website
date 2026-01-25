@@ -1257,11 +1257,14 @@ footer {
 
 .search-results {
   margin-top: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-results:not(:empty) {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  max-height: 300px;
-  overflow-y: auto;
 }
 
 .search-result {

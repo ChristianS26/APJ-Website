@@ -162,7 +162,16 @@ const APJApi = (function() {
    * Search users (for partner search)
    */
   async function searchUsers(query) {
-    return request(`/api/auth/search-users?query=${encodeURIComponent(query)}`);
+    console.log('[APJ API] searchUsers called with query:', query);
+    console.log('[APJ API] Auth token present:', !!getAuthToken());
+    try {
+      const result = await request(`/api/auth/search-users?query=${encodeURIComponent(query)}`);
+      console.log('[APJ API] searchUsers result:', result);
+      return result;
+    } catch (error) {
+      console.error('[APJ API] searchUsers error:', error);
+      throw error;
+    }
   }
 
   /**

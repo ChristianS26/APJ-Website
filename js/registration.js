@@ -135,10 +135,12 @@ const APJRegistration = (function() {
 
     // Partner search
     const searchInput = document.getElementById('partner-search');
+    console.log('[APJ] Partner search input found:', !!searchInput);
     if (searchInput) {
       searchInput.addEventListener('input', e => {
         clearTimeout(searchTimeout);
         const query = e.target.value.trim();
+        console.log('[APJ] Search query:', query);
 
         if (query.length < APJConfig.VALIDATION.MIN_SEARCH_LENGTH) {
           document.getElementById('search-results').innerHTML = '';
@@ -187,9 +189,15 @@ const APJRegistration = (function() {
       }
     });
 
-    // Navigation buttons
-    document.getElementById('btn-next')?.addEventListener('click', nextStep);
-    document.getElementById('btn-prev')?.addEventListener('click', prevStep);
+    // Navigation buttons (using event delegation for multiple buttons)
+    document.addEventListener('click', e => {
+      if (e.target.closest('.btn-next')) {
+        nextStep();
+      }
+      if (e.target.closest('.btn-prev')) {
+        prevStep();
+      }
+    });
 
     // Submit registration code
     document.getElementById('submit-code')?.addEventListener('click', submitRegistrationCode);
@@ -220,10 +228,23 @@ const APJRegistration = (function() {
    */
   async function searchPartners(query) {
     const resultsContainer = document.getElementById('search-results');
-    if (!resultsContainer) return;
+    if (!resultsContainer) {
+      console.error('[APJ] search-results container not found');
+      return;
+    }
+
+    console.log('[APJ] Searching for partners with query:', query);
+
+    // Show loading state
+    resultsContainer.innerHTML = `
+      <div class="search-result" style="cursor: default; justify-content: center;">
+        <span class="spinner"></span>
+      </div>
+    `;
 
     try {
       const users = await APJApi.searchUsers(query);
+      console.log('[APJ] Search results:', users);
       const currentUser = APJApi.getUserData();
 
       // Filter out current user
@@ -717,18 +738,21 @@ const APJRegistration = (function() {
       content.classList.toggle('active', stepNum === currentStep);
     });
 
-    // Update navigation buttons
-    const prevBtn = document.getElementById('btn-prev');
-    const nextBtn = document.getElementById('btn-next');
+    // Update navigation buttons for current step
+    const currentStepNav = document.querySelector(`.step-navigation[data-step="${currentStep}"]`);
+    if (currentStepNav) {
+      const prevBtn = currentStepNav.querySelector('.btn-prev');
+      const nextBtn = currentStepNav.querySelector('.btn-next');
 
-    if (prevBtn) {
-      prevBtn.classList.toggle('hidden', currentStep === 1);
-    }
+      if (prevBtn) {
+        prevBtn.classList.toggle('hidden', currentStep === 1);
+      }
 
-    if (nextBtn) {
-      nextBtn.classList.toggle('hidden', currentStep >= 3);
-      nextBtn.disabled = (currentStep === 1 && !selectedCategory) ||
-                         (currentStep === 2 && !selectedPartner);
+      if (nextBtn) {
+        nextBtn.classList.toggle('hidden', currentStep >= 3);
+        nextBtn.disabled = (currentStep === 1 && !selectedCategory) ||
+                           (currentStep === 2 && !selectedPartner);
+      }
     }
 
     // Update price summary when on step 3
