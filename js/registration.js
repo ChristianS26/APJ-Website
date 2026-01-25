@@ -892,11 +892,14 @@ const APJRegistration = (function() {
       const tournament = APJTournaments.getActiveTournament();
       const userData = APJApi.getUserData();
 
+      // Build request matching backend's RedeemCodeRequest structure
+      // categoryId must be an integer, not UUID
       await APJApi.redeemCode(code, {
-        tournamentId: tournament.id || tournament.tournament_id,
-        categoryId: selectedCategory.id || selectedCategory.category_id,
-        playerUid: userData.uid || userData.id,
-        partnerUid: selectedPartner.uid || selectedPartner.id
+        tournamentId: String(tournament.id || tournament.tournament_id),
+        categoryId: selectedCategory.category_id, // Integer category ID
+        playerUid: String(userData.uid || userData.id),
+        partnerUid: String(selectedPartner.uid || selectedPartner.id),
+        playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
       });
 
       showSuccess();
