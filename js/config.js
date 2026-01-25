@@ -1,11 +1,31 @@
 // APJ Padel - Configuration
 
-const APJConfig = {
-  // API Configuration (Stage)
-  API_BASE_URL: 'https://ktor-lagartosapp-stage.up.railway.app',
+// =============================================
+// ENVIRONMENT SWITCH - Change this to switch environments
+// =============================================
+const ENV = 'stage'; // 'stage' or 'prod'
 
-  // Stripe Configuration (Test)
-  STRIPE_PUBLISHABLE_KEY: 'pk_test_51RLpzE06aLfQAKOqIGtgP1eOhb8Y2bEtYZTv7iAkr55mn5euM8IKsdIzbBRaH0sIcmGfMSO535LzPW2SnXiFTKY700O3z8ruJ5',
+// Environment-specific configurations
+const ENVIRONMENTS = {
+  stage: {
+    API_BASE_URL: 'https://ktor-lagartosapp-stage.up.railway.app',
+    STRIPE_PUBLISHABLE_KEY: 'pk_test_51RLpzE06aLfQAKOqIGtgP1eOhb8Y2bEtYZTv7iAkr55mn5euM8IKsdIzbBRaH0sIcmGfMSO535LzPW2SnXiFTKY700O3z8ruJ5'
+  },
+  prod: {
+    API_BASE_URL: 'https://ktor-lagartosapp-production.up.railway.app',
+    STRIPE_PUBLISHABLE_KEY: 'pk_live_51RLpz406yfSRDOzj53yssmjYSxAkqPtAVRmybHMTHF8AJPeFPA5vjkTo0LP537AxHabdfJkTxMVGaGN2cjxoJj0c00oVcx73hJ'
+  }
+};
+
+const APJConfig = {
+  // Current environment
+  ENV: ENV,
+
+  // API Configuration
+  API_BASE_URL: ENVIRONMENTS[ENV].API_BASE_URL,
+
+  // Stripe Configuration
+  STRIPE_PUBLISHABLE_KEY: ENVIRONMENTS[ENV].STRIPE_PUBLISHABLE_KEY,
 
   // Storage Keys
   STORAGE_KEYS: {
