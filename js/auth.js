@@ -387,6 +387,7 @@ const APJAuth = (function() {
       authButtons.classList.add('hidden');
       userMenu.classList.remove('hidden');
       userMenu.innerHTML = `
+        <a href="/inscripcion/" class="btn btn-sm btn-primary header-register-btn">Inscribirse al Torneo</a>
         <span class="user-name">${userName}</span>
         <div class="user-avatar">${initials}</div>
         <button class="btn btn-sm btn-outline" data-logout>Salir</button>
