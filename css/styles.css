@@ -1195,49 +1195,131 @@ footer {
   gap: 12px;
 }
 
-.category-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  background: var(--card);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all var(--transition);
+.category-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
 }
 
-.category-card:hover {
-  border-color: var(--border-hover);
-  background: var(--card-hover);
+.category-info p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.category-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+/* Category Sections (grouped like Android) */
+.category-section {
+  margin-bottom: 24px;
+}
+
+.category-section:last-child {
+  margin-bottom: 0;
+}
+
+.category-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.category-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+
+.category-card:last-child {
+  margin-bottom: 0;
+}
+
+.category-card:hover:not(.disabled):not(.non-clickable) {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+
+.category-card.non-clickable {
+  cursor: default;
 }
 
 .category-card.selected {
   border-color: var(--primary);
   background: var(--primary-glow);
-}
-
-.category-card.registered {
-  border-color: var(--accent);
-  background: var(--accent-glow);
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
 }
 
 .category-card.disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-.category-card.needs-payment {
-  border-color: var(--stripe);
-  background: var(--stripe-glow);
+.category-card.available:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.15);
+}
+
+.category-card.actionable {
+  cursor: pointer;
+}
+
+.category-card.actionable:hover {
+  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.2);
+}
+
+.category-card.fully-paid {
+  background: var(--success-glow);
+  border-color: var(--success);
+}
+
+.category-card.waiting-partner {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+.category-card.pending-payment {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+.category-description {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 4px 0 8px 0;
+}
+
+.category-status-row {
+  margin-top: 8px;
 }
 
 .category-status {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  margin-top: 8px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.category-status svg {
+  flex-shrink: 0;
 }
 
 .category-status.paid {
@@ -1256,23 +1338,43 @@ footer {
   font-weight: 600;
 }
 
-.category-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.category-info p {
-  font-size: 14px;
+.category-partner {
+  font-size: 12px;
   color: var(--text-muted);
-  margin: 0;
+  margin: 6px 0 0 0;
 }
 
-.category-price {
-  font-size: 1.25rem;
-  font-weight: 700;
+.category-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  text-align: right;
+}
+
+.category-cta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  transition: color 0.2s;
+}
+
+.category-card:hover:not(.disabled):not(.non-clickable) .category-cta {
   color: var(--primary-light);
+}
+
+.category-cta.disabled {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.category-card.needs-payment .category-cta {
+  color: var(--stripe);
+}
+
+.category-card.needs-payment:hover .category-cta {
+  color: var(--stripe);
+  filter: brightness(1.2);
 }
 
 /* Partner Search */

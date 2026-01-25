@@ -95,7 +95,7 @@ const APJRegistration = (function() {
   }
 
   /**
-   * Render category cards
+   * Render category cards - grouped by registration status (like Android)
    */
   function renderCategories() {
     const container = document.getElementById('category-list');
@@ -112,52 +112,152 @@ const APJRegistration = (function() {
       return;
     }
 
-    container.innerHTML = categories.map(cat => {
+    // Separate categories into registered and available (like Android's "Tuyas" and "Otras")
+    const registeredCategories = [];
+    const availableCategories = [];
+
+    categories.forEach(cat => {
       const categoryId = cat.id || cat.category_id;
       const isRegistered = APJTournaments.isRegisteredInCategory(categoryId);
-      const registration = APJTournaments.getRegistrationForCategory(categoryId);
-      const partner = registration?.partner;
-      const paidByMe = registration?.paidByMe || registration?.paid_by_me;
-      const paidByPartner = registration?.paidByPartner || registration?.paid_by_partner;
-
-      let statusHtml = '';
-      let cardClass = 'category-card';
-
       if (isRegistered) {
-        const partnerName = partner ? `${partner.firstName || partner.first_name || ''} ${partner.lastName || partner.last_name || ''}`.trim() : 'Sin pareja';
-
-        if (paidByMe && paidByPartner) {
-          // Fully paid - can't register again
-          statusHtml = `<span class="category-status paid">Inscrito con ${partnerName}</span>`;
-          cardClass += ' registered disabled';
-        } else if (paidByMe) {
-          // I paid, waiting for partner
-          statusHtml = `<span class="category-status pending">Esperando pago de ${partnerName}</span>`;
-          cardClass += ' registered disabled';
-        } else if (paidByPartner) {
-          // Partner paid, I need to pay
-          statusHtml = `<span class="category-status needs-payment">Pagar mi inscripcion (${partnerName} ya pago)</span>`;
-          cardClass += ' registered needs-payment';
-        } else {
-          // Registered but neither has paid
-          statusHtml = `<span class="category-status pending">Pendiente de pago con ${partnerName}</span>`;
-          cardClass += ' registered';
-        }
+        registeredCategories.push(cat);
+      } else {
+        availableCategories.push(cat);
       }
+    });
 
-      return `
-        <div class="${cardClass}" data-category-id="${categoryId}">
-          <div class="category-info">
-            <h4>${cat.name || cat.category_name}</h4>
-            <p>${cat.description || ''}</p>
-            ${statusHtml}
+    let html = '';
+
+    // Registered categories section ("Tuyas" in Android)
+    if (registeredCategories.length > 0) {
+      html += `
+        <div class="category-section">
+          <h3 class="category-section-title">Mis Inscripciones</h3>
+          ${registeredCategories.map(cat => renderCategoryCard(cat, true)).join('')}
+        </div>
+      `;
+    }
+
+    // Available categories section ("Otras" in Android)
+    if (availableCategories.length > 0) {
+      html += `
+        <div class="category-section">
+          <h3 class="category-section-title">${registeredCategories.length > 0 ? 'Otras Categorias' : 'Categorias Disponibles'}</h3>
+          ${availableCategories.map(cat => renderCategoryCard(cat, false)).join('')}
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+  }
+
+  /**
+   * Render a single category card
+   */
+  function renderCategoryCard(cat, isRegistered) {
+    const categoryId = cat.id || cat.category_id;
+    const registration = isRegistered ? APJTournaments.getRegistrationForCategory(categoryId) : null;
+    const partner = registration?.partner;
+    const paidByMe = registration?.paidByMe || registration?.paid_by_me;
+    const paidByPartner = registration?.paidByPartner || registration?.paid_by_partner;
+
+    let statusHtml = '';
+    let cardClass = 'category-card';
+    let actionText = '';
+    let isClickable = true;
+
+    if (isRegistered) {
+      const partnerName = partner
+        ? `${partner.firstName || partner.first_name || ''} ${partner.lastName || partner.last_name || ''}`.trim()
+        : 'Sin pareja';
+
+      if (paidByMe && paidByPartner) {
+        // Fully paid - can't do anything
+        statusHtml = `
+          <div class="category-status-row">
+            <span class="category-status paid">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              Inscrito
+            </span>
           </div>
+          <p class="category-partner">Con: ${partnerName}</p>
+        `;
+        cardClass += ' registered disabled fully-paid';
+        actionText = 'Ya registrado';
+        isClickable = false;
+      } else if (paidByMe) {
+        // I paid, waiting for partner
+        statusHtml = `
+          <div class="category-status-row">
+            <span class="category-status pending">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Esperando pago
+            </span>
+          </div>
+          <p class="category-partner">Pareja: ${partnerName}</p>
+        `;
+        cardClass += ' registered disabled waiting-partner';
+        actionText = 'Esperando a tu pareja';
+        isClickable = false;
+      } else if (paidByPartner) {
+        // Partner paid, I need to pay - ACTIONABLE
+        statusHtml = `
+          <div class="category-status-row">
+            <span class="category-status needs-payment">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Pagar mi inscripcion
+            </span>
+          </div>
+          <p class="category-partner">${partnerName} ya pago su parte</p>
+        `;
+        cardClass += ' registered needs-payment actionable';
+        actionText = 'Completar pago';
+        isClickable = true;
+      } else {
+        // Registered but neither has paid - ACTIONABLE
+        statusHtml = `
+          <div class="category-status-row">
+            <span class="category-status pending">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Pendiente de pago
+            </span>
+          </div>
+          <p class="category-partner">Pareja: ${partnerName}</p>
+        `;
+        cardClass += ' registered pending-payment actionable';
+        actionText = 'Completar pago';
+        isClickable = true;
+      }
+    } else {
+      // Available category
+      cardClass += ' available';
+      actionText = 'Inscribirse';
+      isClickable = true;
+    }
+
+    return `
+      <div class="${cardClass}${isClickable ? '' : ' non-clickable'}" data-category-id="${categoryId}"${!isClickable ? ' tabindex="-1"' : ''}>
+        <div class="category-info">
+          <h4>${cat.name || cat.category_name}</h4>
+          ${cat.description ? `<p class="category-description">${cat.description}</p>` : ''}
+          ${statusHtml}
+        </div>
+        <div class="category-action">
           <div class="category-price">
             ${APJTournaments.formatPrice(cat.price || cat.price_cents || 99900)}
           </div>
+          ${isClickable ? `<span class="category-cta">${actionText} →</span>` : `<span class="category-cta disabled">${actionText}</span>`}
         </div>
-      `;
-    }).join('');
+      </div>
+    `;
   }
 
   /**
