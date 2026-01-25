@@ -11,6 +11,7 @@ const APJRegistration = (function() {
   let discountCode = null;
   let discountData = null;
   let searchTimeout = null;
+  let justAutoAdvanced = false; // Flag to prevent double-advance
 
   /**
    * Initialize registration flow
@@ -411,9 +412,12 @@ const APJRegistration = (function() {
     // Only advance if we're still on step 1
     if (selectedCategory && currentStep === 1) {
       console.log('[APJ] Auto-advancing from step 1 to step 2');
+      justAutoAdvanced = true;
       currentStep = 2;
       updateUI();
       updatePartnerUI();
+      // Clear flag after current event loop completes
+      setTimeout(() => { justAutoAdvanced = false; }, 0);
     }
   }
 
@@ -777,7 +781,14 @@ const APJRegistration = (function() {
    * Next step
    */
   function nextStep() {
-    console.log('[APJ] nextStep called, currentStep before:', currentStep);
+    console.log('[APJ] nextStep called, currentStep before:', currentStep, 'justAutoAdvanced:', justAutoAdvanced);
+
+    // Prevent double-advance when auto-advancing from category selection
+    if (justAutoAdvanced) {
+      console.log('[APJ] Skipping nextStep - just auto-advanced');
+      return;
+    }
+
     if (!validateCurrentStep()) return;
 
     currentStep++;
