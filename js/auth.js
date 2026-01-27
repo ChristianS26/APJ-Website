@@ -3,6 +3,15 @@
 const APJAuth = (function() {
   let loginModal = null;
   let registerModal = null;
+  let forgotPasswordModal = null;
+  let logoutModal = null;
+
+  // Rate limiting state for forgot password
+  const FORGOT_PASSWORD_MAX_ATTEMPTS = 3;
+  const FORGOT_PASSWORD_BLOCK_SECONDS = 300; // 5 minutes
+  let forgotPasswordAttempts = 0;
+  let forgotPasswordBlockedUntil = null;
+  let forgotPasswordCountdownInterval = null;
 
   /**
    * Initialize auth module
@@ -48,6 +57,9 @@ const APJAuth = (function() {
               <button type="submit" class="btn btn-primary btn-block" id="login-submit">
                 Iniciar Sesion
               </button>
+              <div class="forgot-password-link">
+                <a href="#" data-show-forgot-password>Olvidaste tu contrasena?</a>
+              </div>
             </form>
             <div class="auth-switch">
               No tienes cuenta? <a href="#" data-show-register>Registrate</a>
@@ -176,12 +188,83 @@ const APJAuth = (function() {
       </div>
     `;
 
+    // Forgot Password Modal
+    const forgotPasswordModalHtml = `
+      <div id="forgot-password-modal" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 class="modal-title">Restablecer contrasena</h3>
+            <button type="button" class="modal-close" data-close-modal>
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="forgot-password-description">Ingresa tu correo electronico y te enviaremos instrucciones para restablecer tu contrasena.</p>
+            <div id="forgot-password-limit-warning" class="forgot-password-warning hidden">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <div>
+                <strong>Has alcanzado el limite de intentos</strong>
+                <p>Vuelve a intentarlo en <span id="forgot-password-countdown">00:00</span></p>
+              </div>
+            </div>
+            <form id="forgot-password-form">
+              <div class="form-group">
+                <label class="form-label" for="forgot-password-email">Correo electronico <span class="required">*</span></label>
+                <input type="email" id="forgot-password-email" class="form-input" placeholder="nombre@dominio.com" required>
+                <div class="form-error"></div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block" id="forgot-password-submit">
+                Restablecer contrasena
+              </button>
+            </form>
+            <div class="auth-switch">
+              <a href="#" data-show-login>Volver a iniciar sesion</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Logout Confirmation Modal
+    const logoutModalHtml = `
+      <div id="logout-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 380px;">
+          <div class="modal-header">
+            <h3 class="modal-title">Cerrar sesion</h3>
+            <button type="button" class="modal-close" data-close-modal>
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body" style="text-align: center;">
+            <svg width="48" height="48" fill="none" stroke="var(--accent)" viewBox="0 0 24 24" style="margin-bottom: 16px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">Estas seguro que deseas cerrar tu sesion?</p>
+            <div style="display: flex; gap: 12px;">
+              <button type="button" class="btn btn-outline" style="flex: 1;" data-close-modal>Cancelar</button>
+              <button type="button" class="btn btn-primary" style="flex: 1;" id="logout-confirm-btn">Si, salir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
     // Append modals to body
     document.body.insertAdjacentHTML('beforeend', loginModalHtml);
     document.body.insertAdjacentHTML('beforeend', registerModalHtml);
+    document.body.insertAdjacentHTML('beforeend', forgotPasswordModalHtml);
+    document.body.insertAdjacentHTML('beforeend', logoutModalHtml);
 
     loginModal = document.getElementById('login-modal');
     registerModal = document.getElementById('register-modal');
+    forgotPasswordModal = document.getElementById('forgot-password-modal');
+    logoutModal = document.getElementById('logout-modal');
   }
 
   /**
@@ -200,9 +283,20 @@ const APJAuth = (function() {
         showRegister();
       }
 
+      if (e.target.matches('[data-show-forgot-password]')) {
+        e.preventDefault();
+        showForgotPassword();
+      }
+
       if (e.target.matches('[data-logout]')) {
         e.preventDefault();
+        showLogoutConfirmation();
+      }
+
+      if (e.target.matches('#logout-confirm-btn')) {
+        e.preventDefault();
         APJApi.logout();
+        closeModals();
         // Use replace to prevent back button returning to authenticated pages
         window.location.replace('/');
       }
@@ -232,6 +326,9 @@ const APJAuth = (function() {
 
     // Register form submit
     document.getElementById('register-form')?.addEventListener('submit', handleRegister);
+
+    // Forgot password form submit
+    document.getElementById('forgot-password-form')?.addEventListener('submit', handleForgotPassword);
 
     // Gender change - validate form
     document.getElementById('register-gender')?.addEventListener('change', validateRegisterForm);
@@ -317,13 +414,144 @@ const APJAuth = (function() {
   }
 
   /**
+   * Show forgot password modal
+   */
+  function showForgotPassword() {
+    closeModals();
+    forgotPasswordModal?.classList.add('active');
+    document.getElementById('forgot-password-email')?.focus();
+    updateForgotPasswordUI();
+  }
+
+  /**
+   * Show logout confirmation modal
+   */
+  function showLogoutConfirmation() {
+    closeModals();
+    logoutModal?.classList.add('active');
+  }
+
+  /**
+   * Update forgot password UI based on rate limiting state
+   */
+  function updateForgotPasswordUI() {
+    const warningEl = document.getElementById('forgot-password-limit-warning');
+    const submitBtn = document.getElementById('forgot-password-submit');
+    const emailInput = document.getElementById('forgot-password-email');
+
+    if (isRateLimited()) {
+      warningEl?.classList.remove('hidden');
+      submitBtn.disabled = true;
+      emailInput.disabled = true;
+      startCountdown();
+    } else {
+      warningEl?.classList.add('hidden');
+      submitBtn.disabled = false;
+      emailInput.disabled = false;
+      submitBtn.textContent = 'Restablecer contrasena';
+    }
+  }
+
+  /**
+   * Check if forgot password is rate limited
+   */
+  function isRateLimited() {
+    if (!forgotPasswordBlockedUntil) return false;
+    return Date.now() < forgotPasswordBlockedUntil;
+  }
+
+  /**
+   * Start countdown timer
+   */
+  function startCountdown() {
+    if (forgotPasswordCountdownInterval) {
+      clearInterval(forgotPasswordCountdownInterval);
+    }
+
+    const updateCountdown = () => {
+      const countdownEl = document.getElementById('forgot-password-countdown');
+      const submitBtn = document.getElementById('forgot-password-submit');
+
+      if (!forgotPasswordBlockedUntil || Date.now() >= forgotPasswordBlockedUntil) {
+        clearInterval(forgotPasswordCountdownInterval);
+        forgotPasswordCountdownInterval = null;
+        forgotPasswordBlockedUntil = null;
+        forgotPasswordAttempts = 0;
+        updateForgotPasswordUI();
+        return;
+      }
+
+      const secondsLeft = Math.ceil((forgotPasswordBlockedUntil - Date.now()) / 1000);
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+      if (countdownEl) countdownEl.textContent = timeStr;
+      if (submitBtn) submitBtn.textContent = `Bloqueado ${timeStr}`;
+    };
+
+    updateCountdown();
+    forgotPasswordCountdownInterval = setInterval(updateCountdown, 1000);
+  }
+
+  /**
+   * Handle forgot password form submission
+   */
+  async function handleForgotPassword(e) {
+    e.preventDefault();
+
+    if (isRateLimited()) return;
+
+    const email = document.getElementById('forgot-password-email').value.trim();
+
+    // Validate email
+    APJValidation.clearFormErrors('forgot-password-form');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      APJValidation.showFieldError('forgot-password-email', 'Ingresa un correo valido (ej. nombre@dominio.com)');
+      return;
+    }
+
+    const submitBtn = document.getElementById('forgot-password-submit');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Enviando...';
+
+    try {
+      await APJApi.forgotPassword(email);
+      APJToast.success('Correo enviado', 'Revisa tu bandeja de entrada para restablecer tu contrasena');
+
+      // Increment attempts even on success
+      forgotPasswordAttempts++;
+      if (forgotPasswordAttempts >= FORGOT_PASSWORD_MAX_ATTEMPTS) {
+        forgotPasswordBlockedUntil = Date.now() + (FORGOT_PASSWORD_BLOCK_SECONDS * 1000);
+        updateForgotPasswordUI();
+      }
+    } catch (error) {
+      // Increment attempts on error
+      forgotPasswordAttempts++;
+      if (forgotPasswordAttempts >= FORGOT_PASSWORD_MAX_ATTEMPTS) {
+        forgotPasswordBlockedUntil = Date.now() + (FORGOT_PASSWORD_BLOCK_SECONDS * 1000);
+        updateForgotPasswordUI();
+      }
+      APJToast.error('Error', 'No se pudo enviar el correo. Intenta nuevamente mas tarde.');
+    } finally {
+      if (!isRateLimited()) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Restablecer contrasena';
+      }
+    }
+  }
+
+  /**
    * Close all modals
    */
   function closeModals() {
     loginModal?.classList.remove('active');
     registerModal?.classList.remove('active');
+    forgotPasswordModal?.classList.remove('active');
+    logoutModal?.classList.remove('active');
     APJValidation.clearFormErrors('login-form');
     APJValidation.clearFormErrors('register-form');
+    APJValidation.clearFormErrors('forgot-password-form');
   }
 
   /**
@@ -457,14 +685,22 @@ const APJAuth = (function() {
       const userData = APJApi.getUserData();
       const userName = userData ? `${userData.first_name || ''} ${userData.last_name || ''}`.trim() : 'Usuario';
       const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const photoUrl = userData?.photo_url;
+
+      // Avatar: show photo if available, otherwise show initials
+      const avatarContent = photoUrl
+        ? `<img src="${photoUrl}" alt="${userName}" class="user-avatar-img">`
+        : `<span class="user-avatar-initials">${initials}</span>`;
 
       authButtons.classList.add('hidden');
       userMenu.classList.remove('hidden');
       userMenu.innerHTML = `
-        <a href="/inscripcion/" class="btn btn-sm btn-primary header-register-btn">Inscribirse al Torneo</a>
+        <a href="/torneos/" class="btn btn-sm btn-primary header-register-btn">Ver Torneos</a>
         <div class="user-menu-row">
-          <div class="user-avatar">${initials}</div>
-          <span class="user-name">${userName}</span>
+          <a href="/perfil/" class="profile-btn" title="Mi Perfil">
+            <div class="user-avatar">${avatarContent}</div>
+            <span class="user-name">${userName}</span>
+          </a>
           <button class="btn btn-sm btn-outline" data-logout>Salir</button>
         </div>
       `;
@@ -491,6 +727,7 @@ const APJAuth = (function() {
     init,
     showLogin,
     showRegister,
+    showForgotPassword,
     closeModals,
     updateAuthUI,
     requireAuth

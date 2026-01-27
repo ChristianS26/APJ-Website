@@ -48,6 +48,29 @@ const APJApi = (function() {
   }
 
   /**
+   * Validate current token with the server
+   * Returns true if valid, false if invalid/expired
+   */
+  async function validateToken() {
+    const token = getAuthToken();
+    if (!token) return false;
+
+    try {
+      // Try to get profile - this validates the token
+      await request('/api/auth/me', { redirectOnUnauth: false });
+      return true;
+    } catch (error) {
+      if (error.status === 401) {
+        // Token is invalid - clear it
+        clearAuth();
+        return false;
+      }
+      // Network error or other issue - assume token might still be valid
+      return true;
+    }
+  }
+
+  /**
    * Make API request
    */
   async function request(endpoint, options = {}) {
@@ -159,6 +182,103 @@ const APJApi = (function() {
   }
 
   /**
+   * Forgot password - request password reset email
+   */
+  async function forgotPassword(email) {
+    return request('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      auth: false
+    });
+  }
+
+  /**
+   * Get current user profile
+   */
+  async function getProfile() {
+    const response = await request('/api/auth/me');
+    if (response.user) {
+      setUserData(response.user);
+    }
+    return response;
+  }
+
+  /**
+   * Update user profile
+   */
+  async function updateProfile(userData) {
+    const response = await request('/api/auth/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(userData)
+    });
+    if (response) {
+      setUserData(response);
+    }
+    return response;
+  }
+
+  /**
+   * Change password
+   */
+  async function changePassword(currentPassword, newPassword) {
+    return request('/api/auth/change-password', {
+      method: 'PATCH',
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+  }
+
+  /**
+   * Get Cloudinary upload signature
+   */
+  async function getUploadSignature(publicId, folder, overwrite = true) {
+    const formData = new URLSearchParams();
+    formData.append('public_id', publicId);
+    formData.append('folder', folder);
+    formData.append('overwrite', overwrite.toString());
+
+    return request('/api/cloudinary/sign-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
+    });
+  }
+
+  /**
+   * Upload image to Cloudinary
+   */
+  async function uploadToCloudinary(file, signatureData, publicId, folder) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('api_key', signatureData.apiKey);
+    formData.append('timestamp', signatureData.timestamp);
+    formData.append('signature', signatureData.signature);
+    formData.append('public_id', publicId);
+    formData.append('folder', folder);
+    formData.append('overwrite', 'true');
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`,
+      { method: 'POST', body: formData }
+    );
+
+    if (!response.ok) {
+      throw new ApiError('Error al subir imagen', response.status);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Update profile photo URL
+   */
+  async function updateProfilePhoto(photoUrl) {
+    return request('/api/auth/profile/photo', {
+      method: 'PATCH',
+      body: JSON.stringify({ photo_url: photoUrl })
+    });
+  }
+
+  /**
    * Search users (for partner search)
    */
   async function searchUsers(query) {
@@ -244,12 +364,20 @@ const APJApi = (function() {
     getUserData,
     setUserData,
     isAuthenticated,
+    validateToken,
 
     // API methods
     request,
     register,
     login,
     logout,
+    forgotPassword,
+    getProfile,
+    updateProfile,
+    changePassword,
+    getUploadSignature,
+    uploadToCloudinary,
+    updateProfilePhoto,
     searchUsers,
     getTournaments,
     getMyRegistrationsByTournament,

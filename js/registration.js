@@ -24,16 +24,33 @@ const APJRegistration = (function() {
 
     // Check auth
     if (!APJApi.isAuthenticated()) {
-      APJAuth.showLogin();
-      window.addEventListener('apj:auth:login', () => {
-        location.reload();
-      }, { once: true });
+      showLoginRequired();
+      return;
+    }
+
+    // Validate token is still valid (handles expired tokens, wrong environment, etc.)
+    const isValidToken = await APJApi.validateToken();
+    if (!isValidToken) {
+      showLoginRequired('Tu sesion ha expirado. Por favor inicia sesion nuevamente.');
       return;
     }
 
     bindEvents();
     await loadTournamentData();
     updateUI();
+  }
+
+  /**
+   * Show login required state
+   */
+  function showLoginRequired(message) {
+    if (message) {
+      APJToast.info('Sesion expirada', message);
+    }
+    APJAuth.showLogin();
+    window.addEventListener('apj:auth:login', () => {
+      location.reload();
+    }, { once: true });
   }
 
   /**
@@ -48,7 +65,25 @@ const APJRegistration = (function() {
 
     try {
       await APJTournaments.loadTournaments();
-      const tournament = APJTournaments.getActiveTournament();
+
+      // Check for tournament ID in URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      const tournamentId = urlParams.get('torneo');
+
+      let tournament;
+      if (tournamentId) {
+        // Get specific tournament by ID
+        tournament = APJTournaments.getTournamentById(tournamentId);
+
+        // Verify tournament exists and has registration open
+        if (tournament && !tournament.registration_open) {
+          showNoTournament('Las inscripciones para este torneo estan cerradas.');
+          return;
+        }
+      } else {
+        // Fallback: get any active tournament (for backward compatibility)
+        tournament = APJTournaments.getActiveTournament();
+      }
 
       if (!tournament) {
         showNoTournament();
@@ -83,16 +118,18 @@ const APJRegistration = (function() {
   /**
    * Show no tournament available message
    */
-  function showNoTournament() {
+  function showNoTournament(message) {
     const container = document.getElementById('registration-container');
     if (!container) return;
+
+    const defaultMessage = 'No hay torneos con inscripciones abiertas en este momento.';
 
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">📅</div>
         <h2>No hay torneos disponibles</h2>
-        <p>No hay torneos con inscripciones abiertas en este momento. Visita nuestra app para ver el calendario completo.</p>
-        <a href="/" class="btn btn-primary" style="margin-top: 20px;">Volver al inicio</a>
+        <p>${message || defaultMessage}</p>
+        <a href="/torneos/" class="btn btn-primary" style="margin-top: 20px;">Ver torneos</a>
       </div>
     `;
   }
@@ -396,10 +433,12 @@ const APJRegistration = (function() {
       partnerAlreadyPaid = false;
     }
 
-    // Update UI
-    document.querySelectorAll('.category-card').forEach(card => {
-      card.classList.toggle('selected', card.dataset.categoryId === categoryId.toString());
-    });
+    // Add click animation feedback
+    const clickedCard = document.querySelector(`.category-card[data-category-id="${categoryId}"]`);
+    if (clickedCard) {
+      clickedCard.classList.add('clicked');
+      setTimeout(() => clickedCard.classList.remove('clicked'), 200);
+    }
 
     // Clear discount when category changes
     removeDiscount();

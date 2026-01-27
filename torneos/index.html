@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torneos | APJ Padel</title>
+  <meta name="description" content="Descubre los torneos disponibles de la Asociacion de Padel Jalisco. Consulta fechas, ubicaciones e inscribete." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="tournaments-page">
+
+<header class="tournaments-header">
+  <div class="tournaments-header-inner">
+    <a href="/" class="tournaments-logo">
+      <div class="tournaments-logo-icon">APJ</div>
+      <span class="tournaments-logo-text">APJ Padel</span>
+    </a>
+    <div class="header-nav">
+      <div id="auth-buttons">
+        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
+        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
+      </div>
+      <div id="user-menu" class="user-menu hidden"></div>
+    </div>
+  </div>
+</header>
+
+<main class="tournaments-container">
+
+  <!-- Page Header -->
+  <div class="tournaments-page-header">
+    <h1>Torneos</h1>
+    <p>Descubre los torneos disponibles y registrate para competir</p>
+  </div>
+
+  <!-- Loading State -->
+  <div id="tournaments-loading" class="tournaments-loading">
+    <div class="spinner" style="width: 48px; height: 48px;"></div>
+    <p>Cargando torneos...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="tournaments-error" class="tournaments-empty hidden">
+    <svg width="64" height="64" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+    </svg>
+    <h3>No pudimos cargar los torneos</h3>
+    <p>Hubo un problema al cargar la lista de torneos. Intenta nuevamente.</p>
+    <button class="btn btn-primary" id="retry-load">Reintentar</button>
+  </div>
+
+  <!-- Empty State -->
+  <div id="tournaments-empty" class="tournaments-empty hidden">
+    <svg width="64" height="64" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    </svg>
+    <h3>Torneos en camino</h3>
+    <p>Aun no hay torneos disponibles. Vuelve pronto para ver los proximos eventos.</p>
+  </div>
+
+  <!-- Tournaments List -->
+  <div id="tournaments-list" class="tournaments-list hidden">
+    <!-- Tournament cards will be loaded dynamically -->
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Terminos y Condiciones</a>
+      <a href="/privacy">Aviso de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/tournaments.js"></script>
+<script src="/js/tournament-list.js"></script>
+<script src="/js/profile.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>

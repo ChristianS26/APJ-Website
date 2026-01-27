@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Política de Privacidad | APJ Padel</title>
-  <meta name="description" content="Política de privacidad de APJ Padel - Cómo recopilamos, usamos y protegemos su información personal." />
+  <title>Aviso de Privacidad | APJ Padel</title>
+  <meta name="description" content="Aviso de Privacidad Integral de la Asociación para la mejora del pádel en México (APJ)." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -141,33 +141,67 @@
     padding: 48px 24px 80px;
   }
 
-  .last-updated {
-    display: inline-block;
-    padding: 6px 12px;
+  .doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    font-size: 13px;
+  }
+
+  .meta-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
-    margin-bottom: 32px;
+    margin-bottom: 4px;
+  }
+
+  .meta-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .intro {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+
+  .intro p {
+    color: var(--text-secondary);
+    margin: 0;
   }
 
   section { margin-bottom: 40px; }
 
   h2 {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 700;
     margin-bottom: 16px;
     color: var(--text);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
   }
 
   h2::before {
     content: '';
+    flex-shrink: 0;
     width: 4px;
     height: 24px;
+    margin-top: 2px;
     background: var(--primary);
     border-radius: 2px;
   }
@@ -175,15 +209,12 @@
   p {
     color: var(--text-secondary);
     margin-bottom: 16px;
+    text-align: justify;
   }
 
-  ul {
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    padding-left: 24px;
+  p:last-child {
+    margin-bottom: 0;
   }
-
-  li { margin-bottom: 8px; }
 
   a {
     color: var(--primary-light);
@@ -196,12 +227,34 @@
     text-decoration: underline;
   }
 
-  .highlight-box {
-    background: var(--card);
-    border: 1px solid var(--border);
+  .contact-box {
+    background: linear-gradient(135deg, var(--primary-glow), transparent);
+    border: 1px solid var(--primary);
     border-radius: var(--radius-md);
-    padding: 20px;
-    margin: 20px 0;
+    padding: 24px;
+    margin-top: 40px;
+  }
+
+  .contact-box h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--primary-light);
+  }
+
+  .contact-box p {
+    margin-bottom: 12px;
+  }
+
+  .contact-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
   }
 
   footer {
@@ -235,94 +288,96 @@
 
 <header class="hero">
   <div class="hero-inner">
-    <div class="hero-logo">
+    <a href="/" class="hero-logo">
       <span class="hero-logo-text">APJ</span>
-    </div>
+    </a>
     <div class="hero-content">
-      <h1>Política de Privacidad</h1>
-      <div class="hero-subtitle">Asociación de Pádel Jalisco</div>
+      <h1>Aviso de Privacidad Integral</h1>
+      <div class="hero-subtitle">Asociacion para la mejora del padel en Mexico</div>
     </div>
   </div>
 </header>
 
 <main>
-  <div class="last-updated">Última actualización: Enero 2026</div>
+  <div class="doc-meta">
+    <div class="meta-item">
+      <span class="meta-label">Version</span>
+      <span class="meta-value">2025</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Fecha de publicacion</span>
+      <span class="meta-value">23 de abril de 2025</span>
+    </div>
+  </div>
+
+  <div class="intro">
+    <p>En cumplimiento a lo dispuesto en los articulos 15, 16, 17, 22, 26, 36 y demas relativos a la Ley Federal de Proteccion de Datos Personales en Posesion de los Particulares (en adelante la ley), asi como lo establecido en su reglamento (en adelante el reglamento), extiende el presente Aviso de Privacidad Integral, con el objeto de respetar los derechos e intereses de sus Asociados, miembros, proveedores o terceros que compartan su informacion, que compartan con Asociacion para la mejora del padel en Mexico" en adelante APJ, en relacion con su intimidad y sus datos personales, asi como en cumplimiento a lo establecido por la Ley y su reglamento.</p>
+  </div>
 
   <section>
-    <h2>1. Información que Recopilamos</h2>
-    <p>APJ Padel recopila la siguiente información:</p>
-    <ul>
-      <li><strong>Información de cuenta:</strong> Nombre, correo electrónico, número de teléfono</li>
-      <li><strong>Fotos de perfil:</strong> Imágenes que usted sube voluntariamente</li>
-      <li><strong>Datos deportivos:</strong> Resultados de partidos, rankings, estadísticas de juego</li>
-      <li><strong>Información de pago:</strong> Procesada de forma segura por Stripe (no almacenamos datos de tarjetas)</li>
-      <li><strong>Datos de uso:</strong> Interacciones con la aplicación para mejorar el servicio</li>
-    </ul>
+    <h2>I. Responsable de la proteccion de sus datos personales</h2>
+    <p>De conformidad con el articulo 16 de la ley, Asociacion para la mejora del padel en Mexico" en adelante APJ., con domicilio en Zona Metropolitana de Guadalajara, Jalisco, a traves del area de proteccion de datos personales de la asociacion quien sera el responsable de dar el tratamiento adecuado a sus datos personales.</p>
   </section>
 
   <section>
-    <h2>2. Cómo Usamos su Información</h2>
-    <ul>
-      <li>Proporcionar y mantener el servicio del Circuito APJ</li>
-      <li>Procesar inscripciones y pagos de torneos</li>
-      <li>Enviar notificaciones sobre partidos y actualizaciones del circuito</li>
-      <li>Mostrar rankings y resultados públicamente dentro del circuito</li>
-      <li>Mejorar y personalizar la experiencia del usuario</li>
-      <li>Comunicarnos con usted sobre su cuenta y eventos</li>
-    </ul>
+    <h2>II. Finalidades del tratamiento de sus datos personales</h2>
+    <p>Conforme a lo dispuesto por los articulos 15, 16 y 17 de la ley y los articulos 12, 13 y 14 del reglamento de la presente ley, los datos personales que sean recabados, utilizados, almacenados y, en su caso, transferidos por la Asociacion para la Mejora del Padel en Mexico (APJ), seran tratados unicamente en la medida en que la normatividad aplicable lo permita, y para el cumplimiento de las siguientes:</p>
+    <p><strong>Finalidades principales:</strong> (i) dar cumplimiento a obligaciones contraidas con nuestros miembros activos, deportistas vinculados y patrocinadores y/o aliados; (ii) para integrar su expediente como asociado, miembro y/o patrocinador o aliado; (iii) proveer los servicios y productos requeridos por usted; (iv) darle a conocer informacion de torneos, actividades o noticias relacionadas con el Padel.</p>
+    <p>Cabe senalar que el tratamiento de datos personales por parte de APJ, se limitara al cumplimiento de las finalidades aqui previstas y en caso que se pretenda tratar sus datos personales para un fin distinto a los establecidos en el presente Aviso de Privacidad, APJ., requerira su consentimiento para tal fin, de nueva cuenta.</p>
   </section>
 
   <section>
-    <h2>3. Compartición de Datos</h2>
-    <p>No vendemos su información personal. Compartimos datos únicamente con:</p>
-    <ul>
-      <li><strong>Organizadores de torneos:</strong> Información necesaria para gestionar los eventos</li>
-      <li><strong>Otros jugadores:</strong> Nombre y resultados dentro del circuito (visibilidad pública en rankings)</li>
-      <li><strong>Proveedores de servicios:</strong> Stripe (pagos), servicios de almacenamiento de imágenes, servicios de autenticación</li>
-    </ul>
+    <h2>III. Datos personales</h2>
+    <p>Conforme a lo dispuesto en los articulos 3 fraccion V, 6, 8, 15 y 16 de la ley, asi como los articulos 9 y 11 del reglamento, a los Para las finalidades senaladas en el presente aviso de privacidad, podemos recabar sus datos personales de distintas formas; cuando nos los proporciona directamente, cuando visite nuestro sitio de internet o utiliza nuestros servicios en linea, y cuando obtengamos informacion a traves de otras fuentes que estan permitidas por la ley.</p>
+    <p><strong>Datos personales que recabamos de forma directa:</strong> Nombre (s) y apellidos y/o denominacion o razon social, domicilio, telefono fijo (de casa u oficina), telefono celular, registro federal de contribuyentes, correo electronico, datos constitutivos (en caso de ser persona juridica).</p>
+    <p><strong>Datos personales que recabamos por este medio pueden ser:</strong> Nombre (s) y apellidos, domicilio, telefono fijo (de casa u oficina), telefono celular, correo electronico.</p>
+    <p>Los datos personales seran recabados mediante el llenado de los formatos fisicos o remotos, y/o mediante la recopilacion de informacion o documentacion requerida por APJ, ya sea de manera personal o via electronica en cualquiera de las paginas de internet de su propiedad. APJ, no recaba ni trata datos personales sensibles de sus clientes.</p>
   </section>
 
   <section>
-    <h2>4. Sus Derechos</h2>
-    <p>Usted tiene derecho a:</p>
-    <ul>
-      <li>Acceder a sus datos personales</li>
-      <li>Corregir información inexacta</li>
-      <li>Solicitar la eliminación de su cuenta y datos</li>
-      <li>Exportar sus datos en formato legible</li>
-      <li>Retirar su consentimiento en cualquier momento</li>
-    </ul>
-    <p>Para ejercer estos derechos, contacte a <a href="mailto:apadeljalisco@gmail.com">apadeljalisco@gmail.com</a></p>
+    <h2>IV. Seguridad de los datos Personales</h2>
+    <p>Tomando en cuenta los articulos 19 y 20 de la ley, asi como los articulos 43, 52, 53 y 60 APJ implementa medidas de seguridad, tecnicas, administrativas y fisicas, necesarias para proteger sus datos personales y evitar su dano, perdida, alteracion, destruccion o el uso, acceso o tratamiento no autorizado, por lo que realizara las siguientes acciones:</p>
+    <p><strong>(a) Confidencialidad de la informacion.</strong> APJ., guardara confidencialidad respecto de sus datos personales recabados, mismas que subsistira aun despues de finalizar las relaciones comerciales o de otra naturaleza.</p>
+    <p><strong>(b) Notificacion de confidencialidad.</strong> En caso que, por algun motivo APJ., se vea en la necesidad de proporcionar sus datos personales a terceros (en los terminos previstos en la Ley o en el presente Aviso de Privacidad), notificara a dichos terceros la obligacion de cumplir con las disposiciones de la Ley y la confidencialidad de sus datos personales.</p>
+    <p><strong>(c) Administracion de bases de datos.</strong> Los datos personales son administrados y resguardados mediante el uso de bases de datos, por las personas designadas para tal efecto, sin que se permita su uso, consulta, manejo o acceso a personas no autorizadas.</p>
+    <p><strong>(d) Aviso sobre cookies y web beacons.</strong> APJ., utiliza varias tecnologias para mejorar la eficiencia de sus sitios web, incluyendo su experiencia cuando navega por dichos sitios. Entre estas tecnologias se incluye el uso de cookies. Las cookies son pequenas cantidades de informacion que se almacenan en el navegador utilizado por cada usuario para que el servidor recuerde cierta informacion que posteriormente pueda utilizar. Esta informacion permite identificarle y guardar sus preferencias personales para brindarle una mejor experiencia de navegacion. Por su parte, la web beacons son imagenes insertadas en una pagina de Internet o correo electronico, que puede ser utilizado para monitorear el comportamiento de un visitante, como almacenar informacion sobre la direccion IP del usuario, duracion del tiempo de interaccion en dicha pagina y el tipo de navegador utilizado, entre otros.</p>
   </section>
 
   <section>
-    <h2>5. Retención de Datos</h2>
-    <p>Conservamos sus datos mientras su cuenta esté activa. Al eliminar su cuenta, sus datos personales serán eliminados en un plazo de 30 días, excepto cuando la ley requiera su conservación o sean necesarios para mantener el historial del circuito.</p>
+    <h2>V. Consentimiento</h2>
+    <p>Con base en lo establecido en los articulos 10, 16 y 17 de la presente ley, asi como los articulos 19 y 29 de su reglamento, en caso que usted no manifieste oposicion mediante solicitud por escrito al contenido y alcances del presente Aviso de Privacidad, dentro de un periodo de dos meses, contados a partir de la fecha en la que APJ., le informe sobre este o sobre sus modificaciones, se entendera que usted otorga su consentimiento tacito para que APJ, efectue el tratamiento de sus datos personales con base en las finalidades del tratamiento.</p>
+    <p>Independientemente de lo anterior en caso que desee revocar dicho consentimiento o limitar el uso o divulgacion de sus datos personales, en relacion con una o varias de las finalidades de su tratamiento en cualquier momento, podra manifestarlo mediante solicitud por escrito, enviada al correo electronico o direccion de APJ.</p>
   </section>
 
   <section>
-    <h2>6. Seguridad</h2>
-    <p>Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos, incluyendo encriptación en tránsito y almacenamiento seguro. Sin embargo, ningún método de transmisión por Internet es 100% seguro.</p>
+    <h2>VI. Cambios al Aviso de Privacidad</h2>
+    <p>APJ, se reserva el derecho de efectuar, en cualquier momento, modificaciones o actualizaciones al presente Aviso de Privacidad, para la atencion de novedades legislativas o jurisprudenciales, politicas internas, nuevos requerimientos para la prestacion u ofrecimiento de sus productos y servicios, o por practicas comerciales. Por lo anterior, en caso que APJ, llegare a modificar el contenido del presente Aviso de Privacidad, lo hara de su conocimiento, a traves de correo electronico.</p>
   </section>
 
   <section>
-    <h2>7. Menores de Edad</h2>
-    <p>El servicio no está dirigido a menores de 13 años. Los menores de 18 años deben contar con autorización de un tutor legal para participar. No recopilamos intencionalmente información de niños menores de 13 años.</p>
+    <h2>VII. Transferencia de datos personales</h2>
+    <p>En apego a lo establecido en los articulos 36 y 37 de la ley y el articulo 68 al 73 de su reglamento, sus datos personales podrian ser transferidos a sociedades subsidiarias, filiales, afiliadas y controladoras de APJ, e incluso a terceras personas, nacionales o extranjeras, salvo que usted (titular) manifieste expresamente su oposicion, en terminos de lo establecido por la Ley y su Reglamento.</p>
+    <p>En estos casos, APJ, llevara la transferencia de los datos personales previa celebracion de convenios de confidencialidad siempre y cuando (i) el proveedor o persona a quien se le transmitan acepte someter el tratamiento de los datos personales al presente Aviso de Privacidad, de igual manera, el tercero receptor, asumira las mismas obligaciones que correspondan al responsable que transfirio los datos. siempre en apego a lo establecido por el marco legal vigente, asi como la Ley Federal de Proteccion de Datos Personales en Posesion de Sujetos Obligados.</p>
   </section>
 
   <section>
-    <h2>8. Cambios a esta Política</h2>
-    <p>Podemos actualizar esta política ocasionalmente. Le notificaremos de cambios significativos a través de la aplicación o por correo electrónico.</p>
+    <h2>VIII. Revocacion de consentimiento y Derechos ARCO</h2>
+    <p>En su caracter de titular de datos personales, puede presentar o enviar al area de datos personales de APJ, una solicitud para la revocacion de su consentimiento, el acceso, rectificacion, limitacion, cancelacion u oposicion, respecto de los mismos. a fin de que los mismos ya no esten en posesion del responsable. Esto anterior en lo establecido en los articulos 22 al 27 de la ley y los articulos 94 al 111 de su reglamento.</p>
+    <p>El departamento de datos personales dara tramite a sus solicitudes y fomentara la proteccion de los datos personales al interior de APJ.</p>
+    <p>APJ, comunicara al titular de los datos personales la determinacion adoptada, en un plazo no mayor a 20 dias habiles contados desde la fecha en que se recibio la solicitud.</p>
   </section>
 
-  <section>
-    <h2>9. Contacto</h2>
-    <p>Si tiene preguntas sobre esta política de privacidad, contáctenos:</p>
-    <ul>
-      <li>Email: <a href="mailto:apadeljalisco@gmail.com">apadeljalisco@gmail.com</a></li>
-      <li>Instagram: <a href="https://instagram.com/apadeljalisco" target="_blank" rel="noopener">@apadeljalisco</a></li>
-    </ul>
-  </section>
+  <div class="contact-box">
+    <h3>Area de Datos Personales de APJ</h3>
+    <p>El Area le proporcionara la atencion necesaria para el ejercicio de sus derechos ARCO y/o revocacion del consentimiento y/o limitacion-divulgacion de sus datos personales. Ademas, velara por la proteccion de sus datos personales.</p>
+    <p>Para cualquier solicitud, por favor envie un correo electronico a:</p>
+    <a href="mailto:contactoapjmx@gmail.com" class="contact-email">
+      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      contactoapjmx@gmail.com
+    </a>
+  </div>
 
 </main>
 
@@ -330,10 +385,10 @@
   <div class="footer-inner">
     <div class="footer-links">
       <a href="/">APJ Padel</a>
-      <a href="/terms">Términos y Condiciones</a>
-      <a href="/privacy">Política de Privacidad</a>
+      <a href="/terms">Terminos y Condiciones</a>
+      <a href="/privacy">Aviso de Privacidad</a>
     </div>
-    <p class="copyright">&copy; 2026 Asociación de Pádel Jalisco. Todos los derechos reservados.</p>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
   </div>
 </footer>
 

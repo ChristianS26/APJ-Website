@@ -12,6 +12,11 @@ const APJApp = (function() {
     // Initialize auth
     APJAuth.init();
 
+    // Initialize profile (if available)
+    if (typeof APJProfile !== 'undefined') {
+      APJProfile.init();
+    }
+
     // Check if on registration page
     if (window.location.pathname.includes('/inscripcion')) {
       // Check for payment success redirect first
@@ -20,6 +25,25 @@ const APJApp = (function() {
       }
     }
 
+    // Check for login redirect parameter
+    checkLoginRedirect();
+  }
+
+  /**
+   * Check if we need to show login modal (redirected from protected page)
+   */
+  function checkLoginRedirect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === '1') {
+      // Clean URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+
+      // Show login if not authenticated
+      if (!APJApi.isAuthenticated()) {
+        APJAuth.showLogin();
+      }
+    }
   }
 
   // Initialize on DOM ready

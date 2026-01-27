@@ -197,9 +197,28 @@ h1 {
   letter-spacing: 0.05em;
 }
 
+.hero-cta {
+  margin-top: 24px;
+}
+
+.hero-cta .btn {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.hero-cta .btn:hover {
+  animation: none;
+}
+
+/* Hide hero CTA on desktop (it's in the header) */
+@media (min-width: 601px) {
+  .hero-cta {
+    display: none;
+  }
+}
+
 @media (max-width: 600px) {
   .hero {
-    padding: 120px 16px 40px;
+    padding: 80px 16px 40px;
   }
 
   .header-nav {
@@ -207,17 +226,20 @@ h1 {
     top: 0;
     left: 0;
     right: 0;
-    height: 100px;
-    padding: 12px 16px;
-    background: var(--bg);
-    flex-direction: column;
-    justify-content: center;
+    height: 56px;
+    padding: 0 16px;
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    justify-content: flex-end;
     align-items: center;
     gap: 8px;
   }
 
   .header-nav .btn {
-    padding: 8px 16px;
+    padding: 8px 14px;
     font-size: 13px;
   }
 
@@ -228,24 +250,20 @@ h1 {
 
   .user-menu {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     gap: 8px;
-    width: 100%;
   }
 
+  /* Hide the big register button on mobile header */
   .user-menu .header-register-btn {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-    padding: 10px 20px !important;
+    display: none;
   }
 
   .user-menu-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
+    gap: 8px;
   }
 
   .user-menu-row .user-name {
@@ -263,8 +281,19 @@ h1 {
     font-size: 12px !important;
   }
 
+  /* Profile button adjustments for mobile */
+  .profile-btn {
+    padding: 4px;
+    border: none;
+    background: transparent;
+  }
+
+  .profile-btn .user-name {
+    display: none;
+  }
+
   .hero-inner {
-    margin-top: 20px;
+    margin-top: 0;
   }
 
   .hero-logo {
@@ -282,6 +311,14 @@ h1 {
 
   .hero-stat-number {
     font-size: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
   }
 }
 
@@ -705,6 +742,17 @@ footer {
   color: white;
   font-weight: 600;
   font-size: 14px;
+  overflow: hidden;
+}
+
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-initials {
+  line-height: 1;
 }
 
 .user-menu-row {
@@ -1164,8 +1212,43 @@ footer {
 }
 
 .registration-header {
-  padding: 24px;
+  padding: 16px 24px;
   border-bottom: 1px solid var(--border);
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+@media (max-width: 600px) {
+  .registration-header {
+    padding: 12px 16px;
+  }
+
+  .registration-header .header-nav {
+    position: static;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+  }
+
+  .registration-header .user-menu .header-register-btn {
+    display: none;
+  }
+
+  .registration-logo-text {
+    display: none;
+  }
+
+  .registration-logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+  }
 }
 
 .registration-header-inner {
@@ -1369,10 +1452,10 @@ footer {
   cursor: default;
 }
 
-.category-card.selected {
+.category-card.clicked {
+  transform: scale(0.98);
   border-color: var(--primary);
   background: var(--primary-glow);
-  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
 }
 
 .category-card.disabled {
@@ -1854,4 +1937,827 @@ footer {
 
 .auth-switch a {
   font-weight: 500;
+}
+
+/* Forgot password link */
+.forgot-password-link {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.forgot-password-link a {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Forgot password modal */
+.forgot-password-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.forgot-password-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.forgot-password-warning svg {
+  flex-shrink: 0;
+  color: #ef4444;
+}
+
+.forgot-password-warning strong {
+  display: block;
+  color: #ef4444;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.forgot-password-warning p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.forgot-password-warning #forgot-password-countdown {
+  font-family: monospace;
+  font-weight: 600;
+}
+
+/* ==========================================
+   PROFILE MODAL STYLES
+   ========================================== */
+
+.profile-modal {
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.profile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.profile-loading p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Profile completeness indicator */
+.profile-completeness {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.profile-completeness-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.profile-completeness-header span:last-child {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.profile-completeness-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.profile-completeness-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Profile sections */
+.profile-section {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.profile-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 20px 0;
+}
+
+/* Form hint */
+.form-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Profile button in header */
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary);
+}
+
+.profile-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================
+   PROFILE PAGE STYLES
+   ========================================== */
+
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-header {
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+@media (max-width: 600px) {
+  .profile-header {
+    padding: 12px 16px;
+  }
+
+  .profile-header .header-nav {
+    position: static;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+  }
+
+  .profile-header .user-menu .header-register-btn {
+    display: none;
+  }
+
+  .profile-logo-text {
+    display: none;
+  }
+
+  .profile-logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+  }
+}
+
+.profile-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.profile-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.profile-logo-text {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.profile-container {
+  flex: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  width: 100%;
+}
+
+.profile-loading-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.profile-loading-page p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.profile-page-header {
+  margin-bottom: 32px;
+}
+
+.profile-page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.profile-page-header p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.profile-grid {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.profile-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.profile-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-card-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.profile-card-body {
+  padding: 24px;
+}
+
+/* Profile Photo Section */
+.profile-photo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.profile-photo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-photo-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border);
+  background: var(--surface);
+}
+
+.profile-photo.hidden {
+  display: none;
+}
+
+.profile-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.profile-photo-placeholder.hidden {
+  display: none;
+}
+
+.profile-photo-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-photo-loading.hidden {
+  display: none;
+}
+
+.profile-photo-loading .spinner {
+  width: 32px;
+  height: 32px;
+}
+
+.profile-photo-edit-btn {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.profile-photo-edit-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.profile-photo-status {
+  font-size: 13px;
+  color: var(--text-muted);
+  min-height: 20px;
+}
+
+/* Profile completeness on page */
+.profile-content .profile-completeness {
+  max-width: 400px;
+  margin-bottom: 32px;
+}
+
+/* Adjust profile button link style */
+a.profile-btn {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==========================================
+   TOURNAMENTS PAGE
+   ========================================== */
+
+.tournaments-page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.tournaments-header {
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tournaments-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tournaments-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.tournaments-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.tournaments-logo-text {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.tournaments-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.tournaments-page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.tournaments-page-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.tournaments-page-header p {
+  color: var(--text-secondary);
+}
+
+/* Loading State */
+.tournaments-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.tournaments-loading p {
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+
+/* Empty/Error States */
+.tournaments-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.tournaments-empty svg {
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+.tournaments-empty h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.tournaments-empty p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+/* Tournaments List - Grid on desktop, list on mobile */
+.tournaments-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Tournament Card - Vertical layout for grid */
+.tournament-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tournament-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.tournament-card.clicked {
+  transform: scale(0.97);
+}
+
+/* Tournament Card Image */
+.tournament-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tournament-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tournament-card-image img[src*="apj_logo"] {
+  object-fit: contain;
+  padding: 20px;
+  background: white;
+}
+
+.tournament-card:hover .tournament-card-image img {
+  transform: scale(1.05);
+}
+
+/* Badges positioned on image */
+.tournament-card-image .tournament-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+.tournament-badge.lightning {
+  background: var(--accent);
+  color: #000;
+}
+
+.tournament-card-image .tournament-status {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+/* Tournament Status Badges */
+.tournament-status.registration-open {
+  background: rgba(16, 185, 129, 0.9);
+  color: white;
+}
+
+.tournament-status.registration-closed {
+  background: rgba(59, 130, 246, 0.85);
+  color: white;
+}
+
+.tournament-status.finalized {
+  background: rgba(239, 68, 68, 0.85);
+  color: white;
+}
+
+/* Tournament Card Content */
+.tournament-card-content {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tournament-card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tournament-card-points {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.tournament-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.tournament-card-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.tournament-card-row svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+/* CTA Button */
+.tournament-card-btn {
+  margin-top: auto;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tournament-card-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.tournament-card:hover .tournament-card-btn {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+}
+
+/* Tablet - 2 columns */
+@media (max-width: 900px) {
+  .tournaments-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+/* Mobile - Single column list */
+@media (max-width: 600px) {
+  .tournaments-header {
+    padding: 12px 16px;
+  }
+
+  .tournaments-header .header-nav {
+    position: static;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+  }
+
+  .tournaments-header .user-menu .header-register-btn {
+    display: none;
+  }
+
+  .tournaments-logo-text {
+    display: none;
+  }
+
+  .tournaments-logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+  }
+
+  .tournaments-container {
+    padding: 24px 16px 60px;
+  }
+
+  .tournaments-page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .tournaments-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .tournament-card {
+    flex-direction: row;
+    height: auto;
+  }
+
+  .tournament-card-image {
+    width: 120px;
+    min-width: 120px;
+    aspect-ratio: auto;
+    height: 160px;
+  }
+
+  .tournament-card-image .tournament-status {
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .tournament-card-image .tournament-badge {
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    font-size: 9px;
+  }
+
+  .tournament-card-content {
+    padding: 12px;
+  }
+
+  .tournament-card-name {
+    font-size: 0.95rem;
+  }
+
+  .tournament-card-row {
+    font-size: 11px;
+  }
+
+  .tournament-card-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
 }
