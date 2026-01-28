@@ -939,7 +939,7 @@ const APJRegistration = (function() {
         categoryId: selectedCategory.category_id, // Integer category ID
         tournamentId: String(tournament.id || tournament.tournament_id),
         playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
-        restriction: '' // Required field
+        restriction: document.getElementById('player-restriction')?.value?.trim() || ''
       };
 
       console.log('[APJ] Redeem code request:', JSON.stringify(redeemRequest, null, 2));
@@ -1001,7 +1001,7 @@ const APJRegistration = (function() {
     const paymentData = {
       amount: amount,                                    // Full value, not cents
       currency: 'mxn',
-      restriction: '',                                   // Required by backend
+      restriction: document.getElementById('player-restriction')?.value?.trim() || '',
       playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
       playerUid: String(userData.uid || userData.id),
       partnerUid: String(selectedPartner.uid || selectedPartner.id),
