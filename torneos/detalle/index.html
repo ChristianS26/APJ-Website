@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detalle de Torneo | APJ Padel</title>
+  <meta name="description" content="Informacion del torneo, fechas, ubicacion y rol de juego." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="tournaments-page">
+
+<header class="tournaments-header">
+  <div class="tournaments-header-inner">
+    <a href="/torneos/" class="tournaments-logo">
+      <div class="tournaments-logo-icon">APJ</div>
+      <span class="tournaments-logo-text">APJ Padel</span>
+    </a>
+    <div class="header-nav">
+      <div id="auth-buttons">
+        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
+        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
+      </div>
+      <div id="user-menu" class="user-menu hidden"></div>
+    </div>
+  </div>
+</header>
+
+<main class="tournaments-container">
+
+  <!-- Loading State -->
+  <div id="detail-loading" class="tournaments-loading">
+    <div class="spinner" style="width: 48px; height: 48px;"></div>
+    <p>Cargando torneo...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="detail-error" class="tournaments-empty hidden">
+    <svg width="64" height="64" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+    </svg>
+    <h3>Torneo no encontrado</h3>
+    <p>No pudimos encontrar el torneo solicitado.</p>
+    <a href="/torneos/" class="btn btn-primary">Ver todos los torneos</a>
+  </div>
+
+  <!-- Tournament Detail Content -->
+  <div id="detail-content" class="hidden">
+
+    <!-- Back link -->
+    <a href="/torneos/" class="detail-back-link">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Volver a torneos
+    </a>
+
+    <!-- Tournament Header Card -->
+    <div class="profile-card detail-header-card">
+      <div class="detail-header-content">
+        <div class="detail-flyer">
+          <img id="tournament-flyer" src="/img/apj_logo.png" alt="Torneo">
+        </div>
+        <div class="detail-info">
+          <div class="detail-badges">
+            <span id="tournament-status" class="tournament-status"></span>
+            <span id="tournament-type-badge" class="tournament-badge lightning hidden">Relampago</span>
+          </div>
+          <h1 id="tournament-name" class="detail-title">Torneo APJ</h1>
+          <div class="detail-meta">
+            <div class="detail-meta-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span id="tournament-dates">-</span>
+            </div>
+            <div class="detail-meta-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span id="tournament-location">-</span>
+            </div>
+          </div>
+          <div id="tournament-register-btn" class="detail-cta hidden">
+            <a href="#" class="btn btn-primary">Inscribirme al Torneo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="detail-tabs">
+      <button class="detail-tab active" data-tab="info">Informacion</button>
+      <button class="detail-tab" data-tab="draws">Rol de Juego</button>
+    </div>
+
+    <!-- Tab Content: Info -->
+    <div id="tab-info" class="tab-content">
+      <div class="profile-card">
+        <div class="profile-card-header">
+          <h2>Acerca del torneo</h2>
+        </div>
+        <div class="profile-card-body">
+          <p id="tournament-description" class="detail-description">Torneo oficial del Circuito APJ.</p>
+        </div>
+      </div>
+
+      <div id="tournament-flyer-section" class="profile-card hidden" style="margin-top: 16px;">
+        <div class="profile-card-header">
+          <h2>Flyer del torneo</h2>
+        </div>
+        <div class="profile-card-body">
+          <img id="tournament-flyer-large" src="" alt="Flyer del torneo" class="detail-flyer-large">
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Draws -->
+    <div id="tab-draws" class="tab-content hidden">
+
+      <!-- Draws Loading -->
+      <div id="draws-loading" class="tournaments-loading">
+        <div class="spinner" style="width: 32px; height: 32px;"></div>
+        <p>Cargando rol de juego...</p>
+      </div>
+
+      <!-- Draws Empty -->
+      <div id="draws-empty" class="tournaments-empty hidden">
+        <svg width="48" height="48" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h3>Proximamente</h3>
+        <p>Aun no hay rol de juego disponible para este torneo.</p>
+      </div>
+
+      <!-- Draws Error -->
+      <div id="draws-error" class="tournaments-empty hidden">
+        <svg width="48" height="48" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <h3>Error al cargar</h3>
+        <p>No pudimos cargar el rol de juego.</p>
+        <button class="btn btn-outline" id="retry-draws">Reintentar</button>
+      </div>
+
+      <!-- Draws List -->
+      <div id="draws-list" class="hidden">
+        <!-- Draw cards will be inserted here -->
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Terminos y Condiciones</a>
+      <a href="/privacy">Aviso de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/tournaments.js"></script>
+<script src="/js/tournament-detail.js"></script>
+<script src="/js/profile.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>

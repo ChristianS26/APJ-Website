@@ -6,8 +6,9 @@ const APJTournamentList = (function() {
    * Initialize tournament list page
    */
   async function init() {
-    // Check if on tournaments page
-    if (!window.location.pathname.includes('/torneos')) return;
+    // Check if on tournaments list page (not detail page)
+    const listEl = document.getElementById('tournaments-list');
+    if (!listEl) return;
 
     // Bind retry button
     document.getElementById('retry-load')?.addEventListener('click', loadTournaments);
@@ -123,7 +124,7 @@ const APJTournamentList = (function() {
               <span>${location}</span>
             </div>
           </div>
-          ${status.showButton ? `<button class="tournament-card-btn">${status.cta}</button>` : ''}
+          <button class="tournament-card-btn">Ver detalles</button>
         </div>
       </div>
     `;
@@ -141,9 +142,7 @@ const APJTournamentList = (function() {
     if (endDate < today) {
       return {
         label: 'Finalizado',
-        class: 'finalized',
-        cta: 'Ver detalles',
-        showButton: false
+        class: 'finalized'
       };
     }
 
@@ -151,17 +150,13 @@ const APJTournamentList = (function() {
     if (tournament.registration_open) {
       return {
         label: 'Inscripciones abiertas',
-        class: 'registration-open',
-        cta: 'Inscribirme',
-        showButton: true
+        class: 'registration-open'
       };
     }
 
     return {
       label: 'Inscripciones cerradas',
-      class: 'registration-closed',
-      cta: 'Ver detalles',
-      showButton: false
+      class: 'registration-closed'
     };
   }
 
@@ -189,26 +184,10 @@ const APJTournamentList = (function() {
       setTimeout(() => card.classList.remove('clicked'), 200);
     }
 
-    // Check if registration is open
-    const endDate = new Date(tournament.end_date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const isFinalized = endDate < today;
-
-    if (tournament.registration_open && !isFinalized) {
-      // Navigate to registration with tournament ID
-      setTimeout(() => {
-        window.location.href = `/inscripcion/?torneo=${tournament.id}`;
-      }, 150);
-    } else {
-      // Show info toast
-      if (isFinalized) {
-        APJToast.info('Torneo finalizado', 'Este torneo ya ha concluido. Consulta los resultados en la app.');
-      } else {
-        APJToast.info('Inscripciones cerradas', 'Las inscripciones para este torneo estan cerradas.');
-      }
-    }
+    // Navigate to tournament detail page
+    setTimeout(() => {
+      window.location.href = `/torneos/detalle/?id=${tournament.id}`;
+    }, 150);
   }
 
   // Initialize when DOM is ready

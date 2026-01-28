@@ -95,16 +95,7 @@ const APJApi = (function() {
         headers
       });
 
-      // Handle 401 - clear auth and redirect if needed
-      if (response.status === 401) {
-        clearAuth();
-        if (options.redirectOnUnauth !== false) {
-          window.dispatchEvent(new CustomEvent('apj:auth:expired'));
-        }
-        throw new ApiError('Sesion expirada. Por favor inicia sesion nuevamente.', 401);
-      }
-
-      // Parse response
+      // Parse response first to get error messages
       const contentType = response.headers.get('content-type');
       let data;
 
@@ -114,8 +105,22 @@ const APJApi = (function() {
         data = await response.text();
       }
 
+      // Handle 401 - clear auth and redirect if needed
+      // Only clear auth if the request was authenticated (auth !== false)
+      if (response.status === 401) {
+        if (options.auth !== false) {
+          clearAuth();
+          if (options.redirectOnUnauth !== false) {
+            window.dispatchEvent(new CustomEvent('apj:auth:expired'));
+          }
+        }
+        // Use backend error message if available, otherwise generic message
+        const message = data?.error || data?.message || 'No autorizado';
+        throw new ApiError(message, 401, data);
+      }
+
       if (!response.ok) {
-        const message = data.message || data.error || 'Error en la solicitud';
+        const message = data?.message || data?.error || 'Error en la solicitud';
         throw new ApiError(message, response.status, data);
       }
 
@@ -355,6 +360,16 @@ const APJApi = (function() {
     });
   }
 
+  /**
+   * Get tournament draws (rol de juego)
+   * Note: Backend requires auth for this endpoint
+   */
+  async function getTournamentDraws(tournamentId) {
+    return request(`/api/tournament_details/draws?tournament_id=${encodeURIComponent(tournamentId)}`, {
+      redirectOnUnauth: false
+    });
+  }
+
   // Public API
   return {
     // Auth helpers
@@ -380,6 +395,7 @@ const APJApi = (function() {
     updateProfilePhoto,
     searchUsers,
     getTournaments,
+    getTournamentDraws,
     getMyRegistrationsByTournament,
     getCategoryPrices,
     validateDiscountCode,
