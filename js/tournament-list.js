@@ -91,13 +91,13 @@ const APJTournamentList = (function() {
     const maxPoints = tournament.max_points;
     const type = tournament.type || 'regular';
     const isLightning = type.toLowerCase() === 'relampago' || type.toLowerCase() === 'lightning';
-    const flyerUrl = tournament.flyer_url;
+    const clubLogoUrl = tournament.club_logo;
 
     // Determine status
     const status = getTournamentStatus(tournament);
 
-    // Use flyer as main image, fallback to APJ logo
-    const imageUrl = flyerUrl || '/img/apj_logo.png';
+    // Use club logo for card preview, fallback to APJ logo
+    const imageUrl = clubLogoUrl || '/img/apj_logo.png';
 
     return `
       <div class="tournament-card ${status.class}" data-tournament-id="${tournament.id}">
