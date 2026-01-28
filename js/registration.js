@@ -939,7 +939,7 @@ const APJRegistration = (function() {
         categoryId: selectedCategory.category_id, // Integer category ID
         tournamentId: String(tournament.id || tournament.tournament_id),
         playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
-        restriction: document.getElementById('player-restriction')?.value?.trim() || ''
+        restriction: document.getElementById('player-restriction-code')?.value?.trim() || ''
       };
 
       console.log('[APJ] Redeem code request:', JSON.stringify(redeemRequest, null, 2));

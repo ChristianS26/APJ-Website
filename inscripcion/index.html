@@ -119,12 +119,6 @@
         </div>
       </div>
 
-      <!-- Restriction Field (optional) -->
-      <div class="form-group" style="margin-top: 24px;">
-        <label class="form-label">Restriccion de jugador (opcional)</label>
-        <input type="text" id="player-restriction" class="form-input" placeholder="Ej. No jugar el dia...">
-      </div>
-
       <!-- Card Payment Section -->
       <div id="card-payment-section">
         <!-- Paid For Selection -->
@@ -170,6 +164,12 @@
           </div>
         </div>
 
+        <!-- Restriction Field (optional) -->
+        <div class="form-group" style="margin-top: 24px;">
+          <label class="form-label">Restriccion de jugador (opcional)</label>
+          <input type="text" id="player-restriction" class="form-input" placeholder="Ej. No jugar el dia...">
+        </div>
+
         <!-- Stripe Payment Element -->
         <div id="stripe-payment-element"></div>
 
@@ -196,6 +196,13 @@
             Ingresa tu codigo de registro proporcionado por la organizacion.
           </p>
           <input type="text" id="registration-code" class="form-input" placeholder="XXXXXX">
+
+          <!-- Restriction Field (optional) -->
+          <div class="form-group" style="margin-top: 16px;">
+            <label class="form-label">Restriccion de jugador (opcional)</label>
+            <input type="text" id="player-restriction-code" class="form-input" placeholder="Ej. No jugar el dia...">
+          </div>
+
           <button type="button" id="submit-code" class="btn btn-primary btn-block btn-lg">
             Registrar con Codigo
           </button>
