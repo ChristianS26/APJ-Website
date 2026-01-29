@@ -121,6 +121,7 @@ const APJTournamentDetail = (function() {
     const endDate = formatDate(tournament.end_date);
     const location = tournament.location || 'Sin ubicacion';
     const flyerUrl = tournament.flyer_url;
+    const clubLogoUrl = tournament.club_logo_url;
     const type = tournament.type || 'regular';
     const isLightning = type.toLowerCase() === 'relampago' || type.toLowerCase() === 'lightning';
 
@@ -143,18 +144,20 @@ const APJTournamentDetail = (function() {
       typeBadge.classList.remove('hidden');
     }
 
-    // Flyer image
+    // Club logo (top image) and Flyer (expanded section)
     const flyerImg = document.getElementById('tournament-flyer');
     const flyerLarge = document.getElementById('tournament-flyer-large');
     const flyerSection = document.getElementById('tournament-flyer-section');
 
+    // Top image uses club logo
+    const topImageUrl = clubLogoUrl || '/img/apj_logo.png';
+    flyerImg.src = topImageUrl;
+    flyerImg.onerror = () => { flyerImg.src = '/img/apj_logo.png'; };
+
+    // Flyer section (expanded below)
     if (flyerUrl) {
-      flyerImg.src = flyerUrl;
-      flyerImg.onerror = () => { flyerImg.src = '/img/apj_logo.png'; };
       flyerLarge.src = flyerUrl;
       flyerSection.classList.remove('hidden');
-    } else {
-      flyerImg.src = '/img/apj_logo.png';
     }
 
     // Register button (only if registration is open)
