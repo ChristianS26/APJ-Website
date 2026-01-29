@@ -3026,3 +3026,233 @@ a.profile-btn {
     padding: 12px 16px;
   }
 }
+
+/* ========================================
+   Download Page Styles
+   ======================================== */
+
+.download-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.download-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.download-hero {
+  text-align: center;
+}
+
+.download-app-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  background: var(--bg-2);
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.download-app-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.download-hero h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.download-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.download-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.download-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.download-android-icon {
+  width: 48px;
+  height: 48px;
+  color: #3DDC84;
+}
+
+.download-card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.download-version {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1rem;
+  padding: 16px 24px;
+}
+
+.download-size {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 12px;
+}
+
+.download-instructions {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.download-instructions h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.download-instructions ol {
+  list-style: none;
+  counter-reset: steps;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.download-instructions li {
+  counter-increment: steps;
+  display: flex;
+  gap: 16px;
+}
+
+.download-instructions li::before {
+  content: counter(steps);
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.download-instructions li strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.download-instructions li p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.download-features {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.download-features h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-3);
+  border-radius: var(--radius-md);
+}
+
+.feature-item svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.feature-item span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.download-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--primary-glow);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+}
+
+.download-note svg {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.download-note p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .download-container {
+    padding: 24px 16px 60px;
+  }
+
+  .download-hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .download-instructions li {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .download-instructions li::before {
+    align-self: flex-start;
+  }
+}
