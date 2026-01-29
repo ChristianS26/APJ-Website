@@ -91,7 +91,7 @@ const APJTournamentList = (function() {
     const maxPoints = tournament.max_points;
     const type = tournament.type || 'regular';
     const isLightning = type.toLowerCase() === 'relampago' || type.toLowerCase() === 'lightning';
-    const clubLogoUrl = tournament.club_logo;
+    const clubLogoUrl = tournament.club_logo_url;
 
     // Determine status
     const status = getTournamentStatus(tournament);
