@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eliminar Cuenta | APJ Padel</title>
+  <meta name="description" content="Elimina tu cuenta de la Asociacion de Padel Jalisco." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .delete-container {
+      flex: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      width: 100%;
+    }
+
+    .delete-page-header {
+      margin-bottom: 32px;
+    }
+
+    .delete-page-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: var(--error);
+    }
+
+    .delete-page-header p {
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .delete-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .delete-card-body {
+      padding: 24px;
+    }
+
+    .delete-warning {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      background: var(--error-glow);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius-sm);
+      margin-bottom: 24px;
+    }
+
+    .delete-warning svg {
+      flex-shrink: 0;
+      color: var(--error);
+      margin-top: 2px;
+    }
+
+    .delete-warning-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .delete-warning-text strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .delete-warning-text ul {
+      margin: 8px 0 0 0;
+      padding-left: 18px;
+    }
+
+    .delete-warning-text ul li {
+      margin-bottom: 4px;
+    }
+
+    .delete-user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 24px;
+    }
+
+    .delete-user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .delete-user-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .delete-user-details {
+      min-width: 0;
+    }
+
+    .delete-user-name {
+      font-weight: 600;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .delete-user-email {
+      color: var(--text-secondary);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Step 1: Type ELIMINAR */
+    .delete-step {
+      margin-bottom: 24px;
+    }
+
+    .delete-step-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .delete-step-label code {
+      background: var(--error-glow);
+      color: var(--error);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    #delete-confirm-input {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    #delete-confirm-input.input-valid {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px var(--error-glow);
+    }
+
+    /* Step 2: Final confirmation */
+    .delete-final-step {
+      display: none;
+      animation: fadeSlideIn 0.3s ease;
+    }
+
+    .delete-final-step.visible {
+      display: block;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .delete-final-warning {
+      text-align: center;
+      padding: 16px;
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .delete-final-warning strong {
+      color: var(--error);
+    }
+
+    .delete-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .delete-actions .btn {
+      flex: 1;
+    }
+
+    .btn-danger {
+      background: var(--error);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      transition: background var(--transition);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-danger:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Not authenticated state */
+    .delete-auth-required {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .delete-auth-required svg {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .delete-auth-required h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    .delete-auth-required p {
+      color: var(--text-secondary);
+      margin: 0 0 24px 0;
+    }
+
+    .delete-separator {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body class="profile-page">
+
+<header class="profile-header">
+  <div class="profile-header-inner">
+    <a href="/" class="profile-logo">
+      <div class="profile-logo-icon">APJ</div>
+      <span class="profile-logo-text">APJ Padel</span>
+    </a>
+    <div class="header-nav">
+      <div id="auth-buttons">
+        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
+        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
+      </div>
+      <div id="user-menu" class="user-menu hidden"></div>
+    </div>
+  </div>
+</header>
+
+<main class="delete-container">
+
+  <!-- Loading State -->
+  <div id="delete-loading" class="profile-loading-page">
+    <div class="spinner" style="width: 48px; height: 48px;"></div>
+    <p>Verificando sesion...</p>
+  </div>
+
+  <!-- Not Authenticated -->
+  <div id="delete-auth-required" class="hidden">
+    <div class="delete-page-header">
+      <h1>Eliminar Cuenta</h1>
+    </div>
+    <div class="delete-card">
+      <div class="delete-card-body">
+        <div class="delete-auth-required">
+          <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          <h2>Inicia sesion para continuar</h2>
+          <p>Necesitas estar autenticado para eliminar tu cuenta.</p>
+          <button class="btn btn-primary" data-show-login>Iniciar Sesion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authenticated: Delete Flow -->
+  <div id="delete-content" class="hidden">
+
+    <div class="delete-page-header">
+      <h1>Eliminar Cuenta</h1>
+      <p>Esta accion es permanente y no se puede deshacer</p>
+    </div>
+
+    <div class="delete-card">
+      <div class="delete-card-body">
+
+        <!-- Warning -->
+        <div class="delete-warning">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+          <div class="delete-warning-text">
+            <strong>Atencion: Esta accion no se puede revertir</strong>
+            Al eliminar tu cuenta se borraran permanentemente:
+            <ul>
+              <li>Tu perfil y datos personales</li>
+              <li>Tu historial de inscripciones</li>
+              <li>Tu posicion en el ranking</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- User info -->
+        <div class="delete-user-info">
+          <div id="delete-avatar" class="delete-user-avatar"></div>
+          <div class="delete-user-details">
+            <div id="delete-user-name" class="delete-user-name"></div>
+            <div id="delete-user-email" class="delete-user-email"></div>
+          </div>
+        </div>
+
+        <hr class="delete-separator">
+
+        <!-- Step 1: Type ELIMINAR -->
+        <div class="delete-step">
+          <label class="delete-step-label" for="delete-confirm-input">
+            Para confirmar, escribe <code>ELIMINAR</code> en el campo de abajo:
+          </label>
+          <input
+            type="text"
+            id="delete-confirm-input"
+            class="form-input"
+            placeholder="Escribe ELIMINAR"
+            autocomplete="off"
+            spellcheck="false"
+          >
+        </div>
+
+        <!-- Step 2: Final confirmation (hidden until step 1 is complete) -->
+        <div id="delete-final-step" class="delete-final-step">
+          <div class="delete-final-warning">
+            Estas a punto de eliminar tu cuenta de forma <strong>permanente</strong>. Esta accion no se puede deshacer.
+          </div>
+          <div class="delete-actions">
+            <a href="/" class="btn btn-outline">Cancelar</a>
+            <button type="button" id="delete-account-btn" class="btn-danger">
+              Eliminar mi cuenta
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Terminos y Condiciones</a>
+      <a href="/privacy">Politica de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/app.js"></script>
+<script>
+(function() {
+  const loadingEl = document.getElementById('delete-loading');
+  const authRequiredEl = document.getElementById('delete-auth-required');
+  const contentEl = document.getElementById('delete-content');
+  const confirmInput = document.getElementById('delete-confirm-input');
+  const finalStep = document.getElementById('delete-final-step');
+  const deleteBtn = document.getElementById('delete-account-btn');
+
+  const CONFIRM_WORD = 'ELIMINAR';
+
+  /**
+   * Initialize delete account page
+   */
+  async function init() {
+    // Wait for auth to be ready
+    if (!APJApi.isAuthenticated()) {
+      showAuthRequired();
+      return;
+    }
+
+    // Validate token is still valid
+    const isValid = await APJApi.validateToken();
+    if (!isValid) {
+      showAuthRequired();
+      return;
+    }
+
+    showDeleteFlow();
+  }
+
+  /**
+   * Show auth required state
+   */
+  function showAuthRequired() {
+    loadingEl.classList.add('hidden');
+    authRequiredEl.classList.remove('hidden');
+    contentEl.classList.add('hidden');
+  }
+
+  /**
+   * Show delete flow for authenticated user
+   */
+  function showDeleteFlow() {
+    const userData = APJApi.getUserData();
+
+    // Populate user info
+    const name = userData ? `${userData.first_name || ''} ${userData.last_name || ''}`.trim() : 'Usuario';
+    const email = userData?.email || '';
+    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const photoUrl = userData?.photo_url;
+
+    const avatarEl = document.getElementById('delete-avatar');
+    if (photoUrl) {
+      avatarEl.innerHTML = `<img src="${photoUrl}" alt="${name}">`;
+    } else {
+      avatarEl.textContent = initials;
+    }
+
+    document.getElementById('delete-user-name').textContent = name;
+    document.getElementById('delete-user-email').textContent = email;
+
+    loadingEl.classList.add('hidden');
+    authRequiredEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+    // Bind events
+    confirmInput.addEventListener('input', onConfirmInput);
+    deleteBtn.addEventListener('click', onDeleteClick);
+  }
+
+  /**
+   * Handle confirm input changes
+   */
+  function onConfirmInput() {
+    const value = confirmInput.value.trim().toUpperCase();
+
+    if (value === CONFIRM_WORD) {
+      confirmInput.classList.add('input-valid');
+      finalStep.classList.add('visible');
+    } else {
+      confirmInput.classList.remove('input-valid');
+      finalStep.classList.remove('visible');
+    }
+  }
+
+  /**
+   * Handle final delete button click
+   */
+  async function onDeleteClick() {
+    // Double check the word is still correct
+    if (confirmInput.value.trim().toUpperCase() !== CONFIRM_WORD) {
+      finalStep.classList.remove('visible');
+      return;
+    }
+
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<span class="spinner"></span> Eliminando...';
+
+    try {
+      await APJApi.request('/api/auth/me', { method: 'DELETE' });
+
+      // Clear auth data
+      APJApi.clearAuth();
+
+      // Show success and redirect
+      APJToast.success('Cuenta eliminada', 'Tu cuenta ha sido eliminada exitosamente.');
+
+      setTimeout(function() {
+        window.location.replace('/');
+      }, 2000);
+    } catch (error) {
+      APJToast.error('Error', error.message || 'No se pudo eliminar la cuenta. Intenta nuevamente.');
+      deleteBtn.disabled = false;
+      deleteBtn.textContent = 'Eliminar mi cuenta';
+    }
+  }
+
+  // Listen for login events to refresh the page
+  window.addEventListener('apj:auth:login', function() {
+    loadingEl.classList.remove('hidden');
+    authRequiredEl.classList.add('hidden');
+    contentEl.classList.add('hidden');
+    init();
+  });
+
+  // Start
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Small delay to let APJApp.init() run first
+      setTimeout(init, 100);
+    });
+  } else {
+    setTimeout(init, 100);
+  }
+})();
+</script>
+
+</body>
+</html>
