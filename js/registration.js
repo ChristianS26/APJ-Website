@@ -3,6 +3,7 @@ console.log('[APJ] registration.js loaded');
 
 const APJRegistration = (function() {
   // State
+  let currentTournament = null; // The resolved tournament for this registration flow
   let currentStep = 1;
   let selectedCategory = null;
   let selectedPartner = null;
@@ -89,6 +90,9 @@ const APJRegistration = (function() {
         showNoTournament();
         return;
       }
+
+      // Store resolved tournament for use during payment/registration
+      currentTournament = tournament;
 
       // Update tournament info
       const tournamentNameEl = document.getElementById('tournament-name');
@@ -928,7 +932,7 @@ const APJRegistration = (function() {
     }
 
     try {
-      const tournament = APJTournaments.getActiveTournament();
+      const tournament = currentTournament;
       const userData = APJApi.getUserData();
 
       // Build request matching backend's RegisterWithCodeRequest structure
@@ -988,7 +992,7 @@ const APJRegistration = (function() {
       submitBtn.innerHTML = '<span class="spinner"></span> Procesando...';
     }
 
-    const tournament = APJTournaments.getActiveTournament();
+    const tournament = currentTournament;
     const userData = APJApi.getUserData();
     // Price is in full value (799 = 799 MXN), not cents
     const basePrice = selectedCategory.price || 999;
