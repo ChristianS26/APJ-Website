@@ -201,21 +201,18 @@ h1 {
 
 .hero-cta {
   margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.hero-cta .btn {
+.hero-cta .btn-primary {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-.hero-cta .btn:hover {
+.hero-cta .btn-primary:hover {
   animation: none;
-}
-
-/* Hide hero CTA on desktop (it's in the header) */
-@media (min-width: 601px) {
-  .hero-cta {
-    display: none;
-  }
 }
 
 @media (max-width: 600px) {

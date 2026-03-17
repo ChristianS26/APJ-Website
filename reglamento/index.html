@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reglamento Oficial | APJ Padel</title>
+  <meta name="description" content="Reglamento oficial de la Asociación de Pádel Jalisco (APJ). Consulta las reglas y normativas de nuestros torneos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .reglamento-header {
+      padding: 40px 24px 24px;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .reglamento-header-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .reglamento-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .reglamento-header-left a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color var(--transition);
+    }
+
+    .reglamento-header-left a:hover {
+      color: var(--primary);
+    }
+
+    .reglamento-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .reglamento-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .pdf-viewer {
+      width: 100%;
+      height: 85vh;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-2);
+    }
+
+    .pdf-viewer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .pdf-fallback {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-secondary);
+    }
+
+    .pdf-fallback svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      stroke: var(--text-muted);
+    }
+
+    .pdf-fallback p {
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .reglamento-header {
+        padding: 20px 16px 16px;
+      }
+
+      .reglamento-header h1 {
+        font-size: 1.2rem;
+      }
+
+      .reglamento-container {
+        padding: 16px;
+      }
+
+      .pdf-viewer {
+        height: 75vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="reglamento-header">
+  <div class="reglamento-header-inner">
+    <div class="reglamento-header-left">
+      <a href="/">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Inicio
+      </a>
+      <h1>Reglamento Oficial APJ</h1>
+    </div>
+    <a href="/reglamento/reglamento-apj.pdf" download class="btn btn-primary btn-sm download-btn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Descargar PDF
+    </a>
+  </div>
+</header>
+
+<main class="reglamento-container">
+  <div class="pdf-viewer" id="pdfViewer">
+    <iframe src="/reglamento/reglamento-apj.pdf" title="Reglamento Oficial APJ"></iframe>
+  </div>
+
+  <div class="pdf-fallback" id="pdfFallback">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    <p>Tu navegador no puede mostrar el PDF directamente. Descárgalo para consultarlo.</p>
+    <a href="/reglamento/reglamento-apj.pdf" download class="btn btn-primary">Descargar Reglamento</a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Términos y Condiciones</a>
+      <a href="/privacy">Política de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociación de Pádel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script>
+  // Fallback for browsers/devices that can't render PDF inline
+  const iframe = document.querySelector('#pdfViewer iframe');
+  iframe.addEventListener('error', function() {
+    document.getElementById('pdfViewer').style.display = 'none';
+    document.getElementById('pdfFallback').style.display = 'block';
+  });
+
+  // On mobile, some browsers can't embed PDFs — detect and show fallback
+  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    document.getElementById('pdfViewer').style.display = 'none';
+    document.getElementById('pdfFallback').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
