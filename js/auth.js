@@ -686,23 +686,17 @@ const APJAuth = (function() {
       const userName = userData ? `${userData.first_name || ''} ${userData.last_name || ''}`.trim() : 'Usuario';
       const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const photoUrl = userData?.photo_url;
-      const isAdmin = (userData?.role || '').toLowerCase() === 'admin';
 
       // Avatar: show photo if available, otherwise show initials
       const avatarContent = photoUrl
         ? `<img src="${photoUrl}" alt="${userName}" class="user-avatar-img">`
         : `<span class="user-avatar-initials">${initials}</span>`;
 
-      const adminLink = isAdmin
-        ? `<a href="/admin/" class="btn btn-sm btn-outline" title="Panel Admin">Admin</a>`
-        : '';
-
       authButtons.classList.add('hidden');
       userMenu.classList.remove('hidden');
       userMenu.innerHTML = `
         <a href="/torneos/" class="btn btn-sm btn-primary header-register-btn">Ver Torneos</a>
         <div class="user-menu-row">
-          ${adminLink}
           <a href="/perfil/" class="profile-btn" title="Mi Perfil">
             <div class="user-avatar">${avatarContent}</div>
             <span class="user-name">${userName}</span>

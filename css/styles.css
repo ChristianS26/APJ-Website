@@ -3258,15 +3258,18 @@ a.profile-btn {
    ADMIN SHELL (sidebar layout for /admin/*)
    ========================================== */
 
-.admin-page {
-  background: var(--bg);
+:root {
+  /* Updated at runtime by admin-shell.js after measuring the page header. */
+  --admin-header-h: 72px;
+  --admin-sidebar-w: 240px;
 }
+
+.admin-page { background: var(--bg); }
 
 .admin-shell {
   flex: 1;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: stretch;
   width: 100%;
 }
 
@@ -3274,21 +3277,25 @@ a.profile-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 60px 24px;
 }
 
+/* Sidebar */
 .admin-sidebar {
+  flex: 0 0 var(--admin-sidebar-w);
+  align-self: flex-start;
+  position: sticky;
+  top: var(--admin-header-h);
+  height: calc(100vh - var(--admin-header-h));
   background: var(--bg-2);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: calc(100vh - 64px);
   overflow-y: auto;
 }
 
 .admin-sidebar-header {
-  padding: 20px 16px;
+  padding: 18px 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -3299,23 +3306,32 @@ a.profile-btn {
 .admin-sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
+.admin-sidebar-brand .profile-logo-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
 .admin-sidebar-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   margin: 0;
+  line-height: 1.2;
 }
 
 .admin-sidebar-subtitle {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
+  max-width: 140px;
+  line-height: 1.3;
 }
 
 .admin-sidebar-close {
@@ -3334,7 +3350,7 @@ a.profile-btn {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 12px 8px;
+  padding: 10px 8px;
   flex: 1;
 }
 
@@ -3342,13 +3358,14 @@ a.profile-btn {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: 8px;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .admin-nav-item:hover {
@@ -3359,32 +3376,38 @@ a.profile-btn {
 .admin-nav-item.active {
   background: var(--primary-glow);
   color: var(--primary-light);
+  border-color: rgba(16,185,129,0.25);
 }
 
-.admin-nav-item svg { flex-shrink: 0; }
+.admin-nav-item svg { flex-shrink: 0; opacity: 0.85; }
+.admin-nav-item.active svg { opacity: 1; }
 
 .admin-sidebar-footer {
-  padding: 12px 8px;
+  padding: 10px 8px;
   border-top: 1px solid var(--border);
 }
 
+/* Main content area */
 .admin-main {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
 }
 
 .admin-content {
   padding: 32px;
-  max-width: 960px;
   width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
+/* Mobile menu toggle */
 .admin-mobile-toggle {
   display: none;
   align-items: center;
   gap: 8px;
-  margin: 16px 16px 0;
+  margin: 16px;
   padding: 8px 14px;
   background: var(--bg-2);
   border: 1px solid var(--border);
@@ -3393,6 +3416,7 @@ a.profile-btn {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  align-self: flex-start;
 }
 
 .admin-overlay {
@@ -3406,21 +3430,17 @@ a.profile-btn {
 .admin-overlay.active { display: block; }
 
 .admin-fallback {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 24px;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .admin-shell {
-    grid-template-columns: 1fr;
-  }
+.admin-fallback .profile-card { width: 100%; }
 
+@media (max-width: 768px) {
   .admin-sidebar {
     position: fixed;
     top: 0;
@@ -3436,8 +3456,7 @@ a.profile-btn {
   .admin-sidebar.open { transform: translateX(0); }
 
   .admin-sidebar-close { display: inline-flex; }
-
   .admin-mobile-toggle { display: inline-flex; }
 
-  .admin-content { padding: 16px; }
+  .admin-content { padding: 20px 16px; }
 }

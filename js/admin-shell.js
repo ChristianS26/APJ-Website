@@ -33,6 +33,11 @@ const APJAdminShell = (function () {
   async function mount(opts = {}) {
     const activeId = opts.active || '';
 
+    // Measure the page header height so the sidebar sticks below it cleanly,
+    // regardless of header padding / responsive variations.
+    syncHeaderHeight();
+    window.addEventListener('resize', syncHeaderHeight);
+
     // Auth gate first
     if (!APJApi.isAuthenticated()) {
       renderNeedLogin();
@@ -176,6 +181,12 @@ const APJAdminShell = (function () {
     return String(value).replace(/[<>&"']/g, c => ({
       '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
     }[c]));
+  }
+
+  function syncHeaderHeight() {
+    const header = document.querySelector('.profile-header');
+    const h = header?.offsetHeight || 72;
+    document.documentElement.style.setProperty('--admin-header-h', `${h}px`);
   }
 
   return { mount };
