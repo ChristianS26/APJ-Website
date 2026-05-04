@@ -376,7 +376,7 @@ const APJApi = (function() {
    * fully onboarded, or an Express Dashboard login link if it is.
    */
   async function getStripeConnectDashboardLink() {
-    return request('/api/payments/connect/dashboard-link', {
+    return request('/api/connect/dashboard-link', {
       redirectOnUnauth: false
     });
   }
@@ -387,7 +387,7 @@ const APJApi = (function() {
    * Returns { accountId, chargesEnabled, payoutsEnabled, onboardingComplete, requiresAction }.
    */
   async function getConnectAccountStatus() {
-    return request('/api/payments/connect/account-status', {
+    return request('/api/connect/account-status', {
       redirectOnUnauth: false
     });
   }
@@ -398,7 +398,7 @@ const APJApi = (function() {
    * Returns { accountId }.
    */
   async function createConnectAccount() {
-    return request('/api/payments/connect/create-account', {
+    return request('/api/connect/create-account', {
       method: 'POST',
       redirectOnUnauth: false
     });
@@ -409,7 +409,7 @@ const APJApi = (function() {
    * Returns { clientSecret }.
    */
   async function createConnectAccountSession() {
-    return request('/api/payments/connect/account-session', {
+    return request('/api/connect/account-session', {
       method: 'POST',
       redirectOnUnauth: false
     });
