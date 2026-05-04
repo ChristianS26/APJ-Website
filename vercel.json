@@ -1,20 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
-    {
-      "source": "/admin/:path*",
-      "has": [{ "type": "host", "value": "admin.padeljalisco.com" }],
-      "destination": "/:path*",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/((?!css/|js/|img/|favicon|robots|sitemap|apk/).*)",
-      "has": [{ "type": "host", "value": "admin.padeljalisco.com" }],
-      "destination": "/admin/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/admin/(.*)",
