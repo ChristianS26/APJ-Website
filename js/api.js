@@ -415,6 +415,17 @@ const APJApi = (function() {
     });
   }
 
+  /**
+   * Recent payments feed for the Stripe Connect admin view.
+   * Returns array of RecentPaymentRow with nested tournament/player/category.
+   */
+  async function getConnectRecentPayments(limit = 50) {
+    const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+    return request(`/api/connect/recent-payments?limit=${safeLimit}`, {
+      redirectOnUnauth: false
+    });
+  }
+
   // Public API
   return {
     // Auth helpers
@@ -451,6 +462,7 @@ const APJApi = (function() {
     getConnectAccountStatus,
     createConnectAccount,
     createConnectAccountSession,
+    getConnectRecentPayments,
 
     // Error class
     ApiError

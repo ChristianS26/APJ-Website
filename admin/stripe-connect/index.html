@@ -25,6 +25,40 @@
     .connect-onboarding-mount { min-height: 320px; }
     .btn-stripe { background: #635BFF; color: #fff; border-color: #635BFF; }
     .btn-stripe:hover { background: #534be0; border-color: #534be0; }
+
+    /* Recent payments table */
+    .connect-payments-table-wrap {
+      overflow-x: auto;
+      width: 100%;
+    }
+    .connect-payments-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .connect-payments-table thead th {
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-3);
+      white-space: nowrap;
+    }
+    .connect-payments-table tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .connect-payments-table tbody tr:last-child td { border-bottom: none; }
+    .connect-payments-table tbody tr:hover { background: var(--card-hover); }
+    .connect-payments-subtle {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body class="admin-page">
@@ -110,6 +144,24 @@
           Stripe requiere informacion adicional para activar completamente tu cuenta.
         </p>
         <button type="button" id="connect-resume-btn" class="btn btn-stripe">Completar verificacion</button>
+      </div>
+    </div>
+
+    <div class="profile-card" style="margin-top:16px;">
+      <div class="profile-card-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div>
+          <h2 style="font-size:16px; margin:0;">Pagos recientes</h2>
+          <p style="margin:4px 0 0 0; color:var(--text-secondary); font-size:13px;">Inscripciones registradas en el sistema. Actualiza para ver las nuevas.</p>
+        </div>
+        <button type="button" id="connect-payments-refresh-btn" class="btn btn-outline btn-sm">Actualizar</button>
+      </div>
+      <div class="profile-card-body" style="padding:0;">
+        <div id="connect-payments-list">
+          <div class="profile-loading-page" style="padding:40px 0;">
+            <div class="spinner" style="width:28px; height:28px;"></div>
+            <p style="font-size:13px;">Cargando pagos...</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
