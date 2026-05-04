@@ -1,9 +1,43 @@
 // APJ Padel - Configuration
 
 // =============================================
-// ENVIRONMENT SWITCH - Change this to switch environments
+// ENVIRONMENT — selected automatically from the hostname.
+//
+// Flip DEFAULT_ENV to 'prod' once the prod Railway backend has the
+// Stripe Connect endpoints and the prod Supabase project has the
+// stripe_connect_settings migration. Until then, the bare
+// padeljalisco.com / admin.padeljalisco.com hosts keep using stage so
+// the live site doesn't 404 on Connect endpoints.
+//
+// Override per-device with:
+//   localStorage.setItem('apj_env_override', 'stage' | 'prod')
 // =============================================
-const ENV = 'prod'; // 'stage' or 'prod'
+const DEFAULT_ENV = 'stage';
+
+function detectEnv() {
+  if (typeof window === 'undefined') return DEFAULT_ENV;
+
+  try {
+    const override = window.localStorage?.getItem('apj_env_override');
+    if (override === 'stage' || override === 'prod') return override;
+  } catch (_) { /* ignore */ }
+
+  const host = (window.location?.hostname || '').toLowerCase();
+
+  // Local dev → stage
+  if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local')) return 'stage';
+
+  // Vercel preview deployments → stage
+  if (host.endsWith('.vercel.app')) return 'stage';
+
+  // Any subdomain prefixed "stage." → stage backend
+  // (matches stage.admin.padeljalisco.com, stage.padeljalisco.com, etc.)
+  if (host.startsWith('stage.')) return 'stage';
+
+  return DEFAULT_ENV;
+}
+
+const ENV = detectEnv();
 
 // Environment-specific configurations
 const ENVIRONMENTS = {
