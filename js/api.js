@@ -370,6 +370,51 @@ const APJApi = (function() {
     });
   }
 
+  /**
+   * Get Stripe Connect dashboard/onboarding link (admin only)
+   * Returns { url } — Stripe-hosted onboarding link if account is not yet
+   * fully onboarded, or an Express Dashboard login link if it is.
+   */
+  async function getStripeConnectDashboardLink() {
+    return request('/api/payments/connect/dashboard-link', {
+      redirectOnUnauth: false
+    });
+  }
+
+  /**
+   * Get Stripe Connect account status (admin only).
+   * Throws ApiError(404) when no account has been created yet.
+   * Returns { accountId, chargesEnabled, payoutsEnabled, onboardingComplete, requiresAction }.
+   */
+  async function getConnectAccountStatus() {
+    return request('/api/payments/connect/account-status', {
+      redirectOnUnauth: false
+    });
+  }
+
+  /**
+   * Create the Stripe Express account (admin only).
+   * Idempotent: returns the existing account if one is already persisted.
+   * Returns { accountId }.
+   */
+  async function createConnectAccount() {
+    return request('/api/payments/connect/create-account', {
+      method: 'POST',
+      redirectOnUnauth: false
+    });
+  }
+
+  /**
+   * Create an AccountSession for the embedded onboarding component (admin only).
+   * Returns { clientSecret }.
+   */
+  async function createConnectAccountSession() {
+    return request('/api/payments/connect/account-session', {
+      method: 'POST',
+      redirectOnUnauth: false
+    });
+  }
+
   // Public API
   return {
     // Auth helpers
@@ -402,6 +447,10 @@ const APJApi = (function() {
     createPaymentIntent,
     redeemCode,
     redeemCodeDirect,
+    getStripeConnectDashboardLink,
+    getConnectAccountStatus,
+    createConnectAccount,
+    createConnectAccountSession,
 
     // Error class
     ApiError

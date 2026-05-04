@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stripe Connect | Admin APJ</title>
+  <meta name="description" content="Configura la cuenta de Stripe Connect que recibe los pagos desde la app APJ." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Stripe Connect.js for the embedded onboarding component -->
+  <script src="https://connect-js.stripe.com/v1.0/connect.js"></script>
+  <style>
+    .connect-status-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .connect-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .connect-badge.green  { color: #16a34a; border-color: rgba(22,163,74,0.35);  background: rgba(22,163,74,0.08); }
+    .connect-badge.yellow { color: #ca8a04; border-color: rgba(202,138,4,0.35);  background: rgba(202,138,4,0.08); }
+    .connect-badge.orange { color: #ea580c; border-color: rgba(234,88,12,0.35);  background: rgba(234,88,12,0.08); }
+    .connect-stripe-icon {
+      width: 32px; height: 32px;
+      color: #635BFF;
+      flex-shrink: 0;
+    }
+    .connect-onboarding-mount {
+      min-height: 320px;
+    }
+    .btn-stripe {
+      background: #635BFF;
+      color: #fff;
+      border-color: #635BFF;
+    }
+    .btn-stripe:hover { background: #534be0; border-color: #534be0; }
+  </style>
+</head>
+<body class="profile-page">
+
+<header class="profile-header">
+  <div class="profile-header-inner">
+    <a href="/" class="profile-logo">
+      <div class="profile-logo-icon">APJ</div>
+      <span class="profile-logo-text">APJ Padel</span>
+    </a>
+    <div class="header-nav">
+      <div id="auth-buttons">
+        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
+        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
+      </div>
+      <div id="user-menu" class="user-menu hidden"></div>
+    </div>
+  </div>
+</header>
+
+<main class="profile-container">
+
+  <!-- Loading -->
+  <div id="connect-loading" class="profile-loading-page">
+    <div class="spinner" style="width: 48px; height: 48px;"></div>
+    <p>Cargando estado de Stripe Connect...</p>
+  </div>
+
+  <!-- Forbidden -->
+  <div id="connect-forbidden" class="profile-content hidden">
+    <div class="profile-page-header">
+      <h1>Acceso restringido</h1>
+      <p>Esta seccion solo esta disponible para administradores de la APJ.</p>
+    </div>
+    <div class="profile-card">
+      <div class="profile-card-body" style="text-align:center;">
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth required -->
+  <div id="connect-need-login" class="profile-content hidden">
+    <div class="profile-page-header">
+      <h1>Inicia sesion</h1>
+      <p>Necesitas iniciar sesion con una cuenta de administrador para gestionar Stripe Connect.</p>
+    </div>
+    <div class="profile-card">
+      <div class="profile-card-body" style="text-align:center;">
+        <button class="btn btn-primary" data-show-login>Iniciar sesion</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div id="connect-content" class="profile-content hidden">
+
+    <div class="profile-page-header">
+      <h1>Stripe Connect</h1>
+      <p>Conecta la cuenta de Stripe que recibe los pagos de inscripciones desde la app APJ.</p>
+    </div>
+
+    <div id="connect-error" class="hidden" role="alert" style="margin-bottom:16px; padding:12px 14px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:8px; color:#ef4444; font-size:14px;"></div>
+
+    <!-- State: no-account -->
+    <section id="state-no-account" class="profile-card hidden" style="border-color: rgba(99,91,255,0.25); background: rgba(99,91,255,0.04);">
+      <div class="profile-card-body" style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+        <div style="width:56px; height:56px; border-radius:14px; background:rgba(99,91,255,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg class="connect-stripe-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+          </svg>
+        </div>
+        <div style="flex:1; min-width:240px;">
+          <h2 style="margin:0 0 6px 0; font-size:18px; font-weight:600;">Conecta con Stripe</h2>
+          <p style="margin:0; color:var(--text-secondary); font-size:14px; line-height:1.5;">
+            Crea tu cuenta de Stripe Connect para recibir los pagos de inscripciones de la app APJ.
+            Stripe transfiere los fondos automaticamente a tu cuenta bancaria.
+          </p>
+        </div>
+        <button id="connect-create-btn" type="button" class="btn btn-stripe">
+          Conectar con Stripe
+        </button>
+      </div>
+    </section>
+
+    <!-- State: onboarding (Stripe Connect.js mounts here) -->
+    <section id="state-onboarding" class="profile-card hidden">
+      <div class="profile-card-header">
+        <h2>Completa tu verificacion</h2>
+      </div>
+      <div class="profile-card-body">
+        <p style="margin:0 0 16px 0; color:var(--text-secondary); font-size:14px;">
+          Proporciona los datos necesarios para activar los cobros y los payouts en tu cuenta.
+        </p>
+        <div id="connect-onboarding-mount" class="connect-onboarding-mount"></div>
+      </div>
+    </section>
+
+    <!-- State: connected -->
+    <section id="state-connected" class="hidden">
+      <div class="profile-card" style="border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.05); margin-bottom:16px;">
+        <div class="profile-card-body" style="display:flex; gap:12px; align-items:flex-start;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0; margin-top:2px;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <div>
+            <p style="margin:0 0 4px 0; color:#16a34a; font-weight:600; font-size:14px;">Cuenta conectada</p>
+            <p style="margin:0; color:var(--text-secondary); font-size:14px;">Tu cuenta de Stripe esta activa y lista para recibir pagos.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-card-body" style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+          <div style="width:56px; height:56px; border-radius:14px; background:rgba(99,91,255,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg class="connect-stripe-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+            </svg>
+          </div>
+          <div style="flex:1; min-width:240px;">
+            <h2 style="margin:0 0 6px 0; font-size:18px; font-weight:600;">Stripe Connect</h2>
+            <p style="margin:0 0 4px 0; color:var(--text-secondary); font-size:13px;" id="connect-account-id"></p>
+            <div class="connect-status-badges" id="connect-status-badges"></div>
+          </div>
+          <button id="connect-manage-btn" type="button" class="btn btn-outline">
+            Administrar cuenta
+          </button>
+        </div>
+      </div>
+
+      <div id="connect-finish-card" class="profile-card hidden" style="margin-top:16px;">
+        <div class="profile-card-header">
+          <h2 style="font-size:16px;">Completar verificacion</h2>
+        </div>
+        <div class="profile-card-body">
+          <p style="margin:0 0 16px 0; color:var(--text-secondary); font-size:14px;">
+            Stripe requiere informacion adicional para activar completamente tu cuenta.
+          </p>
+          <button type="button" id="connect-resume-btn" class="btn btn-stripe">
+            Completar verificacion
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/terms">Terminos y Condiciones</a>
+      <a href="/privacy">Politica de Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-stripe-connect.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
