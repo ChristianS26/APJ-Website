@@ -3266,11 +3266,18 @@ a.profile-btn {
 
 .admin-page { background: var(--bg); }
 
+main.admin-shell,
 .admin-shell {
   flex: 1;
   display: flex;
   align-items: stretch;
   width: 100%;
+  /* Override the global `main` selector defined earlier in this file
+     (max-width + margin: 0 auto + padding) — the admin shell needs to
+     span the full viewport so the sticky sidebar can sit at the edge. */
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .admin-shell.admin-shell-fallback {
