@@ -12,13 +12,16 @@ export const config = {
   matcher: ['/((?!css/|js/|img/|apk/|favicon|robots|sitemap|_vercel).*)'],
 };
 
-const ADMIN_HOST = 'admin.padeljalisco.com';
+const ADMIN_HOSTS = new Set([
+  'admin.padeljalisco.com',
+  'stage.admin.padeljalisco.com',
+]);
 
 export default function middleware(request) {
   const url = new URL(request.url);
   const host = (request.headers.get('host') || '').toLowerCase();
 
-  if (host !== ADMIN_HOST) return; // pass through unchanged
+  if (!ADMIN_HOSTS.has(host)) return; // pass through unchanged
 
   const path = url.pathname;
 
