@@ -3264,13 +3264,63 @@ a.profile-btn {
   --admin-sidebar-w: 240px;
 }
 
+/* Light theme — applies ONLY to the admin panel; the public site keeps the
+   dark theme defined at :root. Overrides every design token used in shared
+   components (cards, buttons, forms) so .profile-card etc. render light too. */
 body.admin-page {
+  --bg: #f7f8fa;
+  --bg-2: #ffffff;
+  --bg-3: #eef0f4;
+  --card: #ffffff;
+  --card-hover: #f5f6f8;
+  --border: rgba(15, 23, 42, 0.10);
+  --border-hover: rgba(15, 23, 42, 0.22);
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 18px 36px rgba(15, 23, 42, 0.10);
+  --primary-glow: rgba(16, 185, 129, 0.10);
+  --accent-glow: rgba(245, 158, 11, 0.10);
+  --stripe-glow: rgba(99, 91, 255, 0.10);
+  --error-glow: rgba(239, 68, 68, 0.10);
+  --success-glow: rgba(34, 197, 94, 0.10);
+
   background: var(--bg);
+  color: var(--text);
   height: 100vh;
   margin: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Buttons — the dark site relies on contrast with --bg-3; in light mode that
+   would render an invisible white-on-white outlined button. Force light-mode
+   defaults for outline buttons inside the admin panel. */
+body.admin-page .btn-outline {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.admin-page .btn-outline:hover {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+}
+
+/* Form inputs and selects — same idea: explicit white background and dark text
+   so they don't inherit the dark-theme bg-3 fill. */
+body.admin-page .form-input,
+body.admin-page .form-select,
+body.admin-page input,
+body.admin-page select,
+body.admin-page textarea {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--border);
 }
 
 #admin-shell-root {

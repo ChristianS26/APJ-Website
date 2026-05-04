@@ -111,8 +111,15 @@ const APJAdminStripeConnect = (function () {
         appearance: {
           overlays: 'dialog',
           variables: {
-            colorPrimary: '#635BFF',
-            fontFamily: 'Inter, system-ui, sans-serif'
+            colorPrimary: '#10b981',
+            colorBackground: '#ffffff',
+            colorText: '#0f172a',
+            colorSecondaryText: '#475569',
+            colorBorder: 'rgba(15,23,42,0.10)',
+            buttonPrimaryColorBackground: '#10b981',
+            buttonPrimaryColorText: '#ffffff',
+            fontFamily: 'Inter, system-ui, sans-serif',
+            borderRadius: '8px'
           }
         },
         locale: 'es'
