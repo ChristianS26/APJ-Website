@@ -1,4 +1,6 @@
 // APJ Padel - Admin Stripe Connect (embedded onboarding)
+// Auth + admin gate is handled by APJAdminShell. This module owns the
+// Stripe Connect state machine: loading -> no-account -> onboarding -> connected.
 
 const APJAdminStripeConnect = (function () {
 
@@ -6,48 +8,10 @@ const APJAdminStripeConnect = (function () {
   let onboardingComponent = null;
   let cachedStatus = null;
 
-  function init() {
-    if (!window.location.pathname.includes('/admin/stripe-connect')) return;
-    initPage();
-  }
-
-  async function initPage() {
-    // Auth gate — show login screen rather than auto-redirect, so the user
-    // sees the page they navigated to and can sign in inline.
-    if (!APJApi.isAuthenticated()) {
-      hideAll();
-      document.getElementById('connect-need-login')?.classList.remove('hidden');
-      // Re-run after successful login
-      window.addEventListener('apj:auth:login', () => initPage(), { once: true });
-      return;
-    }
-
-    const isValid = await APJApi.validateToken();
-    if (!isValid) {
-      hideAll();
-      document.getElementById('connect-need-login')?.classList.remove('hidden');
-      APJToast?.info?.('Sesion expirada', 'Por favor inicia sesion nuevamente.');
-      window.addEventListener('apj:auth:login', () => initPage(), { once: true });
-      return;
-    }
-
-    // Refresh user (role might have changed) — fall back to cache on error
-    try { await APJApi.getProfile(); } catch (_) { /* ignore */ }
-
-    const user = APJApi.getUserData();
-    const isAdmin = (user?.role || '').toLowerCase() === 'admin';
-    if (!isAdmin) {
-      hideAll();
-      document.getElementById('connect-forbidden')?.classList.remove('hidden');
-      return;
-    }
-
-    // Admin: show content shell, then drive the state machine
-    hideAll();
-    document.getElementById('connect-content')?.classList.remove('hidden');
+  /** Called by the page after APJAdminShell.mount() resolves successfully. */
+  function start() {
     bindEvents();
-
-    await refreshState();
+    refreshState();
   }
 
   function bindEvents() {
@@ -56,13 +20,9 @@ const APJAdminStripeConnect = (function () {
     document.getElementById('connect-manage-btn')?.addEventListener('click', handleManageAccount);
   }
 
-  function hideAll() {
-    ['connect-loading','connect-forbidden','connect-need-login','connect-content']
-      .forEach(id => document.getElementById(id)?.classList.add('hidden'));
-  }
-
   function setState(stateId) {
-    ['state-no-account','state-onboarding','state-connected']
+    document.getElementById('connect-loading')?.classList.add('hidden');
+    ['state-no-account', 'state-onboarding', 'state-connected']
       .forEach(id => document.getElementById(id)?.classList.toggle('hidden', id !== stateId));
   }
 
@@ -80,7 +40,6 @@ const APJAdminStripeConnect = (function () {
     el.classList.add('hidden');
   }
 
-  /** Decide which state to render based on the server-side status. */
   async function refreshState() {
     clearError();
     try {
@@ -93,7 +52,6 @@ const APJAdminStripeConnect = (function () {
       }
     } catch (error) {
       if (error?.status === 404) {
-        // No account yet — let the admin create one
         cachedStatus = null;
         setState('state-no-account');
       } else {
@@ -128,7 +86,6 @@ const APJAdminStripeConnect = (function () {
     clearError();
     setState('state-onboarding');
 
-    // Connect.js loaded yet?
     if (!window.StripeConnect || typeof window.StripeConnect.init !== 'function') {
       showError('No se pudo cargar Stripe Connect.js. Revisa tu conexion e intenta de nuevo.');
       return;
@@ -139,7 +96,6 @@ const APJAdminStripeConnect = (function () {
       return;
     }
 
-    // Tear down any previous instance to avoid double-mounting
     const mount = document.getElementById('connect-onboarding-mount');
     if (mount) mount.innerHTML = '<div class="profile-loading-page" style="padding:60px 0;"><div class="spinner" style="width:32px;height:32px;"></div><p>Cargando onboarding...</p></div>';
     onboardingComponent = null;
@@ -177,16 +133,10 @@ const APJAdminStripeConnect = (function () {
 
   async function handleOnboardingExit() {
     APJToast?.success?.('Verificacion enviada', 'Stripe procesara la informacion en breve.');
-    // Re-fetch status; if onboardingComplete, swap to connected; else stay
     try {
       const status = await APJApi.getConnectAccountStatus();
       cachedStatus = status;
-      if (status?.onboardingComplete) {
-        renderConnected(status);
-      } else {
-        // Still missing things — keep showing the embedded component for now
-        renderConnected(status);
-      }
+      renderConnected(status);
     } catch (error) {
       showError(humanizeError(error));
     }
@@ -207,7 +157,6 @@ const APJAdminStripeConnect = (function () {
       badges.innerHTML = items.join('');
     }
 
-    // Show "completar verificacion" only when there's pending action and onboarding is incomplete
     const finish = document.getElementById('connect-finish-card');
     if (finish) {
       const showFinish = !!status?.requiresAction && !status?.onboardingComplete;
@@ -216,7 +165,7 @@ const APJAdminStripeConnect = (function () {
   }
 
   function badge(label, color) {
-    const safe = String(label).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+    const safe = String(label).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
     return `<span class="connect-badge ${color}">${safe}</span>`;
   }
 
@@ -243,11 +192,5 @@ const APJAdminStripeConnect = (function () {
     return error.message || 'Ocurrio un error inesperado.';
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-  return { init };
+  return { start };
 })();

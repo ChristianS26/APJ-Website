@@ -694,7 +694,7 @@ const APJAuth = (function() {
         : `<span class="user-avatar-initials">${initials}</span>`;
 
       const adminLink = isAdmin
-        ? `<a href="/admin/stripe-connect/" class="btn btn-sm btn-outline" title="Stripe Connect">Stripe Connect</a>`
+        ? `<a href="/admin/" class="btn btn-sm btn-outline" title="Panel Admin">Admin</a>`
         : '';
 
       authButtons.classList.add('hidden');
