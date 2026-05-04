@@ -10,55 +10,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <!-- Stripe Connect.js for the embedded onboarding component -->
   <script src="https://connect-js.stripe.com/v1.0/connect.js"></script>
   <style>
-    .connect-status-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    .connect-status-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .connect-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1px solid;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 9999px;
+      font-size: 12px; font-weight: 600; border: 1px solid;
     }
-    .connect-badge.green  { color: #16a34a; border-color: rgba(22,163,74,0.35);  background: rgba(22,163,74,0.08); }
-    .connect-badge.yellow { color: #ca8a04; border-color: rgba(202,138,4,0.35);  background: rgba(202,138,4,0.08); }
-    .connect-badge.orange { color: #ea580c; border-color: rgba(234,88,12,0.35);  background: rgba(234,88,12,0.08); }
-    .connect-stripe-icon {
-      width: 32px; height: 32px;
-      color: #635BFF;
-      flex-shrink: 0;
-    }
+    .connect-badge.green  { color: #16a34a; border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.08); }
+    .connect-badge.yellow { color: #ca8a04; border-color: rgba(202,138,4,0.35); background: rgba(202,138,4,0.08); }
+    .connect-badge.orange { color: #ea580c; border-color: rgba(234,88,12,0.35); background: rgba(234,88,12,0.08); }
+    .connect-stripe-icon { width: 32px; height: 32px; color: #635BFF; flex-shrink: 0; }
     .connect-onboarding-mount { min-height: 320px; }
     .btn-stripe { background: #635BFF; color: #fff; border-color: #635BFF; }
     .btn-stripe:hover { background: #534be0; border-color: #534be0; }
   </style>
 </head>
-<body class="profile-page admin-page">
-
-<header class="profile-header">
-  <div class="profile-header-inner">
-    <a href="/" class="profile-logo">
-      <div class="profile-logo-icon">APJ</div>
-      <span class="profile-logo-text">APJ Padel</span>
-    </a>
-    <div class="header-nav">
-      <div id="auth-buttons">
-        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
-        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
-      </div>
-      <div id="user-menu" class="user-menu hidden"></div>
-    </div>
-  </div>
-</header>
+<body class="admin-page">
 
 <template id="admin-page-template">
   <div class="profile-page-header">
@@ -73,7 +42,6 @@
     <p>Cargando estado de Stripe Connect...</p>
   </div>
 
-  <!-- State: no-account -->
   <section id="state-no-account" class="profile-card hidden" style="border-color: rgba(99,91,255,0.25); background: rgba(99,91,255,0.04);">
     <div class="profile-card-body" style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
       <div style="width:56px; height:56px; border-radius:14px; background:rgba(99,91,255,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
@@ -88,13 +56,10 @@
           Stripe transfiere los fondos automaticamente a tu cuenta bancaria.
         </p>
       </div>
-      <button id="connect-create-btn" type="button" class="btn btn-stripe">
-        Conectar con Stripe
-      </button>
+      <button id="connect-create-btn" type="button" class="btn btn-stripe">Conectar con Stripe</button>
     </div>
   </section>
 
-  <!-- State: onboarding (Stripe Connect.js mounts here) -->
   <section id="state-onboarding" class="profile-card hidden">
     <div class="profile-card-header">
       <h2>Completa tu verificacion</h2>
@@ -107,7 +72,6 @@
     </div>
   </section>
 
-  <!-- State: connected -->
   <section id="state-connected" class="hidden">
     <div class="profile-card" style="border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.05); margin-bottom:16px;">
       <div class="profile-card-body" style="display:flex; gap:12px; align-items:flex-start;">
@@ -133,9 +97,7 @@
           <p style="margin:0 0 4px 0; color:var(--text-secondary); font-size:13px;" id="connect-account-id"></p>
           <div class="connect-status-badges" id="connect-status-badges"></div>
         </div>
-        <button id="connect-manage-btn" type="button" class="btn btn-outline">
-          Administrar cuenta
-        </button>
+        <button id="connect-manage-btn" type="button" class="btn btn-outline">Administrar cuenta</button>
       </div>
     </div>
 
@@ -147,28 +109,14 @@
         <p style="margin:0 0 16px 0; color:var(--text-secondary); font-size:14px;">
           Stripe requiere informacion adicional para activar completamente tu cuenta.
         </p>
-        <button type="button" id="connect-resume-btn" class="btn btn-stripe">
-          Completar verificacion
-        </button>
+        <button type="button" id="connect-resume-btn" class="btn btn-stripe">Completar verificacion</button>
       </div>
     </div>
   </section>
 </template>
 
-<main id="admin-shell-root" class="admin-shell"></main>
+<div id="admin-shell-root"></div>
 
-<footer>
-  <div class="footer-inner">
-    <div class="footer-links">
-      <a href="/">APJ Padel</a>
-      <a href="/terms">Terminos y Condiciones</a>
-      <a href="/privacy">Politica de Privacidad</a>
-    </div>
-    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
-  </div>
-</footer>
-
-<!-- Scripts -->
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
 <script src="/js/validation.js"></script>
@@ -179,10 +127,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     const result = await APJAdminShell.mount({ active: 'stripe-connect' });
-    if (result) {
-      // Shell is rendered with the template content; now boot the page logic
-      APJAdminStripeConnect.start();
-    }
+    if (result) APJAdminStripeConnect.start();
   });
 </script>
 

@@ -1,7 +1,8 @@
 // APJ Padel - Admin Shell
-// Shared layout & auth gate for every page under /admin/.
-// Each admin page calls APJAdminShell.mount({ active: 'stripe-connect' }) and
-// then renders its content into <div id="admin-content">.
+// Owns the entire admin chrome: header (brand + user + logout) and layout
+// (sidebar + scrollable content area). Each admin page provides its body
+// content inside <template id="admin-page-template"> and calls
+// APJAdminShell.mount({ active: 'foo' }).
 
 const APJAdminShell = (function () {
 
@@ -23,22 +24,14 @@ const APJAdminShell = (function () {
   ];
 
   /**
-   * Mount the shell. Returns a Promise that resolves with the user when the
-   * page is allowed to render its content, or rejects (silently — having
-   * already rendered an error/login state) when access is denied.
+   * Mount the shell. Returns { user } on success, or null when access was
+   * denied (login or forbidden screens have already been rendered).
    *
    * @param {{ active: string }} opts
-   * @returns {Promise<{user: object} | null>}
    */
   async function mount(opts = {}) {
     const activeId = opts.active || '';
 
-    // Measure the page header height so the sidebar sticks below it cleanly,
-    // regardless of header padding / responsive variations.
-    syncHeaderHeight();
-    window.addEventListener('resize', syncHeaderHeight);
-
-    // Auth gate first
     if (!APJApi.isAuthenticated()) {
       renderNeedLogin();
       window.addEventListener('apj:auth:login', () => location.reload(), { once: true });
@@ -53,8 +46,7 @@ const APJAdminShell = (function () {
       return null;
     }
 
-    // Refresh user (role may have changed) — fall back to cache on error
-    try { await APJApi.getProfile(); } catch (_) { /* ignore */ }
+    try { await APJApi.getProfile(); } catch (_) { /* keep cached user */ }
 
     const user = APJApi.getUserData();
     const isAdmin = (user?.role || '').toLowerCase() === 'admin';
@@ -78,49 +70,56 @@ const APJAdminShell = (function () {
     }).join('');
 
     const userName = user
-      ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
+      ? (`${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email || 'Admin')
       : 'Admin';
+    const userInitials = userName.split(' ').filter(Boolean).map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    const avatarInner = user?.photo_url
+      ? `<img src="${escapeAttr(user.photo_url)}" alt="${escapeAttr(userName)}">`
+      : escapeHtml(userInitials || 'A');
 
     root.innerHTML = `
-      <aside class="admin-sidebar" id="admin-sidebar">
-        <div class="admin-sidebar-header">
-          <div class="admin-sidebar-brand">
-            <div class="profile-logo-icon">APJ</div>
-            <div>
-              <div class="admin-sidebar-title">Panel Admin</div>
-              <div class="admin-sidebar-subtitle">${escapeHtml(userName)}</div>
-            </div>
-          </div>
-          <button type="button" class="admin-sidebar-close" id="admin-sidebar-close" aria-label="Cerrar menu">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      <header class="admin-header">
+        <div class="admin-header-left">
+          <button type="button" class="admin-burger" id="admin-burger" aria-label="Abrir menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
           </button>
-        </div>
-        <nav class="admin-nav">${navHtml}</nav>
-        <div class="admin-sidebar-footer">
-          <a href="/" class="admin-nav-item">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            <span>Volver al sitio</span>
+          <a href="/admin/" class="admin-header-brand">
+            <div class="admin-header-brand-icon">APJ</div>
+            <span class="admin-header-brand-text">Admin</span>
           </a>
         </div>
-      </aside>
-      <div class="admin-main">
-        <button type="button" class="admin-mobile-toggle" id="admin-mobile-toggle" aria-label="Abrir menu">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-          <span>Menu</span>
-        </button>
-        <div class="admin-content" id="admin-content"></div>
+        <div class="admin-header-right">
+          <div class="admin-header-user">
+            <div class="admin-avatar">${avatarInner}</div>
+            <span class="admin-header-username">${escapeHtml(userName)}</span>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" data-logout>Salir</button>
+        </div>
+      </header>
+
+      <div class="admin-layout">
+        <aside class="admin-sidebar" id="admin-sidebar">
+          <nav class="admin-nav">${navHtml}</nav>
+          <div class="admin-sidebar-footer">
+            <a href="https://padeljalisco.com" class="admin-nav-item" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+              <span>Ver sitio publico</span>
+            </a>
+          </div>
+        </aside>
+        <main class="admin-main">
+          <div id="admin-content"></div>
+        </main>
       </div>
       <div class="admin-overlay" id="admin-overlay"></div>
     `;
 
     bindShellEvents();
 
-    // Reveal the content the page already wrote into a hidden template
+    // Pull the page-specific content from the <template> into #admin-content
     const tpl = document.getElementById('admin-page-template');
     const target = document.getElementById('admin-content');
-    if (tpl && target) {
-      target.innerHTML = tpl.innerHTML;
-    }
+    if (tpl && target) target.innerHTML = tpl.innerHTML;
   }
 
   function renderNeedLogin() {
@@ -154,7 +153,7 @@ const APJAdminShell = (function () {
             <p style="color:var(--text-secondary); margin:0 0 20px 0;">
               Esta seccion solo esta disponible para administradores de la APJ.
             </p>
-            <a href="/" class="btn btn-primary">Volver al inicio</a>
+            <a href="https://padeljalisco.com" class="btn btn-primary">Volver al sitio</a>
           </div>
         </div>
       </div>
@@ -172,9 +171,10 @@ const APJAdminShell = (function () {
       sidebar?.classList.remove('open');
       overlay?.classList.remove('active');
     };
-    document.getElementById('admin-mobile-toggle')?.addEventListener('click', open);
-    document.getElementById('admin-sidebar-close')?.addEventListener('click', close);
+    document.getElementById('admin-burger')?.addEventListener('click', open);
     overlay?.addEventListener('click', close);
+    // Auto-close when navigating via a sidebar link on mobile
+    sidebar?.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
   }
 
   function escapeHtml(value) {
@@ -182,12 +182,7 @@ const APJAdminShell = (function () {
       '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
-
-  function syncHeaderHeight() {
-    const header = document.querySelector('.profile-header');
-    const h = header?.offsetHeight || 72;
-    document.documentElement.style.setProperty('--admin-header-h', `${h}px`);
-  }
+  function escapeAttr(value) { return escapeHtml(value); }
 
   return { mount };
 })();

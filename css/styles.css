@@ -3255,45 +3255,146 @@ a.profile-btn {
 }
 
 /* ==========================================
-   ADMIN SHELL (sidebar layout for /admin/*)
+   ADMIN PANEL (app-shell: header + sidebar + main)
+   admin-shell.js renders all chrome inside #admin-shell-root.
    ========================================== */
 
 :root {
-  /* Updated at runtime by admin-shell.js after measuring the page header. */
-  --admin-header-h: 72px;
+  --admin-header-h: 56px;
   --admin-sidebar-w: 240px;
 }
 
-.admin-page { background: var(--bg); }
-
-main.admin-shell,
-.admin-shell {
-  flex: 1;
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-  /* Override the global `main` selector defined earlier in this file
-     (max-width + margin: 0 auto + padding) — the admin shell needs to
-     span the full viewport so the sticky sidebar can sit at the edge. */
-  max-width: none;
+body.admin-page {
+  background: var(--bg);
+  height: 100vh;
   margin: 0;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.admin-shell.admin-shell-fallback {
+#admin-shell-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#admin-shell-root.admin-shell-fallback {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+
+/* Header */
+.admin-header {
+  flex: 0 0 var(--admin-header-h);
+  height: var(--admin-header-h);
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+  z-index: 50;
+}
+
+.admin-header-left,
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin-burger {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 6px;
+  cursor: pointer;
+}
+
+.admin-burger:hover { background: var(--card-hover); }
+
+.admin-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.admin-header-brand-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--primary);
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 24px;
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.admin-header-brand-text {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.admin-header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px 4px 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text);
+  max-width: 220px;
+}
+
+.admin-header-username {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-avatar {
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.admin-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Layout (sidebar + main) — fills the area below the header */
+.admin-layout {
+  flex: 1;
+  display: flex;
+  min-height: 0;
 }
 
 /* Sidebar */
 .admin-sidebar {
   flex: 0 0 var(--admin-sidebar-w);
-  align-self: flex-start;
-  position: sticky;
-  top: var(--admin-header-h);
-  height: calc(100vh - var(--admin-header-h));
   background: var(--bg-2);
   border-right: 1px solid var(--border);
   display: flex;
@@ -3301,63 +3402,11 @@ main.admin-shell,
   overflow-y: auto;
 }
 
-.admin-sidebar-header {
-  padding: 18px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.admin-sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.admin-sidebar-brand .profile-logo-icon {
-  width: 32px;
-  height: 32px;
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.admin-sidebar-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.admin-sidebar-subtitle {
-  font-size: 11px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 140px;
-  line-height: 1.3;
-}
-
-.admin-sidebar-close {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
-  display: none;
-}
-
-.admin-sidebar-close:hover { background: var(--card-hover); color: var(--text); }
-
 .admin-nav {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px 8px;
+  padding: 16px 10px;
   flex: 1;
 }
 
@@ -3383,63 +3432,65 @@ main.admin-shell,
 .admin-nav-item.active {
   background: var(--primary-glow);
   color: var(--primary-light);
-  border-color: rgba(16,185,129,0.25);
+  border-color: rgba(16, 185, 129, 0.25);
 }
 
 .admin-nav-item svg { flex-shrink: 0; opacity: 0.85; }
 .admin-nav-item.active svg { opacity: 1; }
 
 .admin-sidebar-footer {
-  padding: 10px 8px;
+  padding: 10px 10px 16px;
   border-top: 1px solid var(--border);
 }
 
-/* Main content area */
+/* Main content (scrollable) */
 .admin-main {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
+  background: var(--bg);
+  /* Override the global `main` selector earlier in this file. */
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
-.admin-content {
-  padding: 32px;
+.admin-main #admin-content {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
+  padding: 32px 24px 64px;
 }
 
-/* Mobile menu toggle */
-.admin-mobile-toggle {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  margin: 16px;
-  padding: 8px 14px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  align-self: flex-start;
+/* Quick-link cards on the dashboard */
+.admin-quick-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
+.admin-quick-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+/* Mobile drawer */
 .admin-overlay {
   display: none;
   position: fixed;
-  inset: 0;
+  top: var(--admin-header-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 90;
+  z-index: 39;
 }
 
 .admin-overlay.active { display: block; }
 
+/* Fallback (login required / forbidden) — center a single card */
 .admin-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
@@ -3448,22 +3499,22 @@ main.admin-shell,
 .admin-fallback .profile-card { width: 100%; }
 
 @media (max-width: 768px) {
+  .admin-burger { display: inline-flex; }
+  .admin-header-username { display: none; }
+  .admin-header-user { padding: 4px; }
+
   .admin-sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: var(--admin-header-h);
     bottom: 0;
-    height: 100vh;
+    left: 0;
     width: 280px;
-    z-index: 100;
+    z-index: 40;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
   }
 
   .admin-sidebar.open { transform: translateX(0); }
 
-  .admin-sidebar-close { display: inline-flex; }
-  .admin-mobile-toggle { display: inline-flex; }
-
-  .admin-content { padding: 20px 16px; }
+  .admin-main #admin-content { padding: 20px 16px 48px; }
 }

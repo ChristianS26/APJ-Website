@@ -11,25 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body class="profile-page admin-page">
+<body class="admin-page">
 
-<header class="profile-header">
-  <div class="profile-header-inner">
-    <a href="/" class="profile-logo">
-      <div class="profile-logo-icon">APJ</div>
-      <span class="profile-logo-text">APJ Padel</span>
-    </a>
-    <div class="header-nav">
-      <div id="auth-buttons">
-        <button class="btn btn-outline btn-sm" data-show-login>Iniciar Sesion</button>
-        <button class="btn btn-primary btn-sm" data-show-register>Registrarse</button>
-      </div>
-      <div id="user-menu" class="user-menu hidden"></div>
-    </div>
-  </div>
-</header>
-
-<!-- Page content lives in this template; the shell injects it into the layout. -->
 <template id="admin-page-template">
   <div class="profile-page-header">
     <h1>Panel Admin</h1>
@@ -37,7 +20,7 @@
   </div>
 
   <div class="profile-grid">
-    <a class="profile-card" href="/admin/stripe-connect/" style="text-decoration:none; color:inherit; display:block;">
+    <a class="profile-card admin-quick-card" href="/admin/stripe-connect/">
       <div class="profile-card-body" style="display:flex; gap:16px; align-items:center;">
         <div style="width:48px; height:48px; border-radius:12px; background:var(--stripe-glow); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="#635BFF" aria-hidden="true">
@@ -53,21 +36,8 @@
   </div>
 </template>
 
-<!-- Shell mount point: admin-shell.js renders the sidebar + content here -->
-<main id="admin-shell-root" class="admin-shell"></main>
+<div id="admin-shell-root"></div>
 
-<footer>
-  <div class="footer-inner">
-    <div class="footer-links">
-      <a href="/">APJ Padel</a>
-      <a href="/terms">Terminos y Condiciones</a>
-      <a href="/privacy">Politica de Privacidad</a>
-    </div>
-    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
-  </div>
-</footer>
-
-<!-- Scripts -->
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
 <script src="/js/validation.js"></script>
