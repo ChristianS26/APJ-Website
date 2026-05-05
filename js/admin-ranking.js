@@ -26,6 +26,28 @@ const APJAdminRanking = (function () {
     { id: 19, name: 'Mixto +7' },
   ];
 
+  // Brackets ordenados de mayor a menor categoria. La promocion natural
+  // es subir una posicion DENTRO del mismo bracket. Femenil y Mixto son
+  // brackets independientes — un jugador de Femenil 5ta no asciende a
+  // Septima masculina, asciende a Femenil 4ta.
+  const NATURAL_BRACKETS = [
+    [1, 2, 3, 4, 5, 6, 20], // Masculino: Primera..Septima
+    [13, 14, 15],            // Femenil 3ra..5ta
+    [19],                    // Mixto +7
+  ];
+
+  // Devuelve el id de la categoria inmediatamente superior dentro del
+  // mismo bracket, o null si ya esta en el tope (Primera, Femenil 3ra,
+  // Mixto +7).
+  function naturalPromoteTarget(currentCatId) {
+    for (const bracket of NATURAL_BRACKETS) {
+      const idx = bracket.indexOf(currentCatId);
+      if (idx > 0) return bracket[idx - 1];
+      if (idx === 0) return null;
+    }
+    return null;
+  }
+
   // Season activa — debe coincidir con la que el backend usa por default
   // (RankingService.getPlayerProfile la trae hardcoded). La temporada arranca
   // en 2025 y corre hasta el corte. Cuando rolen al siguiente, hay que tocar
@@ -142,9 +164,9 @@ const APJAdminRanking = (function () {
           <td style="text-align:right;">${tournaments}</td>
           <td style="text-align:right;"><span class="rk-points">${points}</span></td>
           <td style="text-align:right;">
-            <button type="button" class="rk-row-cta" data-uid="${escapeAttr(u.uid || '')}" title="Mover de categoría">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-              <span>Mover</span>
+            <button type="button" class="rk-row-cta" data-uid="${escapeAttr(u.uid || '')}" title="Ascender de categoría">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+              <span>Ascender</span>
             </button>
           </td>
         </tr>`;
@@ -318,7 +340,7 @@ const APJAdminRanking = (function () {
       </div>
       <div class="rk-actions">
         <button type="button" class="btn btn-outline" id="rk-move-btn">
-          Mover a otra categoría
+          Ascender de categoría
         </button>
         ${shouldShowRevert(p, history) ? `
         <button type="button" class="btn btn-outline" id="rk-revert-btn">
@@ -478,10 +500,18 @@ const APJAdminRanking = (function () {
     const defaultPoints = Math.floor(sourceTotal / 2);
     const fullName = `${p.user?.first_name || ''} ${p.user?.last_name || ''}`.trim() || 'jugador';
 
+    // Pre-seleccionamos la categoria inmediatamente superior dentro del
+    // mismo bracket — es a la que naturalmente asciende. Si ya esta en
+    // el tope (Primera, Femenil 3ra, Mixto +7), null = el admin elige.
+    const naturalTargetId = naturalPromoteTarget(sourceCatId);
+
     // Destination chips — todas las categorias del whitelist menos la actual.
     const destChips = RANKING_CATEGORIES
       .filter(c => c.id !== sourceCatId)
-      .map(c => `<button type="button" class="rk-cat-chip" data-dest-id="${c.id}">${escapeHtml(c.name)}</button>`)
+      .map(c => {
+        const cls = c.id === naturalTargetId ? 'rk-cat-chip active' : 'rk-cat-chip';
+        return `<button type="button" class="${cls}" data-dest-id="${c.id}">${escapeHtml(c.name)}</button>`;
+      })
       .join('');
 
     body.innerHTML = `
@@ -527,8 +557,9 @@ const APJAdminRanking = (function () {
       </div>
     `;
 
-    let selectedDestId = null;
+    let selectedDestId = naturalTargetId;
     const confirmBtn = document.getElementById('rk-move-confirm');
+    if (confirmBtn) confirmBtn.disabled = (selectedDestId == null);
 
     document.querySelectorAll('#rk-move-dest-chips .rk-cat-chip').forEach(btn => {
       btn.addEventListener('click', () => {
