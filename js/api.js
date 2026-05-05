@@ -426,6 +426,31 @@ const APJApi = (function() {
     });
   }
 
+  // ----- Admin: Regular tournament categories CRUD -----
+  async function adminListRegularCategories() {
+    return request('/api/categories/admin/regular', { redirectOnUnauth: false });
+  }
+  async function adminCreateRegularCategory({ name, position, price }) {
+    return request('/api/categories/admin/regular', {
+      method: 'POST',
+      body: JSON.stringify({ name, position, price }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function adminUpdateRegularCategory(id, { name, position, price }) {
+    return request(`/api/categories/admin/regular/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ name, position, price }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function adminDeleteRegularCategory(id) {
+    return request(`/api/categories/admin/regular/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      redirectOnUnauth: false,
+    });
+  }
+
   // Public API
   return {
     // Auth helpers
@@ -463,6 +488,10 @@ const APJApi = (function() {
     createConnectAccount,
     createConnectAccountSession,
     getConnectRecentPayments,
+    adminListRegularCategories,
+    adminCreateRegularCategory,
+    adminUpdateRegularCategory,
+    adminDeleteRegularCategory,
 
     // Error class
     ApiError
