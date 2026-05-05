@@ -288,6 +288,9 @@ const APJAdminRanking = (function () {
         <button type="button" class="btn btn-outline" id="rk-move-btn">
           Mover a otra categoría
         </button>
+        <button type="button" class="btn btn-outline" id="rk-revert-btn">
+          Revertir promoción
+        </button>
       </div>
       <h4 class="rk-history-title">Historial</h4>
       ${historyHtml}
@@ -296,6 +299,63 @@ const APJAdminRanking = (function () {
 
   function bindMoveActions() {
     document.getElementById('rk-move-btn')?.addEventListener('click', openMoveForm);
+    document.getElementById('rk-revert-btn')?.addEventListener('click', confirmRevert);
+  }
+
+  // Confirm + execute: revert the most recent promotion of the player in
+  // this category. The backend returns 404 if there's no active promotion,
+  // which we surface with a clear message instead of a generic error.
+  async function confirmRevert() {
+    const p = state.currentProfile;
+    if (!p) return;
+
+    const fullName = `${p.user?.first_name || ''} ${p.user?.last_name || ''}`.trim() || 'jugador';
+    const catName = p.category?.name || 'esta categoría';
+
+    const ok = window.confirm(
+      `¿Revertir la última promoción de ${fullName} en ${catName}?\n\n` +
+      `Sus ${p.points ?? 0} pts en ${catName} se eliminarán y se le restaurarán los puntos originales en la categoría desde la cual fue promovida.`
+    );
+    if (!ok) return;
+
+    const btn = document.getElementById('rk-revert-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Procesando...';
+    }
+
+    try {
+      const result = await APJApi.revertPlayerPromotion({
+        userId: p.user.uid,
+        season: ACTIVE_SEASON,
+        categoryId: p.category.id,
+      });
+      const sourceCat = RANKING_CATEGORIES.find(c => c.id === result.source_category_id);
+      const sourceName = sourceCat?.name || `categoría ${result.source_category_id}`;
+      APJToast?.success?.('Promoción revertida',
+        `${fullName} vuelve a tener ${result.source_total_after} pts en ${sourceName}.`);
+      closeDetail();
+      loadRanking();
+    } catch (error) {
+      const msg = mapRevertError(error);
+      APJToast?.error?.('No se pudo revertir', msg);
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Revertir promoción';
+      }
+    }
+  }
+
+  function mapRevertError(error) {
+    if (!error) return 'Error desconocido';
+    const status = error.status;
+    const errCode = error.data?.error;
+    if (status === 401) return 'Sesion expirada. Inicia sesion nuevamente.';
+    if (status === 403) return 'No tienes permisos para esta accion.';
+    if (status === 404 || errCode === 'no_active_promotion') {
+      return 'Este jugador no tiene una promoción activa en esta categoría.';
+    }
+    return error.message || 'No se pudo revertir la promoción.';
   }
 
   // Replace the modal body with a "move category" form — same player profile

@@ -518,6 +518,20 @@ const APJApi = (function() {
       redirectOnUnauth: false,
     });
   }
+  // Admin-only: undo the most recent promotion of a player in a category.
+  // Returns { source_category_id, source_total_after, dest_total_after,
+  // points_reverted }. 404 if no active promotion exists.
+  async function revertPlayerPromotion({ userId, season, categoryId }) {
+    return request('/api/ranking/promote/revert', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_id: userId,
+        season,
+        category_id: categoryId,
+      }),
+      redirectOnUnauth: false,
+    });
+  }
 
   // ----- Admin: Regular tournament categories CRUD -----
   async function adminListRegularCategories() {
@@ -584,6 +598,7 @@ const APJApi = (function() {
     getRanking,
     getRankingPlayerProfile,
     promotePlayerCategory,
+    revertPlayerPromotion,
     adminListRegularCategories,
     adminCreateRegularCategory,
     adminUpdateRegularCategory,
