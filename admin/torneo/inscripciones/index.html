@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscripciones | Admin APJ</title>
+  <meta name="description" content="Inscripciones del torneo seleccionado." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .ins-category-block { margin-bottom: 24px; }
+    .ins-category-header {
+      padding: 12px 16px;
+      background: var(--bg-3);
+      border-radius: 8px 8px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .ins-category-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+    .ins-category-count {
+      font-size: 12px; color: var(--text-secondary);
+      background: var(--card); padding: 2px 8px; border-radius: 9999px;
+      border: 1px solid var(--border);
+    }
+    .ins-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 0 0 8px 8px;
+    }
+    .ins-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ins-table thead th {
+      padding: 10px 14px; text-align: left;
+      font-weight: 600; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-secondary);
+      background: var(--bg-3); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .ins-table tbody td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    .ins-table tbody tr:last-child td { border-bottom: none; }
+    .ins-table tbody tr:hover { background: var(--card-hover); }
+    .ins-paid-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 9999px;
+      font-size: 11px; font-weight: 600;
+      border: 1px solid;
+    }
+    .ins-paid-pill.green { color: #16a34a; border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.08); }
+    .ins-paid-pill.gray  { color: var(--text-secondary); border-color: var(--border); background: var(--card); }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="profile-page-header">
+    <h1>Inscripciones</h1>
+    <p id="ins-tournament-subtitle" style="color:var(--text-secondary);">Selecciona un torneo en el menu lateral.</p>
+  </div>
+
+  <div id="ins-list">
+    <div class="profile-card">
+      <div class="profile-card-body" style="text-align:center; color:var(--text-secondary); padding:48px 24px;">
+        Selecciona un torneo arriba para ver sus inscripciones.
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root"></div>
+
+<script src="/api/config"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-torneo-inscripciones.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'inscripciones' });
+    if (result) APJAdminTorneoInscripciones.start();
+  });
+</script>
+
+</body>
+</html>
