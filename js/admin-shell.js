@@ -6,27 +6,39 @@
 
 const APJAdminShell = (function () {
 
-  const NAV_ITEMS = [
+  const NAV_SECTIONS = [
     {
-      id: 'dashboard',
-      label: 'Dashboard',
-      href: '/admin/',
-      icon:
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>'
+      id: 'tournament',
+      label: 'Torneo',
+      items: [
+        {
+          id: 'torneo',
+          label: 'Torneo',
+          href: '/admin/torneo/',
+          icon:
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>'
+        }
+      ]
     },
     {
-      id: 'stripe-connect',
-      label: 'Stripe Connect',
-      href: '/admin/stripe-connect/',
-      icon:
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg>'
-    },
-    {
-      id: 'categories',
-      label: 'Categorias',
-      href: '/admin/categories/',
-      icon:
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/><circle cx="6" cy="6" r="0.5" fill="currentColor"/><circle cx="6" cy="12" r="0.5" fill="currentColor"/><circle cx="6" cy="18" r="0.5" fill="currentColor"/></svg>'
+      id: 'organization',
+      label: 'Organizacion',
+      items: [
+        {
+          id: 'categories',
+          label: 'Categorias',
+          href: '/admin/categories/',
+          icon:
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/><circle cx="6" cy="6" r="0.5" fill="currentColor"/><circle cx="6" cy="12" r="0.5" fill="currentColor"/><circle cx="6" cy="18" r="0.5" fill="currentColor"/></svg>'
+        },
+        {
+          id: 'stripe-connect',
+          label: 'Stripe Connect',
+          href: '/admin/stripe-connect/',
+          icon:
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg>'
+        }
+      ]
     }
   ];
 
@@ -71,9 +83,16 @@ const APJAdminShell = (function () {
     if (!root) return;
     root.classList.remove('admin-shell-fallback');
 
-    const navHtml = NAV_ITEMS.map(item => {
-      const cls = item.id === activeId ? 'admin-nav-item active' : 'admin-nav-item';
-      return `<a href="${item.href}" class="${cls}">${item.icon}<span>${item.label}</span></a>`;
+    const navHtml = NAV_SECTIONS.map(section => {
+      const itemsHtml = section.items.map(item => {
+        const cls = item.id === activeId ? 'admin-nav-item active' : 'admin-nav-item';
+        return `<a href="${item.href}" class="${cls}">${item.icon}<span>${item.label}</span></a>`;
+      }).join('');
+      return `
+        <div class="admin-nav-section">
+          <div class="admin-nav-section-label">${escapeHtml(section.label)}</div>
+          ${itemsHtml}
+        </div>`;
     }).join('');
 
     const userName = user

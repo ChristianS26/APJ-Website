@@ -426,6 +426,41 @@ const APJApi = (function() {
     });
   }
 
+  // ----- Tournaments (admin views read + write) -----
+  async function getTournamentById(id) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}`, {
+      auth: false, // public endpoint
+      redirectOnUnauth: false,
+    });
+  }
+  async function updateTournament(id, payload) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+      redirectOnUnauth: false,
+    });
+  }
+  async function setTournamentEnabled(id, enabled) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/enabled`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_enabled: !!enabled }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function setTournamentRegistrationOpen(id, open) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/registration-open`, {
+      method: 'PATCH',
+      body: JSON.stringify({ registration_open: !!open }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function getTeamsByTournamentGrouped(tournamentId) {
+    return request(`/api/teams/by-tournament?tournamentId=${encodeURIComponent(tournamentId)}`, {
+      auth: false, // public endpoint per TeamRoutes
+      redirectOnUnauth: false,
+    });
+  }
+
   // ----- Admin: Regular tournament categories CRUD -----
   async function adminListRegularCategories() {
     return request('/api/categories/admin/regular', { redirectOnUnauth: false });
@@ -492,6 +527,11 @@ const APJApi = (function() {
     adminCreateRegularCategory,
     adminUpdateRegularCategory,
     adminDeleteRegularCategory,
+    getTournamentById,
+    updateTournament,
+    setTournamentEnabled,
+    setTournamentRegistrationOpen,
+    getTeamsByTournamentGrouped,
 
     // Error class
     ApiError
