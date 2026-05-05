@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ranking | Admin APJ</title>
+  <meta name="description" content="Ranking de jugadores por categoria, con detalle por jugador." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* La tabla de ranking necesita el mismo extra de ancho que inscripciones
+       para que las columnas (jugador + torneos + puntos) respiren bien. */
+    .admin-main #admin-content { max-width: 1280px; }
+
+    .rk-toolbar {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .rk-toolbar-left { flex: 1; min-width: 240px; }
+    .rk-toolbar-search {
+      position: relative;
+      width: 280px;
+      max-width: 100%;
+    }
+    .rk-toolbar-search input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--text);
+    }
+    .rk-toolbar-search input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,91,255,0.15);
+    }
+    .rk-toolbar-search svg {
+      position: absolute;
+      left: 11px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+
+    /* Category chips — same visual language as the day chips elsewhere. */
+    .rk-cat-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rk-cat-chip {
+      padding: 8px 16px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--text-secondary);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .rk-cat-chip:hover {
+      background: var(--card-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .rk-cat-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .rk-cat-meta {
+      margin: 6px 0 0 0;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Ranking table */
+    .rk-table-wrap { width: 100%; }
+    .rk-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      table-layout: fixed;
+    }
+    .rk-table th:nth-child(1), .rk-table td:nth-child(1) { width: 70px; }
+    .rk-table th:nth-child(2), .rk-table td:nth-child(2) { width: auto; }
+    .rk-table th:nth-child(3), .rk-table td:nth-child(3) { width: 100px; }
+    .rk-table th:nth-child(4), .rk-table td:nth-child(4) { width: 100px; }
+    .rk-table th:nth-child(5), .rk-table td:nth-child(5) { width: 150px; }
+    .rk-table thead th {
+      padding: 10px 14px; text-align: left;
+      font-weight: 600; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-secondary);
+      background: var(--bg-3); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .rk-table tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rk-table tbody tr { height: 64px; cursor: pointer; }
+    .rk-table tbody tr:last-child td { border-bottom: none; }
+    .rk-table tbody tr:hover { background: var(--card-hover); }
+
+    .rk-pos {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .rk-pos-medal {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 9999px;
+      font-size: 12px; font-weight: 700;
+      color: #fff;
+    }
+    .rk-pos-medal.gold   { background: #d4a017; }
+    .rk-pos-medal.silver { background: #94a3b8; }
+    .rk-pos-medal.bronze { background: #b45309; }
+
+    .rk-player {
+      display: flex; align-items: center; gap: 12px;
+      min-width: 0;
+    }
+    .rk-avatar {
+      width: 36px; height: 36px;
+      border-radius: 9999px;
+      background: var(--bg-3);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--text-secondary);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .rk-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .rk-player-info { display: flex; flex-direction: column; min-width: 0; }
+    .rk-player-info .name {
+      font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .rk-player-info .phone {
+      color: var(--text-secondary); font-size: 12px;
+    }
+
+    .rk-points {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* CTA por fila: boton compacto pill que abre el move form directo */
+    .rk-row-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--text-secondary);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .rk-row-cta:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .rk-row-cta svg { display: block; }
+    .rk-empty {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .rk-error {
+      padding: 12px 14px;
+      background: rgba(239,68,68,0.10);
+      border: 1px solid rgba(239,68,68,0.30);
+      border-radius: 8px;
+      color: #ef4444;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Player detail modal */
+    .rk-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,0.45);
+      display: none; align-items: center; justify-content: center;
+      z-index: 200;
+      padding: 24px;
+    }
+    .rk-modal-overlay.active { display: flex; }
+    .rk-modal {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px;
+      width: 100%; max-width: 560px;
+      max-height: 90vh;
+      box-shadow: var(--shadow-lg);
+      display: flex; flex-direction: column;
+    }
+    .rk-modal-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .rk-modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; }
+    .rk-modal-close {
+      background: transparent; border: none; cursor: pointer; color: var(--text-secondary);
+      padding: 4px;
+    }
+    .rk-modal-close:hover { color: var(--text); }
+    .rk-modal-body { padding: 20px; overflow-y: auto; }
+
+    .rk-detail-hero {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px;
+      background: var(--bg-3);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .rk-detail-hero .avatar {
+      width: 64px; height: 64px;
+      border-radius: 9999px;
+      overflow: hidden;
+      background: var(--bg);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .rk-detail-hero .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .rk-detail-hero .info { min-width: 0; }
+    .rk-detail-hero .info .name {
+      font-size: 18px; font-weight: 700; margin: 0 0 2px 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .rk-detail-hero .info .meta {
+      font-size: 13px; color: var(--text-secondary);
+    }
+
+    .rk-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .rk-stat {
+      padding: 12px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+    }
+    .rk-stat .value {
+      font-size: 18px; font-weight: 700; color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .rk-stat .label {
+      font-size: 11px; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin-top: 2px;
+    }
+
+    .rk-history-title {
+      font-size: 14px; font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+    .rk-history-empty {
+      padding: 16px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      background: var(--bg-3);
+      border-radius: 8px;
+    }
+    .rk-history-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .rk-history-row + .rk-history-row { margin-top: 6px; }
+    .rk-history-row .name {
+      font-weight: 500; font-size: 13px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .rk-history-row .date {
+      color: var(--text-secondary); font-size: 12px;
+    }
+    .rk-result-chip {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 9999px; font-size: 11px; font-weight: 600;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .rk-result-chip.gold { color: #d4a017; border-color: rgba(212,160,23,0.4); background: rgba(212,160,23,0.10); }
+    .rk-result-chip.silver { color: #475569; border-color: rgba(148,163,184,0.4); background: rgba(148,163,184,0.12); }
+    .rk-result-chip.bronze { color: #b45309; border-color: rgba(180,83,9,0.4); background: rgba(180,83,9,0.10); }
+    .rk-result-chip.gray { color: var(--text-secondary); border-color: var(--border); background: var(--card); }
+
+    /* "Mover de categoria" action + form (in-place inside the detail modal) */
+    .rk-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .rk-move-form { display: block; }
+    .rk-move-summary {
+      padding: 12px 14px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .rk-move-warning {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.30);
+      color: #b45309;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Custom in-place confirm para revertir promocion (reemplaza al
+       window.confirm nativo, mismo patron que el move form) */
+    .rk-revert-form { text-align: left; }
+    .rk-revert-icon {
+      width: 56px; height: 56px;
+      border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(245, 158, 11, 0.10);
+      color: #d97706;
+      margin: 0 0 12px 0;
+    }
+    .rk-revert-title {
+      margin: 0 0 8px 0;
+      font-size: 18px; font-weight: 700;
+    }
+    .rk-revert-body {
+      margin: 0 0 16px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .rk-revert-effects {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 14px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .rk-revert-effect {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .rk-revert-effect-icon {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+    }
+    .rk-revert-effect-icon.minus { background: rgba(220,38,38,0.12); color: #dc2626; }
+    .rk-revert-effect-icon.plus  { background: rgba(22,163,74,0.12); color: #16a34a; }
+    .rk-revert-effect-icon.check { background: rgba(37,99,235,0.12); color: #2563eb; font-size: 14px; }
+
+    /* Variante de boton primario en rojo para acciones destructivas */
+    .btn.btn-primary.rk-btn-danger {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+    .btn.btn-primary.rk-btn-danger:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+    }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="profile-page-header">
+    <h1>Ranking</h1>
+    <p style="color:var(--text-secondary);">
+      Ranking de jugadores por categoria. Selecciona una categoria y haz click en un jugador para ver su detalle.
+    </p>
+  </div>
+
+  <div id="rk-error" class="rk-error hidden" role="alert"></div>
+
+  <div class="profile-card" style="margin-bottom:16px;">
+    <div class="profile-card-body">
+      <div class="rk-toolbar">
+        <div class="rk-toolbar-left">
+          <div class="rk-cat-chips" id="rk-cat-chips">
+            <!-- chips renderizados por admin-ranking.js (whitelist hardcoded) -->
+          </div>
+          <p class="rk-cat-meta" id="rk-cat-meta"></p>
+        </div>
+        <div class="rk-toolbar-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="search" id="rk-search" placeholder="Buscar jugador..." autocomplete="off">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-card">
+    <div class="profile-card-body" style="padding:0;">
+      <div id="rk-table-host">
+        <div class="profile-loading-page" style="padding:40px 0;">
+          <div class="spinner" style="width:28px; height:28px;"></div>
+          <p style="font-size:13px;">Cargando ranking...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player detail modal -->
+  <div id="rk-detail-modal" class="rk-modal-overlay" role="dialog" aria-modal="true">
+    <div class="rk-modal">
+      <div class="rk-modal-header">
+        <h3>Detalle del jugador</h3>
+        <button type="button" class="rk-modal-close" data-rk-close aria-label="Cerrar">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="rk-modal-body" id="rk-detail-body">
+        <div class="profile-loading-page" style="padding:40px 0;">
+          <div class="spinner" style="width:28px; height:28px;"></div>
+          <p style="font-size:13px;">Cargando perfil...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root">
+  <div class="admin-shell-loading">
+    <div class="spinner"></div>
+    <p>Cargando ranking...</p>
+  </div>
+</div>
+
+<script src="/api/config"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-ranking.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'ranking' });
+    if (result) APJAdminRanking.start();
+  });
+</script>
+
+</body>
+</html>

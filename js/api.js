@@ -486,6 +486,53 @@ const APJApi = (function() {
     });
   }
 
+  // ----- Ranking (admin) -----
+  // Backend mirrors what the mobile apps consume — no season filter so
+  // the totals match what players see in the app (aggregated across seasons).
+  async function getRanking(categoryId) {
+    return request(`/api/ranking?category_id=${encodeURIComponent(categoryId)}`, {
+      auth: false,
+      redirectOnUnauth: false,
+    });
+  }
+  async function getRankingPlayerProfile(userId, categoryId) {
+    return request(
+      `/api/ranking/user/profile/${encodeURIComponent(userId)}?category_id=${encodeURIComponent(categoryId)}`,
+      { auth: false, redirectOnUnauth: false }
+    );
+  }
+  // Admin-only: move (promote OR demote) a player between categories.
+  // points = null lets the backend default to floor(source/2). Returns
+  // { event_in_id, event_out_id, source_total_before, points_carried,
+  // dest_total_after }. 409 if user already has a promotion_in for dest.
+  async function promotePlayerCategory({ userId, season, fromCategoryId, toCategoryId, points }) {
+    return request('/api/ranking/promote', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_id: userId,
+        season,
+        from_category_id: fromCategoryId,
+        to_category_id: toCategoryId,
+        points: points ?? null,
+      }),
+      redirectOnUnauth: false,
+    });
+  }
+  // Admin-only: undo the most recent promotion of a player in a category.
+  // Returns { source_category_id, source_total_after, dest_total_after,
+  // points_reverted }. 404 if no active promotion exists.
+  async function revertPlayerPromotion({ userId, season, categoryId }) {
+    return request('/api/ranking/promote/revert', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_id: userId,
+        season,
+        category_id: categoryId,
+      }),
+      redirectOnUnauth: false,
+    });
+  }
+
   // ----- Admin: Regular tournament categories CRUD -----
   async function adminListRegularCategories() {
     return request('/api/categories/admin/regular', { redirectOnUnauth: false });
@@ -548,6 +595,10 @@ const APJApi = (function() {
     createConnectAccount,
     createConnectAccountSession,
     getConnectRecentPayments,
+    getRanking,
+    getRankingPlayerProfile,
+    promotePlayerCategory,
+    revertPlayerPromotion,
     adminListRegularCategories,
     adminCreateRegularCategory,
     adminUpdateRegularCategory,

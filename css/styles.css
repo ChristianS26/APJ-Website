@@ -3338,6 +3338,30 @@ body.admin-page textarea {
   overflow: auto;
 }
 
+/* Full-area loader shown while the admin shell boots (auth + tournaments).
+   Replaces #admin-shell-root contents synchronously so the user never sees
+   a blank page while validateToken / getProfile / tournaments resolve. */
+.admin-shell-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  color: var(--text-secondary);
+}
+.admin-shell-loading .spinner {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+  color: var(--primary);
+}
+.admin-shell-loading p {
+  margin: 0;
+  font-size: 13px;
+}
+
 /* Header */
 .admin-header {
   flex: 0 0 var(--admin-header-h);

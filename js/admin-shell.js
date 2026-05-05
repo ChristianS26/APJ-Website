@@ -4,7 +4,7 @@
 // content inside <template id="admin-page-template"> and calls
 // APJAdminShell.mount({ active: 'foo' }).
 //
-// build-id: 2026-05-04T22:30Z — bump to force Vercel cache invalidation.
+// build-id: 2026-05-04T23:30Z — bump to force Vercel cache invalidation.
 
 const APJAdminShell = (function () {
 
@@ -53,6 +53,13 @@ const APJAdminShell = (function () {
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/><circle cx="6" cy="6" r="0.5" fill="currentColor"/><circle cx="6" cy="12" r="0.5" fill="currentColor"/><circle cx="6" cy="18" r="0.5" fill="currentColor"/></svg>'
         },
         {
+          id: 'ranking',
+          label: 'Ranking',
+          href: '/admin/ranking/',
+          icon:
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M17 4h3a2 2 0 0 1 2 2v1a4 4 0 0 1-4 4"/><path d="M7 4H4a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4"/></svg>'
+        },
+        {
           id: 'stripe-connect',
           label: 'Stripe Connect',
           href: '/admin/stripe-connect/',
@@ -71,6 +78,11 @@ const APJAdminShell = (function () {
    */
   async function mount(opts = {}) {
     const activeId = opts.active || '';
+
+    // Show a loader immediately so the user never sees an empty admin area
+    // while auth + profile + tournaments resolve. renderShell / renderNeedLogin
+    // / renderForbidden each overwrite #admin-shell-root, replacing the loader.
+    renderBootLoading(labelForActive(activeId));
 
     if (!APJApi.isAuthenticated()) {
       renderNeedLogin();
@@ -181,6 +193,33 @@ const APJAdminShell = (function () {
     const tpl = document.getElementById('admin-page-template');
     const target = document.getElementById('admin-content');
     if (tpl && target) target.innerHTML = tpl.innerHTML;
+  }
+
+  // Friendly label per section so the loading copy reflects what the user
+  // just clicked instead of a generic "Cargando..." (small UX touch).
+  const SECTION_LABELS = {
+    inscripciones: 'Cargando inscripciones...',
+    restricciones: 'Cargando restricciones...',
+    ajustes: 'Cargando ajustes del torneo...',
+    categories: 'Cargando categorias...',
+    ranking: 'Cargando ranking...',
+    'stripe-connect': 'Cargando Stripe Connect...',
+  };
+
+  function labelForActive(activeId) {
+    return SECTION_LABELS[activeId] || 'Cargando panel...';
+  }
+
+  function renderBootLoading(label) {
+    const root = document.getElementById('admin-shell-root');
+    if (!root) return;
+    root.classList.remove('admin-shell-fallback');
+    root.innerHTML = `
+      <div class="admin-shell-loading">
+        <div class="spinner"></div>
+        <p>${escapeHtml(label)}</p>
+      </div>
+    `;
   }
 
   function renderNeedLogin() {
