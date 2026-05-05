@@ -3,8 +3,15 @@
 // (sidebar + scrollable content area). Each admin page provides its body
 // content inside <template id="admin-page-template"> and calls
 // APJAdminShell.mount({ active: 'foo' }).
+//
+// build-id: 2026-05-04T22:30Z — bump to force Vercel cache invalidation.
 
 const APJAdminShell = (function () {
+
+  const TORNEO_KEY = 'apj_admin_torneo_id';
+  const TORNEO_CHANGED_EVENT = 'apj:torneo:changed';
+
+  let tournamentsCache = null;
 
   const NAV_SECTIONS = [
     {
@@ -12,11 +19,18 @@ const APJAdminShell = (function () {
       label: 'Torneo',
       items: [
         {
-          id: 'torneo',
-          label: 'Torneo',
-          href: '/admin/torneo/',
+          id: 'inscripciones',
+          label: 'Inscripciones',
+          href: '/admin/torneo/inscripciones/',
           icon:
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>'
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg>'
+        },
+        {
+          id: 'ajustes',
+          label: 'Ajustes',
+          href: '/admin/torneo/ajustes/',
+          icon:
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
         }
       ]
     },
@@ -125,6 +139,12 @@ const APJAdminShell = (function () {
 
       <div class="admin-layout">
         <aside class="admin-sidebar" id="admin-sidebar">
+          <div class="admin-sidebar-tournament">
+            <label class="admin-sidebar-tournament-label" for="admin-tournament-selector">Torneo</label>
+            <select id="admin-tournament-selector" class="admin-sidebar-tournament-select">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
           <nav class="admin-nav">${navHtml}</nav>
           <div class="admin-sidebar-footer">
             <a href="https://padeljalisco.com" class="admin-nav-item" target="_blank" rel="noopener noreferrer">
@@ -141,6 +161,7 @@ const APJAdminShell = (function () {
     `;
 
     bindShellEvents();
+    loadTournamentsIntoSelector();
 
     // Pull the page-specific content from the <template> into #admin-content
     const tpl = document.getElementById('admin-page-template');
@@ -201,6 +222,66 @@ const APJAdminShell = (function () {
     overlay?.addEventListener('click', close);
     // Auto-close when navigating via a sidebar link on mobile
     sidebar?.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+
+    // Tournament selector — persist + broadcast
+    document.getElementById('admin-tournament-selector')?.addEventListener('change', (e) => {
+      const id = e.target.value || '';
+      try {
+        if (id) localStorage.setItem(TORNEO_KEY, id);
+        else localStorage.removeItem(TORNEO_KEY);
+      } catch (_) { /* ignore */ }
+      window.dispatchEvent(new CustomEvent(TORNEO_CHANGED_EVENT, { detail: { id } }));
+    });
+  }
+
+  async function loadTournamentsIntoSelector() {
+    const select = document.getElementById('admin-tournament-selector');
+    if (!select) return;
+    try {
+      const list = await APJApi.getTournaments();
+      tournamentsCache = (Array.isArray(list) ? list : [])
+        .slice()
+        .sort((a, b) => (b.start_date || '').localeCompare(a.start_date || ''));
+
+      let savedId = '';
+      try { savedId = localStorage.getItem(TORNEO_KEY) || ''; } catch (_) {}
+      if (savedId && !tournamentsCache.find(t => t.id === savedId)) {
+        savedId = '';
+        try { localStorage.removeItem(TORNEO_KEY); } catch (_) {}
+      }
+
+      if (tournamentsCache.length === 0) {
+        select.innerHTML = '<option value="">No hay torneos</option>';
+        return;
+      }
+
+      const opts = ['<option value="">— Selecciona un torneo —</option>']
+        .concat(tournamentsCache.map(t => {
+          const date = (t.start_date || '').slice(0, 10);
+          const inactive = t.is_enabled === false ? ' (inactivo)' : '';
+          return `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)} — ${escapeHtml(date)}${inactive}</option>`;
+        }));
+      select.innerHTML = opts.join('');
+      select.value = savedId || '';
+
+      // Notify the page that tournaments are ready (covers case where
+      // the page mounted before the selector finished loading).
+      window.dispatchEvent(new CustomEvent(TORNEO_CHANGED_EVENT, { detail: { id: savedId } }));
+    } catch (e) {
+      select.innerHTML = '<option value="">Error cargando torneos</option>';
+    }
+  }
+
+  function getSelectedTournamentId() {
+    try { return localStorage.getItem(TORNEO_KEY) || ''; } catch (_) { return ''; }
+  }
+
+  function getCachedTournaments() {
+    return tournamentsCache || [];
+  }
+
+  function getCachedTournament(id) {
+    return (tournamentsCache || []).find(t => t.id === id) || null;
   }
 
   function escapeHtml(value) {
@@ -210,5 +291,11 @@ const APJAdminShell = (function () {
   }
   function escapeAttr(value) { return escapeHtml(value); }
 
-  return { mount };
+  return {
+    mount,
+    getSelectedTournamentId,
+    getCachedTournaments,
+    getCachedTournament,
+    TORNEO_CHANGED_EVENT,
+  };
 })();
