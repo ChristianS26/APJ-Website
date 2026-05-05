@@ -94,6 +94,9 @@ const APJRegistration = (function() {
       // Store resolved tournament for use during payment/registration
       currentTournament = tournament;
 
+      // Hydrate the restriction picker with this tournament's admin config
+      RestrictionPicker.init(tournament.id || tournament.tournament_id);
+
       // Update tournament info
       const tournamentNameEl = document.getElementById('tournament-name');
       if (tournamentNameEl) {
@@ -943,7 +946,7 @@ const APJRegistration = (function() {
         categoryId: selectedCategory.category_id, // Integer category ID
         tournamentId: String(tournament.id || tournament.tournament_id),
         playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
-        restriction: document.getElementById('player-restriction-code')?.value?.trim() || ''
+        restriction: RestrictionPicker.serialize() || ''
       };
 
       console.log('[APJ] Redeem code request:', JSON.stringify(redeemRequest, null, 2));
@@ -1005,7 +1008,7 @@ const APJRegistration = (function() {
     const paymentData = {
       amount: amount,                                    // Full value, not cents
       currency: 'mxn',
-      restriction: document.getElementById('player-restriction')?.value?.trim() || '',
+      restriction: RestrictionPicker.serialize() || '',
       playerName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
       playerUid: String(userData.uid || userData.id),
       partnerUid: String(selectedPartner.uid || selectedPartner.id),
