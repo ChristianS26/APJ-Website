@@ -54,11 +54,14 @@ const APJAdminTorneoInscripciones = (function () {
       const catName = group.categoryName || group.category?.name || 'Sin categoria';
       const teams = Array.isArray(group.teams) ? group.teams : [];
       const rows = teams.map(t => renderRow(t)).join('');
+      const color = colorForCategory(catName);
+      const headerStyle = `background: ${color.bg}; border-left: 4px solid ${color.accent};`;
+      const countStyle = `color: ${color.accent}; border-color: ${color.accent}; background: ${color.bg};`;
       return `
         <div class="ins-category-block">
-          <div class="ins-category-header">
+          <div class="ins-category-header" style="${headerStyle}">
             <h3>${escapeHtml(catName)}</h3>
-            <span class="ins-category-count">${teams.length} ${teams.length === 1 ? 'equipo' : 'equipos'}</span>
+            <span class="ins-category-count" style="${countStyle}">${teams.length} ${teams.length === 1 ? 'equipo' : 'equipos'}</span>
           </div>
           <div class="ins-table-wrap">
             <table class="ins-table">
@@ -76,6 +79,27 @@ const APJAdminTorneoInscripciones = (function () {
           </div>
         </div>`;
     }).join('');
+  }
+
+  // ----- Category color palette -----
+  // Stable, distinct per category name so the same category keeps its color
+  // across reloads and tournaments. Light tinted bg + accent border.
+  const CATEGORY_PALETTE = [
+    { bg: 'rgba(99,102,241,0.12)', accent: '#6366f1' },  // indigo
+    { bg: 'rgba(236,72,153,0.12)', accent: '#ec4899' },  // pink
+    { bg: 'rgba(16,185,129,0.12)', accent: '#10b981' },  // emerald
+    { bg: 'rgba(245,158,11,0.14)', accent: '#d97706' },  // amber
+    { bg: 'rgba(14,165,233,0.12)', accent: '#0ea5e9' },  // sky
+    { bg: 'rgba(168,85,247,0.12)', accent: '#a855f7' },  // purple
+    { bg: 'rgba(244,63,94,0.12)',  accent: '#f43f5e' },  // rose
+    { bg: 'rgba(20,184,166,0.12)', accent: '#14b8a6' },  // teal
+  ];
+
+  function colorForCategory(name) {
+    const s = String(name || '');
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    return CATEGORY_PALETTE[Math.abs(h) % CATEGORY_PALETTE.length];
   }
 
   function renderRow(t) {
