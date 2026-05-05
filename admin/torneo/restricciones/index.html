@@ -156,15 +156,21 @@
           <div id="restr-time-fields" class="time-row hidden">
             <div class="form-group">
               <label class="form-label" for="restr-time-from">Desde</label>
-              <input type="time" id="restr-time-from" class="form-input" step="900">
+              <select id="restr-time-from" class="form-select"></select>
             </div>
             <div class="form-group">
               <label class="form-label" for="restr-time-to">Hasta</label>
-              <input type="time" id="restr-time-to" class="form-input" step="900">
+              <select id="restr-time-to" class="form-select"></select>
             </div>
             <div class="form-group">
               <label class="form-label" for="restr-slot-min">Intervalo (min)</label>
-              <input type="number" id="restr-slot-min" class="form-input" min="5" max="180" step="5" value="60">
+              <select id="restr-slot-min" class="form-select">
+                <option value="15">15 min</option>
+                <option value="30" selected>30 min</option>
+                <option value="60">60 min</option>
+                <option value="90">90 min</option>
+                <option value="120">120 min</option>
+              </select>
             </div>
           </div>
         </div>

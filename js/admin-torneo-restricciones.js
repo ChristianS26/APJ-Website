@@ -27,10 +27,51 @@ const APJAdminTorneoRestricciones = (function () {
     };
   }
 
+  // Selectable time slots: 30-min increments, 1pm (13:00) to midnight (23:59).
+  // 23:59 is the canonical "midnight" upper bound — the backend stores TIME so
+  // we can't use 24:00; 23:59 is the conventional end-of-day sentinel.
+  const SLOTS = (() => {
+    const out = [];
+    for (let h = 13; h <= 23; h++) {
+      out.push(`${pad(h)}:00`);
+      out.push(`${pad(h)}:30`);
+    }
+    out.push('23:59');
+    return out;
+  })();
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function formatTimeLabel(t) {
+    if (!t) return '';
+    if (t === '23:59') return 'Medianoche (12:00 AM)';
+    const [h, m] = t.split(':').map(Number);
+    const hour12 = ((h + 11) % 12) + 1;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    return `${hour12}:${pad(m)} ${ampm}`;
+  }
+
   function start() {
     bind();
+    populateTimeSelects();
     refresh();
     window.addEventListener(APJAdminShell.TORNEO_CHANGED_EVENT, refresh);
+  }
+
+  function populateTimeSelects() {
+    const from = document.getElementById('restr-time-from');
+    const to = document.getElementById('restr-time-to');
+    if (!from || !to) return;
+
+    // From: every slot except 23:59 (can't start at the very end of day)
+    const fromOpts = SLOTS.filter(t => t !== '23:59')
+      .map(t => `<option value="${t}">${formatTimeLabel(t)}</option>`).join('');
+    // To: every slot except 13:00 (must be after the earliest possible start)
+    const toOpts = SLOTS.filter(t => t !== '13:00')
+      .map(t => `<option value="${t}">${formatTimeLabel(t)}</option>`).join('');
+
+    from.innerHTML = '<option value="">Selecciona</option>' + fromOpts;
+    to.innerHTML = '<option value="">Selecciona</option>' + toOpts;
   }
 
   function bind() {
@@ -43,17 +84,23 @@ const APJAdminTorneoRestricciones = (function () {
       document.getElementById('restr-time-fields')?.classList.toggle('hidden', !state.hasTimeRange);
       markDirty();
     });
-    document.getElementById('restr-time-from')?.addEventListener('input', e => {
+    document.getElementById('restr-time-from')?.addEventListener('change', e => {
       state.timeFrom = e.target.value;
+      // If "Hasta" is now <= From, bump it to the next available slot
+      if (state.timeFrom && state.timeTo && state.timeFrom >= state.timeTo) {
+        const idx = SLOTS.indexOf(state.timeFrom);
+        const next = SLOTS[idx + 1] || '23:59';
+        state.timeTo = next;
+        document.getElementById('restr-time-to').value = next;
+      }
       markDirty();
     });
-    document.getElementById('restr-time-to')?.addEventListener('input', e => {
+    document.getElementById('restr-time-to')?.addEventListener('change', e => {
       state.timeTo = e.target.value;
       markDirty();
     });
     document.getElementById('restr-slot-min')?.addEventListener('change', e => {
       const v = clamp(parseInt(e.target.value, 10) || 60, 5, 180);
-      e.target.value = v;
       state.slotMinutes = v;
       markDirty();
     });
