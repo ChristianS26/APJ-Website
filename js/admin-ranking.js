@@ -288,7 +288,7 @@ const APJAdminRanking = (function () {
         <button type="button" class="btn btn-outline" id="rk-move-btn">
           Mover a otra categoría
         </button>
-        ${history.length === 0 ? `
+        ${(p.active_promotion && history.length === 0) ? `
         <button type="button" class="btn btn-outline" id="rk-revert-btn">
           Revertir promoción
         </button>
@@ -315,7 +315,9 @@ const APJAdminRanking = (function () {
 
     const fullName = `${p.user?.first_name || ''} ${p.user?.last_name || ''}`.trim() || 'jugador';
     const catName = p.category?.name || 'esta categoría';
-    const currentPts = p.points ?? 0;
+    const ap = p.active_promotion; // ya garantizada por la condicion del boton
+    const sourceName = ap?.source_category_name || 'su categoría origen';
+    const pointsCarried = ap?.points_carried ?? (p.points ?? 0);
 
     body.innerHTML = `
       <div class="rk-revert-form">
@@ -325,25 +327,21 @@ const APJAdminRanking = (function () {
             <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
           </svg>
         </div>
-        <h3 class="rk-revert-title">¿Revertir la última promoción?</h3>
+        <h3 class="rk-revert-title">¿Revertir la promoción?</h3>
         <p class="rk-revert-body">
-          Vas a deshacer la última promoción de
-          <strong>${escapeHtml(fullName)}</strong> en
-          <strong>${escapeHtml(catName)}</strong>.
+          Vas a deshacer la promoción de
+          <strong>${escapeHtml(fullName)}</strong>:
+          <strong>${escapeHtml(sourceName)}</strong> → <strong>${escapeHtml(catName)}</strong>.
         </p>
 
         <div class="rk-revert-effects">
           <div class="rk-revert-effect">
             <span class="rk-revert-effect-icon minus">−</span>
-            <span>Sus <strong>${currentPts} pts</strong> en ${escapeHtml(catName)} se eliminan.</span>
+            <span>Los <strong>${pointsCarried} pts</strong> que se le otorgaron en ${escapeHtml(catName)} se eliminan.</span>
           </div>
           <div class="rk-revert-effect">
             <span class="rk-revert-effect-icon plus">+</span>
-            <span>Se le restauran los puntos originales en la categoría desde la cual fue promovida.</span>
-          </div>
-          <div class="rk-revert-effect">
-            <span class="rk-revert-effect-icon check">✓</span>
-            <span>Si jugó torneos en ${escapeHtml(catName)} después de la promoción, esos puntos se conservan.</span>
+            <span>Se le restauran los puntos originales en <strong>${escapeHtml(sourceName)}</strong>.</span>
           </div>
         </div>
 
