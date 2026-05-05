@@ -486,6 +486,22 @@ const APJApi = (function() {
     });
   }
 
+  // ----- Ranking (admin) -----
+  // Backend mirrors what the mobile apps consume — no season filter so
+  // the totals match what players see in the app (aggregated across seasons).
+  async function getRanking(categoryId) {
+    return request(`/api/ranking?category_id=${encodeURIComponent(categoryId)}`, {
+      auth: false,
+      redirectOnUnauth: false,
+    });
+  }
+  async function getRankingPlayerProfile(userId, categoryId) {
+    return request(
+      `/api/ranking/user/profile/${encodeURIComponent(userId)}?category_id=${encodeURIComponent(categoryId)}`,
+      { auth: false, redirectOnUnauth: false }
+    );
+  }
+
   // ----- Admin: Regular tournament categories CRUD -----
   async function adminListRegularCategories() {
     return request('/api/categories/admin/regular', { redirectOnUnauth: false });
@@ -548,6 +564,8 @@ const APJApi = (function() {
     createConnectAccount,
     createConnectAccountSession,
     getConnectRecentPayments,
+    getRanking,
+    getRankingPlayerProfile,
     adminListRegularCategories,
     adminCreateRegularCategory,
     adminUpdateRegularCategory,
