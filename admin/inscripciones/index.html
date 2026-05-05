@@ -11,6 +11,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <style>
+    /* Inscripciones es la pagina mas tabular del admin: necesita mas
+       ancho que el default de 960px para que las columnas (jugadores +
+       pagos + restriccion) respiren sin scroll horizontal. */
+    .admin-main #admin-content { max-width: 1280px; }
+
     .ins-category-block { margin-bottom: 24px; }
     .ins-category-header {
       padding: 12px 16px;
@@ -28,13 +33,11 @@
       border: 1px solid var(--border);
     }
     .ins-table-wrap {
-      overflow-x: auto;
       border: 1px solid var(--border);
       border-radius: 0 0 8px 8px;
     }
     .ins-table {
       width: 100%;
-      min-width: 960px;
       border-collapse: collapse;
       font-size: 13px;
       table-layout: fixed;
