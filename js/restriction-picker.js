@@ -108,12 +108,13 @@ const RestrictionPicker = (function () {
     }
 
     if (showTime) {
-      const select = document.getElementById('restriction-time-from');
-      if (select) {
+      const wrap = document.getElementById('restriction-time-chips');
+      if (wrap) {
         const slots = buildTimeSlots(config.time_range_from, config.time_range_to, config.time_slot_minutes);
-        select.innerHTML = '<option value="">Selecciona una hora</option>' + slots
-          .map(t => `<option value="${t}"${t === state.selectedTime ? ' selected' : ''}>${formatTimeLabel(t)}</option>`)
-          .join('');
+        wrap.innerHTML = slots.map(t => {
+          const active = state.selectedTime === t ? ' active' : '';
+          return `<button type="button" class="time-chip${active}" data-time="${t}">${formatTimeLabel(t)}</button>`;
+        }).join('');
       }
     }
   }
@@ -154,9 +155,13 @@ const RestrictionPicker = (function () {
       render();
     });
 
-    // Time select
-    document.getElementById('restriction-time-from')?.addEventListener('change', (e) => {
-      state.selectedTime = e.target.value || '';
+    // Time chips (single-select; delegated)
+    document.getElementById('restriction-time-chips')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.time-chip');
+      if (!btn) return;
+      const t = btn.getAttribute('data-time') || '';
+      state.selectedTime = (state.selectedTime === t) ? '' : t;
+      render();
     });
   }
 
