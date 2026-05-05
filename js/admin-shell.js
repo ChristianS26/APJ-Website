@@ -4,7 +4,7 @@
 // content inside <template id="admin-page-template"> and calls
 // APJAdminShell.mount({ active: 'foo' }).
 //
-// build-id: 2026-05-04T22:30Z — bump to force Vercel cache invalidation.
+// build-id: 2026-05-04T23:00Z — bump to force Vercel cache invalidation.
 
 const APJAdminShell = (function () {
 
@@ -71,6 +71,11 @@ const APJAdminShell = (function () {
    */
   async function mount(opts = {}) {
     const activeId = opts.active || '';
+
+    // Show a loader immediately so the user never sees an empty admin area
+    // while auth + profile + tournaments resolve. renderShell / renderNeedLogin
+    // / renderForbidden each overwrite #admin-shell-root, replacing the loader.
+    renderBootLoading(labelForActive(activeId));
 
     if (!APJApi.isAuthenticated()) {
       renderNeedLogin();
@@ -181,6 +186,32 @@ const APJAdminShell = (function () {
     const tpl = document.getElementById('admin-page-template');
     const target = document.getElementById('admin-content');
     if (tpl && target) target.innerHTML = tpl.innerHTML;
+  }
+
+  // Friendly label per section so the loading copy reflects what the user
+  // just clicked instead of a generic "Cargando..." (small UX touch).
+  const SECTION_LABELS = {
+    inscripciones: 'Cargando inscripciones...',
+    restricciones: 'Cargando restricciones...',
+    ajustes: 'Cargando ajustes del torneo...',
+    categories: 'Cargando categorias...',
+    'stripe-connect': 'Cargando Stripe Connect...',
+  };
+
+  function labelForActive(activeId) {
+    return SECTION_LABELS[activeId] || 'Cargando panel...';
+  }
+
+  function renderBootLoading(label) {
+    const root = document.getElementById('admin-shell-root');
+    if (!root) return;
+    root.classList.remove('admin-shell-fallback');
+    root.innerHTML = `
+      <div class="admin-shell-loading">
+        <div class="spinner"></div>
+        <p>${escapeHtml(label)}</p>
+      </div>
+    `;
   }
 
   function renderNeedLogin() {
