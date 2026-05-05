@@ -3,16 +3,17 @@
 // =============================================
 // ENVIRONMENT — selected automatically from the hostname.
 //
-// Flip DEFAULT_ENV to 'prod' once the prod Railway backend has the
-// Stripe Connect endpoints and the prod Supabase project has the
-// stripe_connect_settings migration. Until then, the bare
-// padeljalisco.com / admin.padeljalisco.com hosts keep using stage so
-// the live site doesn't 404 on Connect endpoints.
+// padeljalisco.com / admin.padeljalisco.com → DEFAULT_ENV ('prod') so the
+// public site and the admin panel hit the prod Railway backend (the only
+// one that the mobile apps and existing inscriptions expect).
+//
+// stage.* hosts and *.vercel.app previews are forced to 'stage' below so
+// staging keeps using the stage Railway backend.
 //
 // Override per-device with:
 //   localStorage.setItem('apj_env_override', 'stage' | 'prod')
 // =============================================
-const DEFAULT_ENV = 'stage';
+const DEFAULT_ENV = 'prod';
 
 function detectEnv() {
   if (typeof window === 'undefined') return DEFAULT_ENV;
