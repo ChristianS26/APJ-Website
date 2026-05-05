@@ -67,6 +67,20 @@
       width: fit-content;
     }
     .ins-restriction-chip-icon { font-size: 13px; line-height: 1; }
+    .ins-restriction-chip-initials {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 22px; height: 18px;
+      padding: 0 5px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.04em;
+      border-radius: 9999px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+    .ins-restriction-chip.green .ins-restriction-chip-initials { background: #16a34a; }
+    .ins-restriction-chip.red   .ins-restriction-chip-initials { background: #dc2626; }
+    .ins-restriction-chip.blue  .ins-restriction-chip-initials { background: #2563eb; }
+    .ins-restriction-chip.gray  .ins-restriction-chip-initials { background: var(--text-secondary); }
     .ins-restriction-chip.green {
       color: #16a34a; border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.08);
     }

@@ -146,8 +146,7 @@ const APJAdminTorneoInscripciones = (function () {
       .filter(Boolean)
       .map(splitNameAndPayload);
 
-    const showNames = entries.length > 1;
-    const chips = entries.flatMap(e => entryChips(e, showNames));
+    const chips = entries.flatMap(e => entryChips(e));
     if (chips.length === 0) {
       return restrictionChip('💬', escapeHtml(raw), 'gray');
     }
@@ -168,15 +167,12 @@ const APJAdminTorneoInscripciones = (function () {
     return { name: maybeName, payload: rest };
   }
 
-  function entryChips(entry, showNames) {
+  function entryChips(entry) {
     const parsed = tryParseJson(entry.payload);
-    const prefix = showNames && entry.name ? `${shortName(entry.name)}: ` : '';
+    const initials = entry.name ? initialsOf(entry.name) : null;
     if (!parsed || typeof parsed !== 'object') {
-      // Couldn't parse — keep the raw payload as a neutral chip.
-      const text = (entry.name && !showNames)
-        ? entry.payload
-        : `${prefix}${entry.payload}`;
-      return [restrictionChip('💬', escapeHtml(text), 'gray')];
+      // Couldn't parse — show the raw payload as a neutral chip.
+      return [restrictionChip('💬', escapeHtml(entry.payload), 'gray', initials)];
     }
     const chips = [];
     const days = Array.isArray(parsed.days)
@@ -190,31 +186,31 @@ const APJAdminTorneoInscripciones = (function () {
         .filter(Boolean)
         .join(', ');
       if (parsed.mode === 'not') {
-        chips.push(restrictionChip('🚫', `${escapeHtml(prefix)}No puede jugar ${escapeHtml(names)}`, 'red'));
+        chips.push(restrictionChip('🚫', `No puede jugar ${escapeHtml(names)}`, 'red', initials));
       } else {
-        chips.push(restrictionChip('✅', `${escapeHtml(prefix)}Solo juega ${escapeHtml(names)}`, 'green'));
+        chips.push(restrictionChip('✅', `Solo juega ${escapeHtml(names)}`, 'green', initials));
       }
     }
     if (typeof parsed.time_from === 'string' && /^\d{2}:\d{2}/.test(parsed.time_from)) {
-      chips.push(restrictionChip('🕐', `${escapeHtml(prefix)}Desde ${escapeHtml(formatTime12(parsed.time_from))}`, 'blue'));
+      chips.push(restrictionChip('🕐', `Desde ${escapeHtml(formatTime12(parsed.time_from))}`, 'blue', initials));
     }
     if (chips.length === 0) {
-      // Structured but empty — keep the prefixed payload visible
-      const text = (entry.name && !showNames)
-        ? entry.payload
-        : `${prefix}${entry.payload}`;
-      return [restrictionChip('💬', escapeHtml(text), 'gray')];
+      return [restrictionChip('💬', escapeHtml(entry.payload), 'gray', initials)];
     }
     return chips;
   }
 
-  function shortName(full) {
-    const parts = String(full).trim().split(/\s+/);
-    return parts[0] || full;
+  function initialsOf(full) {
+    const parts = String(full).trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '';
+    return parts.slice(0, 3).map(p => p[0]?.toUpperCase() || '').join('');
   }
 
-  function restrictionChip(icon, label, color) {
-    return `<span class="ins-restriction-chip ${color}"><span class="ins-restriction-chip-icon">${icon}</span><span>${label}</span></span>`;
+  function restrictionChip(icon, label, color, initials) {
+    const badge = initials
+      ? `<span class="ins-restriction-chip-initials" title="${escapeHtml(initials)}">${escapeHtml(initials)}</span>`
+      : '';
+    return `<span class="ins-restriction-chip ${color}">${badge}<span class="ins-restriction-chip-icon">${icon}</span><span>${label}</span></span>`;
   }
 
   function tryParseJson(s) {
