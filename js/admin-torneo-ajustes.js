@@ -24,11 +24,12 @@ const APJAdminTorneoAjustes = (function () {
     document.getElementById('aj-enabled')?.addEventListener('change', onToggleEnabled);
     document.getElementById('aj-registration-open')?.addEventListener('change', onToggleRegistration);
 
-    // Live preview: re-render the mock card on every change in name/date/location/registration
-    ['aj-name', 'aj-start', 'aj-end', 'aj-location', 'aj-registration-open'].forEach(id => {
-      document.getElementById(id)?.addEventListener('input', refreshMockCard);
-      document.getElementById(id)?.addEventListener('change', refreshMockCard);
-    });
+    // Live preview: re-render the mock card on every change to a relevant field
+    ['aj-name', 'aj-start', 'aj-end', 'aj-type', 'aj-max-points', 'aj-registration-open']
+      .forEach(id => {
+        document.getElementById(id)?.addEventListener('input', refreshMockCard);
+        document.getElementById(id)?.addEventListener('change', refreshMockCard);
+      });
 
     // Logo uploader
     document.getElementById('aj-logo-upload-btn')?.addEventListener('click', () => {
@@ -260,44 +261,81 @@ const APJAdminTorneoAjustes = (function () {
   }
 
   // ----- Live mock card preview -----
+  // Mirrors the Tournament card from the mobile app:
+  // [logo 76×92] [name (+ lightning if Relampago) / max_points / date / status chip]
   function refreshMockCard() {
     const name = document.getElementById('aj-name')?.value.trim() || 'Nombre del torneo';
     const start = document.getElementById('aj-start')?.value || '';
     const end = document.getElementById('aj-end')?.value || '';
-    const location = document.getElementById('aj-location')?.value.trim() || 'Ubicacion';
+    const type = document.getElementById('aj-type')?.value || 'Regular';
+    const maxPoints = document.getElementById('aj-max-points')?.value.trim() || '';
     const logo = document.getElementById('aj-club-logo')?.value.trim();
     const open = !!document.getElementById('aj-registration-open')?.checked;
 
+    // Name + lightning chip
     document.getElementById('aj-mock-name').textContent = name;
-    document.getElementById('aj-mock-date').textContent = formatDateRange(start, end);
-    document.getElementById('aj-mock-location').textContent = location;
+    const lightning = document.getElementById('aj-mock-lightning');
+    if (lightning) lightning.classList.toggle('hidden', type !== 'Relampago');
 
+    // Max points (small green text under name) — hidden if empty
+    document.getElementById('aj-mock-points').textContent = maxPoints;
+
+    // Date row uses the app's "startDate • endDate" format with raw ISO dates
+    document.getElementById('aj-mock-date').textContent = mobileDateFormat(start, end);
+
+    // Logo image / placeholder
     const img = document.getElementById('aj-mock-image');
+    const placeholder = document.getElementById('aj-mock-logo-placeholder');
     if (img) {
       if (logo) {
         img.src = logo;
         img.style.display = 'block';
+        placeholder?.classList.add('hidden');
       } else {
         img.removeAttribute('src');
         img.style.display = 'none';
+        placeholder?.classList.remove('hidden');
       }
     }
 
+    // Status chip — same logic as the app:
+    //   isExpired       → "Finalizado" (red)
+    //   registrationOpen → "Inscripciones abiertas" (green)
+    //   start in future  → "Próximamente" (blue)
+    //   otherwise        → "Inscripciones cerradas" (red)
     const status = document.getElementById('aj-mock-status');
     if (status) {
-      status.textContent = open ? 'Inscripciones abiertas' : 'Inscripciones cerradas';
-      status.classList.toggle('closed', !open);
+      const expired = isExpired(end);
+      let label, cls;
+      if (expired) {
+        label = 'Finalizado'; cls = 'finalized';
+      } else if (open) {
+        label = 'Inscripciones abiertas'; cls = 'open';
+      } else if (isFuture(start)) {
+        label = 'Próximamente'; cls = 'upcoming';
+      } else {
+        label = 'Inscripciones cerradas'; cls = 'closed';
+      }
+      status.textContent = label;
+      status.className = `app-card-status ${cls}`;
     }
   }
 
-  function formatDateRange(start, end) {
+  function mobileDateFormat(start, end) {
     if (!start && !end) return 'Fecha';
-    if (start && end) {
-      const a = formatDateShort(start);
-      const b = formatDateShort(end);
-      return a === b ? a : `${a} - ${b}`;
-    }
-    return formatDateShort(start || end);
+    if (start && end) return `${start} • ${end}`;
+    return start || end;
+  }
+
+  function isFuture(iso) {
+    if (!iso) return false;
+    const d = new Date(iso + 'T23:59:59');
+    return !isNaN(d.getTime()) && d.getTime() > Date.now();
+  }
+  function isExpired(iso) {
+    if (!iso) return false;
+    const d = new Date(iso + 'T23:59:59');
+    return !isNaN(d.getTime()) && d.getTime() < Date.now();
   }
 
   function formatDateShort(iso) {
