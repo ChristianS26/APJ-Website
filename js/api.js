@@ -433,10 +433,16 @@ const APJApi = (function() {
       redirectOnUnauth: false,
     });
   }
-  async function updateTournament(id, payload) {
+  async function updateTournament(id, payload, categoryIds) {
+    // Backend expects UpdateTournamentWithCategoriesRequest:
+    //   { tournament: UpdateTournamentRequest, categoryIds: List<Int> }
+    // categoryIds must be non-empty and integers > 0.
+    const ids = (Array.isArray(categoryIds) ? categoryIds : [])
+      .map(v => parseInt(v, 10))
+      .filter(n => Number.isFinite(n) && n > 0);
     return request(`/api/tournaments/${encodeURIComponent(id)}`, {
       method: 'PATCH',
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ tournament: payload, categoryIds: ids }),
       redirectOnUnauth: false,
     });
   }

@@ -118,8 +118,13 @@ const APJAdminTorneoAjustes = (function () {
     const orig = btn.textContent;
     btn.innerHTML = '<span class="spinner"></span> Guardando...';
 
+    const categoryIds = currentTournament.categoryIds || [];
+    if (categoryIds.length === 0) {
+      return APJToast?.error?.('Sin categorías', 'Este torneo no tiene categorías asignadas. Asígnaselas desde la app/dashboard antes de editar aquí.');
+    }
+
     try {
-      await APJApi.updateTournament(currentTournament.id, payload);
+      await APJApi.updateTournament(currentTournament.id, payload, categoryIds);
       Object.assign(currentTournament, payload);
       APJToast?.success?.('Listo', 'Cambios guardados');
     } catch (error) {
@@ -219,10 +224,11 @@ const APJAdminTorneoAjustes = (function () {
     try {
       // The PATCH club-logo endpoint requires non-blank; for "clear" we
       // PATCH the tournament directly nulling the field.
-      await APJApi.updateTournament(currentTournament.id, {
-        ...readForm(),
-        club_logo_url: null,
-      });
+      await APJApi.updateTournament(
+        currentTournament.id,
+        { ...readForm(), club_logo_url: null },
+        currentTournament.categoryIds || [],
+      );
       currentTournament.club_logo_url = null;
       document.getElementById('aj-club-logo').value = '';
       renderLogoPreview('');
