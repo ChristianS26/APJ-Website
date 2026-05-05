@@ -121,24 +121,16 @@
         </div>
 
         <div id="restriction-picker" class="hidden">
-          <div class="restriction-mode-row">
-            <button type="button" class="restriction-mode-btn active" data-mode="only">Solo puedo jugar</button>
-            <button type="button" class="restriction-mode-btn" data-mode="not">No puedo jugar</button>
+          <div id="restriction-type-options" class="restriction-type-options"></div>
+
+          <div id="restriction-day-block" class="hidden">
+            <div class="restriction-section-title">Selecciona el día</div>
+            <div class="day-chips" id="restriction-day-chips"></div>
           </div>
 
-          <div class="restriction-section-title">Dias</div>
-          <div class="day-chips" id="restriction-day-chips"></div>
-
           <div id="restriction-time-block" class="hidden">
-            <div class="restriction-section-title" style="display:flex; align-items:center; justify-content:space-between;">
-              <span>Horario minimo</span>
-              <label class="switch" style="transform: scale(0.85);">
-                <input type="checkbox" id="restriction-time-on">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p class="restriction-hint">Si activas, indicas que solo puedes jugar a partir de cierta hora.</p>
-            <select id="restriction-time-from" class="form-select hidden" style="max-width: 240px;"></select>
+            <div class="restriction-section-title">Selecciona la hora mínima</div>
+            <select id="restriction-time-from" class="form-select" style="max-width: 240px;"></select>
           </div>
         </div>
       </div>
