@@ -95,8 +95,66 @@ const APJAdminTorneoInscripciones = (function () {
         </td>
         <td>${pill(aPaid ? 'Pagado' : 'Pendiente', aPaid ? 'green' : 'gray')}</td>
         <td>${pill(bPaid ? 'Pagado' : 'Pendiente', bPaid ? 'green' : 'gray')}</td>
-        <td style="color:var(--text-secondary);">${escapeHtml(t.restriction || '—')}</td>
+        <td style="color:var(--text-secondary); white-space: pre-line;">${formatRestriction(t.restriction)}</td>
       </tr>`;
+  }
+
+  // ----- Restriction formatting -----
+  // Accepts both the structured JSON contract emitted by the new restriction
+  // picker (apps + web /inscripcion/) and the legacy free-text strings:
+  //   { mode?: 'only'|'not', days?: number[1..7], time_from?: 'HH:mm' }
+  // Returns escaped HTML safe to drop into a <td>. Multiple lines separated
+  // by \n (CSS white-space: pre-line renders them).
+  const ISO_DAY_NAMES = {
+    1: 'Lunes', 2: 'Martes', 3: 'Miercoles', 4: 'Jueves',
+    5: 'Viernes', 6: 'Sabado', 7: 'Domingo',
+  };
+
+  function formatRestriction(raw) {
+    if (!raw || !String(raw).trim()) return '—';
+    const parsed = tryParseJson(raw);
+    if (!parsed || typeof parsed !== 'object') {
+      // Legacy free text — show as-is.
+      return escapeHtml(raw);
+    }
+    const lines = [];
+    const days = Array.isArray(parsed.days)
+      ? parsed.days.filter(d => Number.isInteger(d) && d >= 1 && d <= 7)
+      : [];
+    if (days.length > 0) {
+      const sortedNames = days
+        .slice()
+        .sort((a, b) => a - b)
+        .map(d => ISO_DAY_NAMES[d])
+        .filter(Boolean)
+        .join(', ');
+      const mode = parsed.mode === 'not' ? 'No puedo jugar' : 'Solo puedo jugar';
+      lines.push(`${mode}: ${sortedNames}`);
+    }
+    if (typeof parsed.time_from === 'string' && /^\d{2}:\d{2}/.test(parsed.time_from)) {
+      lines.push(`Puedo jugar a partir de las: ${formatTime12(parsed.time_from)}`);
+    }
+    if (lines.length === 0) {
+      // Structured but empty — fall back to raw
+      return escapeHtml(raw);
+    }
+    return lines.map(escapeHtml).join('\n');
+  }
+
+  function tryParseJson(s) {
+    const text = String(s).trim();
+    if (!text.startsWith('{') && !text.startsWith('[')) return null;
+    try { return JSON.parse(text); } catch (_) { return null; }
+  }
+
+  function formatTime12(hhmm) {
+    const [hStr, mStr] = hhmm.split(':');
+    const h = parseInt(hStr, 10);
+    const m = parseInt(mStr, 10);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return hhmm;
+    const hour12 = ((h + 11) % 12) + 1;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`;
   }
 
   function nameOf(p) {
