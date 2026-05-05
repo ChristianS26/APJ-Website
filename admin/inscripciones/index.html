@@ -41,10 +41,26 @@
       white-space: nowrap;
     }
     .ins-table tbody td {
-      padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
     }
+    .ins-table tbody tr { height: 64px; }
     .ins-table tbody tr:last-child td { border-bottom: none; }
     .ins-table tbody tr:hover { background: var(--card-hover); }
+    /* Fixed two-line layout for the player cells so a missing phone doesn't
+       collapse the row. The second line keeps its baseline (or a non-breaking
+       space if no phone) and content starts from the top of the cell area. */
+    .ins-player-cell {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 2px;
+      min-height: 36px;
+    }
+    .ins-player-cell .name { font-weight: 600; }
+    .ins-player-cell .phone {
+      color: var(--text-secondary); font-size: 12px;
+      min-height: 14px;
+    }
     .ins-paid-pill {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 2px 8px; border-radius: 9999px;

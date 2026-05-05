@@ -109,18 +109,20 @@ const APJAdminTorneoInscripciones = (function () {
     const bPaid = !!t.playerBPaid;
     return `
       <tr>
-        <td>
-          <div><strong>${escapeHtml(nameOf(a))}</strong></div>
-          ${a.phone ? `<div style="color:var(--text-secondary); font-size:12px;">${escapeHtml(a.phone)}</div>` : ''}
-        </td>
-        <td>
-          <div><strong>${escapeHtml(nameOf(b))}</strong></div>
-          ${b.phone ? `<div style="color:var(--text-secondary); font-size:12px;">${escapeHtml(b.phone)}</div>` : ''}
-        </td>
+        <td>${playerCell(a)}</td>
+        <td>${playerCell(b)}</td>
         <td>${pill(aPaid ? 'Pagado' : 'Pendiente', aPaid ? 'green' : 'gray')}</td>
         <td>${pill(bPaid ? 'Pagado' : 'Pendiente', bPaid ? 'green' : 'gray')}</td>
         <td>${formatRestriction(t.restriction)}</td>
       </tr>`;
+  }
+
+  function playerCell(p) {
+    return `
+      <div class="ins-player-cell">
+        <span class="name">${escapeHtml(nameOf(p))}</span>
+        <span class="phone">${p && p.phone ? escapeHtml(p.phone) : '&nbsp;'}</span>
+      </div>`;
   }
 
   // ----- Restriction formatting -----
