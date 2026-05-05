@@ -32,7 +32,20 @@
       border: 1px solid var(--border);
       border-radius: 0 0 8px 8px;
     }
-    .ins-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ins-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      font-size: 13px;
+      table-layout: fixed;
+    }
+    /* Identical column widths across every category table so the columns
+       line up vertically as you scan top-to-bottom. */
+    .ins-table th:nth-child(1), .ins-table td:nth-child(1) { width: 24%; }
+    .ins-table th:nth-child(2), .ins-table td:nth-child(2) { width: 24%; }
+    .ins-table th:nth-child(3), .ins-table td:nth-child(3) { width: 10%; }
+    .ins-table th:nth-child(4), .ins-table td:nth-child(4) { width: 10%; }
+    .ins-table th:nth-child(5), .ins-table td:nth-child(5) { width: 32%; }
     .ins-table thead th {
       padding: 10px 14px; text-align: left;
       font-weight: 600; font-size: 11px; text-transform: uppercase;
@@ -44,6 +57,9 @@
       padding: 12px 14px;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
     }
     .ins-table tbody tr { height: 64px; }
     .ins-table tbody tr:last-child td { border-bottom: none; }
