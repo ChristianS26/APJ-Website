@@ -140,7 +140,8 @@ const APJAdminTorneo = (function () {
     }
 
     const blocks = currentTeams.map(group => {
-      const catName = group.category?.name || group.category_name || 'Sin categoria';
+      // Backend uses categoryName (camelCase) — not category.name.
+      const catName = group.categoryName || group.category?.name || 'Sin categoria';
       const teams = Array.isArray(group.teams) ? group.teams : [];
       const rows = teams.map(t => renderTeamRow(t)).join('');
       return `
@@ -172,19 +173,18 @@ const APJAdminTorneo = (function () {
   function renderTeamRow(t) {
     const a = t.playerA || {};
     const b = t.playerB || {};
-    const aName = nameOf(a);
-    const bName = nameOf(b);
-    const aPaid = !!t.player_a_paid;
-    const bPaid = !!t.player_b_paid;
+    // Paid flags use camelCase from the DTO: playerAPaid / playerBPaid
+    const aPaid = !!t.playerAPaid;
+    const bPaid = !!t.playerBPaid;
     return `
       <tr>
         <td>
-          <div><strong>${escapeHtml(aName)}</strong></div>
-          <div style="color:var(--text-secondary); font-size:12px;">${escapeHtml(a.email || '')}</div>
+          <div><strong>${escapeHtml(nameOf(a))}</strong></div>
+          ${a.phone ? `<div style="color:var(--text-secondary); font-size:12px;">${escapeHtml(a.phone)}</div>` : ''}
         </td>
         <td>
-          <div><strong>${escapeHtml(bName)}</strong></div>
-          <div style="color:var(--text-secondary); font-size:12px;">${escapeHtml(b.email || '')}</div>
+          <div><strong>${escapeHtml(nameOf(b))}</strong></div>
+          ${b.phone ? `<div style="color:var(--text-secondary); font-size:12px;">${escapeHtml(b.phone)}</div>` : ''}
         </td>
         <td>${pill(aPaid ? 'Pagado' : 'Pendiente', aPaid ? 'green' : 'gray')}</td>
         <td>${pill(bPaid ? 'Pagado' : 'Pendiente', bPaid ? 'green' : 'gray')}</td>
@@ -193,8 +193,8 @@ const APJAdminTorneo = (function () {
   }
 
   function nameOf(player) {
-    return [player.first_name || player.firstName, player.last_name || player.lastName]
-      .filter(Boolean).join(' ').trim() || '—';
+    // Backend uses snake_case for player names (TeamPlayerDto: @SerialName first_name/last_name).
+    return [player.first_name, player.last_name].filter(Boolean).join(' ').trim() || '—';
   }
 
   function pill(label, color) {
