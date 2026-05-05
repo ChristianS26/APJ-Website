@@ -281,6 +281,29 @@
     .rk-result-chip.silver { color: #475569; border-color: rgba(148,163,184,0.4); background: rgba(148,163,184,0.12); }
     .rk-result-chip.bronze { color: #b45309; border-color: rgba(180,83,9,0.4); background: rgba(180,83,9,0.10); }
     .rk-result-chip.gray { color: var(--text-secondary); border-color: var(--border); background: var(--card); }
+
+    /* "Mover de categoria" action + form (in-place inside the detail modal) */
+    .rk-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .rk-move-form { display: block; }
+    .rk-move-summary {
+      padding: 12px 14px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .rk-move-warning {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.30);
+      color: #b45309;
+      font-size: 13px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body class="admin-page">

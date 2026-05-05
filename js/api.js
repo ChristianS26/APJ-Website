@@ -501,6 +501,23 @@ const APJApi = (function() {
       { auth: false, redirectOnUnauth: false }
     );
   }
+  // Admin-only: move (promote OR demote) a player between categories.
+  // points = null lets the backend default to floor(source/2). Returns
+  // { event_in_id, event_out_id, source_total_before, points_carried,
+  // dest_total_after }. 409 if user already has a promotion_in for dest.
+  async function promotePlayerCategory({ userId, season, fromCategoryId, toCategoryId, points }) {
+    return request('/api/ranking/promote', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_id: userId,
+        season,
+        from_category_id: fromCategoryId,
+        to_category_id: toCategoryId,
+        points: points ?? null,
+      }),
+      redirectOnUnauth: false,
+    });
+  }
 
   // ----- Admin: Regular tournament categories CRUD -----
   async function adminListRegularCategories() {
@@ -566,6 +583,7 @@ const APJApi = (function() {
     getConnectRecentPayments,
     getRanking,
     getRankingPlayerProfile,
+    promotePlayerCategory,
     adminListRegularCategories,
     adminCreateRegularCategory,
     adminUpdateRegularCategory,

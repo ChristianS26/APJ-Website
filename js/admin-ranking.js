@@ -25,11 +25,20 @@ const APJAdminRanking = (function () {
     { id: 19, name: 'Mixto +7' },
   ];
 
+  // Season activa — debe coincidir con la que el backend usa por default
+  // (RankingService.getPlayerProfile la trae hardcoded). La temporada arranca
+  // en 2025 y corre hasta el corte. Cuando rolen al siguiente, hay que tocar
+  // este valor + el del backend.
+  const ACTIVE_SEASON = '2025';
+
   const state = {
     categories: RANKING_CATEGORIES.slice(),
     selectedCategoryId: RANKING_CATEGORIES[0].id,
     items: [],
     filter: '',
+    // Profile actualmente abierto en el modal (necesario para que el form
+    // de "mover categoria" sepa origen + total + uid sin re-fetch).
+    currentProfile: null,
   };
 
   function start() {
@@ -223,7 +232,9 @@ const APJAdminRanking = (function () {
 
     try {
       const profile = await APJApi.getRankingPlayerProfile(userId, state.selectedCategoryId);
+      state.currentProfile = profile;
       body.innerHTML = renderProfile(profile);
+      bindMoveActions();
     } catch (error) {
       body.innerHTML = `<div class="rk-error" style="margin:0;">${escapeHtml(humanizeError(error))}</div>`;
     }
@@ -231,6 +242,7 @@ const APJAdminRanking = (function () {
 
   function closeDetail() {
     document.getElementById('rk-detail-modal')?.classList.remove('active');
+    state.currentProfile = null;
   }
 
   function renderProfile(p) {
@@ -272,9 +284,167 @@ const APJAdminRanking = (function () {
         <div class="rk-stat"><div class="value">${p.tournamentsWon ?? 0}</div><div class="label">Campeon</div></div>
         <div class="rk-stat"><div class="value">${p.finalsReached ?? 0}</div><div class="label">Finales</div></div>
       </div>
+      <div class="rk-actions">
+        <button type="button" class="btn btn-outline" id="rk-move-btn">
+          Mover a otra categoría
+        </button>
+      </div>
       <h4 class="rk-history-title">Historial</h4>
       ${historyHtml}
     `;
+  }
+
+  function bindMoveActions() {
+    document.getElementById('rk-move-btn')?.addEventListener('click', openMoveForm);
+  }
+
+  // Replace the modal body with a "move category" form — same player profile
+  // is the source. Admin picks destination and overrides the points if needed.
+  function openMoveForm() {
+    const p = state.currentProfile;
+    if (!p) return;
+    const body = document.getElementById('rk-detail-body');
+    if (!body) return;
+
+    const sourceCatId = p.category?.id;
+    const sourceCatName = p.category?.name || '—';
+    const sourceTotal = p.points ?? 0;
+    const defaultPoints = Math.floor(sourceTotal / 2);
+    const fullName = `${p.user?.first_name || ''} ${p.user?.last_name || ''}`.trim() || 'jugador';
+
+    // Destination chips — todas las categorias del whitelist menos la actual.
+    const destChips = RANKING_CATEGORIES
+      .filter(c => c.id !== sourceCatId)
+      .map(c => `<button type="button" class="rk-cat-chip" data-dest-id="${c.id}">${escapeHtml(c.name)}</button>`)
+      .join('');
+
+    body.innerHTML = `
+      <div class="rk-move-form">
+        <div class="rk-move-summary">
+          <p style="margin:0 0 4px 0; font-weight:600;">${escapeHtml(fullName)}</p>
+          <p style="margin:0; color:var(--text-secondary); font-size:13px;">
+            Origen: <strong>${escapeHtml(sourceCatName)}</strong> · ${sourceTotal} pts
+          </p>
+        </div>
+
+        <div class="form-group" style="margin-top:16px;">
+          <label class="form-label">Categoría destino</label>
+          <div class="rk-cat-chips" id="rk-move-dest-chips">${destChips}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="rk-move-points">Puntos a llevar</label>
+          <input
+            type="number" id="rk-move-points" class="form-input"
+            min="0" step="1"
+            value="${defaultPoints}"
+            style="max-width: 200px;"
+          >
+          <p class="logo-uploader-hint" style="margin-top:6px;">
+            Default: la mitad de los puntos actuales (${sourceTotal} ÷ 2 = ${defaultPoints}).
+            Si ya tiene puntos en la categoría destino, se le sumarán.
+          </p>
+        </div>
+
+        <div class="rk-move-warning" id="rk-move-warning">
+          ${escapeHtml(fullName)} quedará en <strong>0 pts</strong> en ${escapeHtml(sourceCatName)} y desaparecerá del listing de esa categoría.
+        </div>
+
+        <div id="rk-move-error" class="rk-error hidden" style="margin-top:12px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+          <button type="button" class="btn btn-outline" id="rk-move-cancel">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="rk-move-confirm" disabled>
+            Confirmar cambio
+          </button>
+        </div>
+      </div>
+    `;
+
+    let selectedDestId = null;
+    const confirmBtn = document.getElementById('rk-move-confirm');
+
+    document.querySelectorAll('#rk-move-dest-chips .rk-cat-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#rk-move-dest-chips .rk-cat-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedDestId = parseInt(btn.getAttribute('data-dest-id'), 10);
+        if (confirmBtn) confirmBtn.disabled = false;
+      });
+    });
+
+    document.getElementById('rk-move-cancel')?.addEventListener('click', () => {
+      // Re-render the original profile view (no need to refetch).
+      const body = document.getElementById('rk-detail-body');
+      if (body && state.currentProfile) {
+        body.innerHTML = renderProfile(state.currentProfile);
+        bindMoveActions();
+      }
+    });
+
+    confirmBtn?.addEventListener('click', async () => {
+      if (selectedDestId == null) return;
+      const pointsInput = document.getElementById('rk-move-points');
+      const rawPoints = pointsInput?.value?.trim();
+      const points = rawPoints === '' ? null : parseInt(rawPoints, 10);
+      if (points != null && (!Number.isFinite(points) || points < 0)) {
+        showMoveError('Los puntos deben ser un número mayor o igual a 0.');
+        return;
+      }
+
+      confirmBtn.disabled = true;
+      const orig = confirmBtn.textContent;
+      confirmBtn.innerHTML = '<span class="spinner"></span> Procesando...';
+
+      try {
+        const result = await APJApi.promotePlayerCategory({
+          userId: p.user.uid,
+          season: ACTIVE_SEASON,
+          fromCategoryId: sourceCatId,
+          toCategoryId: selectedDestId,
+          points,
+        });
+        // Success — toast + refresh.
+        const destCat = RANKING_CATEGORIES.find(c => c.id === selectedDestId);
+        const destName = destCat?.name || `categoría ${selectedDestId}`;
+        APJToast?.success?.('Movimiento aplicado',
+          `${fullName} ahora tiene ${result.dest_total_after} pts en ${destName}.`);
+        closeDetail();
+        // If the admin is currently viewing the source category, the player
+        // will already be filtered out (total=0). Either way, refresh to
+        // reflect the new state.
+        loadRanking();
+      } catch (error) {
+        const msg = mapPromotionError(error);
+        showMoveError(msg);
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = orig;
+      }
+    });
+  }
+
+  function showMoveError(msg) {
+    const el = document.getElementById('rk-move-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
+  // Backend specific error → user-facing copy. The route returns
+  // { error: "already_promoted" | "same_category" | "negative_points", ... }
+  // and ApiError stores the parsed body under `data`.
+  function mapPromotionError(error) {
+    if (!error) return 'Error desconocido';
+    const status = error.status;
+    const errCode = error.data?.error;
+    if (status === 401) return 'Sesion expirada. Inicia sesion nuevamente.';
+    if (status === 403) return 'No tienes permisos para esta accion.';
+    if (status === 409 || errCode === 'already_promoted') {
+      return 'Este jugador ya fue promovido a esa categoría en esta temporada. No se puede promover dos veces.';
+    }
+    if (errCode === 'same_category') return 'La categoría destino debe ser distinta a la origen.';
+    if (errCode === 'negative_points') return 'Los puntos no pueden ser negativos.';
+    return error.message || 'No se pudo aplicar el movimiento.';
   }
 
   function resultChip(result) {
