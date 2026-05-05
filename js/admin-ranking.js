@@ -1,20 +1,41 @@
 // APJ Padel - Admin / Ranking
-// Lists categorias (admin/regular), lets the admin pick one, fetches the
-// per-category ranking and renders it as a table. Supports a live name
-// filter and a player detail modal.
+// Mismo whitelist curado de categorias que iOS y Android (los apps no
+// muestran TODO lo que hay en la DB; muestran 11 categorias hardcoded en
+// orden especifico). El admin selecciona una, fetch /api/ranking, render
+// con filtro por nombre. Click en jugador abre el perfil detallado.
 
 const APJAdminRanking = (function () {
 
+  // Whitelist curado, en orden — espejo exacto de iOS (RankingListViewModel)
+  // y Android (RankingViewModel). NO es derivable de la DB: los IDs saltan
+  // (6 -> 20 -> 13 -> ...) y la app oculta cualquier otra categoria del
+  // ranking. Si quieres agregar/cambiar una categoria visible, hay que
+  // tocar las 3 plataformas a la vez para mantener paridad.
+  const RANKING_CATEGORIES = [
+    { id: 1,  name: 'Primera' },
+    { id: 2,  name: 'Segunda' },
+    { id: 3,  name: 'Tercera' },
+    { id: 4,  name: 'Cuarta' },
+    { id: 5,  name: 'Quinta' },
+    { id: 6,  name: 'Sexta' },
+    { id: 20, name: 'Septima' },
+    { id: 13, name: 'Femenil 3ra' },
+    { id: 14, name: 'Femenil 4ta' },
+    { id: 15, name: 'Femenil 5ta' },
+    { id: 19, name: 'Mixto +7' },
+  ];
+
   const state = {
-    categories: [],
-    selectedCategoryId: null,
+    categories: RANKING_CATEGORIES.slice(),
+    selectedCategoryId: RANKING_CATEGORIES[0].id,
     items: [],
     filter: '',
   };
 
   function start() {
     bind();
-    loadCategories();
+    renderCategoryChips();
+    loadRanking();
   }
 
   function bind() {
@@ -38,31 +59,6 @@ const APJAdminRanking = (function () {
   }
 
   // ---------- Categories ----------
-  async function loadCategories() {
-    const chipsHost = document.getElementById('rk-cat-chips');
-    try {
-      const list = await APJApi.adminListRegularCategories();
-      const sorted = (Array.isArray(list) ? list : [])
-        .slice()
-        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
-      state.categories = sorted;
-
-      if (sorted.length === 0) {
-        if (chipsHost) chipsHost.innerHTML = '<span style="color:var(--text-secondary); font-size:13px;">No hay categorias.</span>';
-        renderEmpty('No hay categorias creadas. Ve a "Categorias" para crear la primera.');
-        return;
-      }
-
-      // Default to first category (lowest position)
-      state.selectedCategoryId = sorted[0].id;
-      renderCategoryChips();
-      loadRanking();
-    } catch (error) {
-      showError(humanizeError(error));
-      if (chipsHost) chipsHost.innerHTML = '';
-    }
-  }
-
   function renderCategoryChips() {
     const host = document.getElementById('rk-cat-chips');
     if (!host) return;
