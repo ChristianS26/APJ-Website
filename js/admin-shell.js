@@ -140,10 +140,17 @@ const APJAdminShell = (function () {
       <div class="admin-layout">
         <aside class="admin-sidebar" id="admin-sidebar">
           <div class="admin-sidebar-tournament">
-            <label class="admin-sidebar-tournament-label" for="admin-tournament-selector">Torneo</label>
-            <select id="admin-tournament-selector" class="admin-sidebar-tournament-select">
-              <option value="">Cargando...</option>
-            </select>
+            <div class="admin-sidebar-tournament-label">Torneo seleccionado</div>
+            <div class="t-picker" id="t-picker">
+              <button type="button" class="t-picker-trigger" id="t-picker-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <div class="t-picker-trigger-content">
+                  <div class="t-picker-name" id="t-picker-name">Cargando...</div>
+                  <div class="t-picker-meta" id="t-picker-meta"></div>
+                </div>
+                <svg class="t-picker-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="t-picker-popover" id="t-picker-popover" role="listbox" hidden></div>
+            </div>
           </div>
           <nav class="admin-nav">${navHtml}</nav>
           <div class="admin-sidebar-footer">
@@ -223,20 +230,47 @@ const APJAdminShell = (function () {
     // Auto-close when navigating via a sidebar link on mobile
     sidebar?.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
 
-    // Tournament selector — persist + broadcast
-    document.getElementById('admin-tournament-selector')?.addEventListener('change', (e) => {
-      const id = e.target.value || '';
-      try {
-        if (id) localStorage.setItem(TORNEO_KEY, id);
-        else localStorage.removeItem(TORNEO_KEY);
-      } catch (_) { /* ignore */ }
-      window.dispatchEvent(new CustomEvent(TORNEO_CHANGED_EVENT, { detail: { id } }));
-    });
+    // Custom tournament picker
+    const trigger = document.getElementById('t-picker-trigger');
+    const popover = document.getElementById('t-picker-popover');
+    if (trigger && popover) {
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = popover.hasAttribute('hidden');
+        if (open) openPopover();
+        else closePopover();
+      });
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!popover.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+          closePopover();
+        }
+      });
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePopover();
+      });
+    }
+  }
+
+  function openPopover() {
+    const trigger = document.getElementById('t-picker-trigger');
+    const popover = document.getElementById('t-picker-popover');
+    if (!trigger || !popover) return;
+    popover.removeAttribute('hidden');
+    trigger.setAttribute('aria-expanded', 'true');
+    document.getElementById('t-picker')?.classList.add('open');
+  }
+  function closePopover() {
+    const trigger = document.getElementById('t-picker-trigger');
+    const popover = document.getElementById('t-picker-popover');
+    if (!trigger || !popover) return;
+    popover.setAttribute('hidden', '');
+    trigger.setAttribute('aria-expanded', 'false');
+    document.getElementById('t-picker')?.classList.remove('open');
   }
 
   async function loadTournamentsIntoSelector() {
-    const select = document.getElementById('admin-tournament-selector');
-    if (!select) return;
     try {
       const list = await APJApi.getTournaments();
       tournamentsCache = (Array.isArray(list) ? list : [])
@@ -245,31 +279,101 @@ const APJAdminShell = (function () {
 
       let savedId = '';
       try { savedId = localStorage.getItem(TORNEO_KEY) || ''; } catch (_) {}
+      // Drop stale selection (deleted/renamed tournament).
       if (savedId && !tournamentsCache.find(t => t.id === savedId)) {
         savedId = '';
         try { localStorage.removeItem(TORNEO_KEY); } catch (_) {}
       }
-
-      if (tournamentsCache.length === 0) {
-        select.innerHTML = '<option value="">No hay torneos</option>';
-        return;
+      // First time on the panel? Pick the most recent ACTIVE tournament.
+      if (!savedId) {
+        const firstActive = tournamentsCache.find(t => t.is_enabled !== false);
+        if (firstActive) {
+          savedId = firstActive.id;
+          try { localStorage.setItem(TORNEO_KEY, savedId); } catch (_) {}
+        }
       }
 
-      const opts = ['<option value="">— Selecciona un torneo —</option>']
-        .concat(tournamentsCache.map(t => {
-          const date = (t.start_date || '').slice(0, 10);
-          const inactive = t.is_enabled === false ? ' (inactivo)' : '';
-          return `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)} — ${escapeHtml(date)}${inactive}</option>`;
-        }));
-      select.innerHTML = opts.join('');
-      select.value = savedId || '';
+      renderPickerTrigger(savedId);
+      renderPickerPopover(savedId);
 
-      // Notify the page that tournaments are ready (covers case where
-      // the page mounted before the selector finished loading).
+      // Notify the page that tournaments are ready
       window.dispatchEvent(new CustomEvent(TORNEO_CHANGED_EVENT, { detail: { id: savedId } }));
     } catch (e) {
-      select.innerHTML = '<option value="">Error cargando torneos</option>';
+      renderPickerTrigger('', { error: true });
     }
+  }
+
+  function renderPickerTrigger(selectedId, opts = {}) {
+    const nameEl = document.getElementById('t-picker-name');
+    const metaEl = document.getElementById('t-picker-meta');
+    if (!nameEl || !metaEl) return;
+    if (opts.error) {
+      nameEl.textContent = 'Error cargando torneos';
+      metaEl.innerHTML = '';
+      return;
+    }
+    if (!tournamentsCache || tournamentsCache.length === 0) {
+      nameEl.textContent = 'Sin torneos';
+      metaEl.innerHTML = '';
+      return;
+    }
+    const t = tournamentsCache.find(x => x.id === selectedId);
+    if (!t) {
+      nameEl.textContent = 'Selecciona un torneo';
+      metaEl.innerHTML = '';
+      return;
+    }
+    nameEl.textContent = t.name;
+    const date = formatDateShort(t.start_date);
+    const dot = t.is_enabled === false
+      ? '<span class="t-picker-status t-picker-status-off">Inactivo</span>'
+      : '<span class="t-picker-status t-picker-status-on">Activo</span>';
+    metaEl.innerHTML = `<span>${escapeHtml(date)}</span>${dot}`;
+  }
+
+  function renderPickerPopover(selectedId) {
+    const popover = document.getElementById('t-picker-popover');
+    if (!popover) return;
+    if (!tournamentsCache || tournamentsCache.length === 0) {
+      popover.innerHTML = '<div class="t-picker-empty">No hay torneos</div>';
+      return;
+    }
+    popover.innerHTML = tournamentsCache.map(t => {
+      const isActive = t.id === selectedId;
+      const date = formatDateShort(t.start_date);
+      const off = t.is_enabled === false;
+      return `
+        <button type="button" class="t-picker-item${isActive ? ' active' : ''}" data-id="${escapeAttr(t.id)}" role="option" aria-selected="${isActive}">
+          <div class="t-picker-item-main">
+            <div class="t-picker-item-name">${escapeHtml(t.name)}</div>
+            <div class="t-picker-item-meta">
+              <span>${escapeHtml(date)}</span>
+              <span class="t-picker-status ${off ? 't-picker-status-off' : 't-picker-status-on'}">${off ? 'Inactivo' : 'Activo'}</span>
+            </div>
+          </div>
+          ${isActive ? '<svg class="t-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        </button>`;
+    }).join('');
+
+    // Bind item clicks
+    popover.querySelectorAll('.t-picker-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id') || '';
+        try { localStorage.setItem(TORNEO_KEY, id); } catch (_) {}
+        renderPickerTrigger(id);
+        renderPickerPopover(id);
+        closePopover();
+        window.dispatchEvent(new CustomEvent(TORNEO_CHANGED_EVENT, { detail: { id } }));
+      });
+    });
+  }
+
+  function formatDateShort(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso.slice(0, 10);
+    return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   function getSelectedTournamentId() {

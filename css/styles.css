@@ -3453,7 +3453,7 @@ body.admin-page textarea {
 }
 
 .admin-sidebar-tournament {
-  padding: 14px 12px 12px;
+  padding: 14px 12px 14px;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
 }
@@ -3470,55 +3470,187 @@ body.admin-page textarea {
   margin: 0 0 8px 4px;
 }
 
-.admin-sidebar-tournament-label::before {
-  content: "";
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--primary);
+/* ------- Custom tournament picker (button + popover) ------- */
+.t-picker {
+  position: relative;
 }
 
-.admin-sidebar-tournament-select {
+.t-picker-trigger {
   width: 100%;
-  padding: 10px 32px 10px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: inherit;
-  line-height: 1.3;
-  color: var(--text);
-  background-color: var(--bg-2);
+  background: var(--bg-2);
   border: 1px solid var(--border);
   border-radius: 10px;
+  padding: 10px 10px 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text);
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  /* custom chevron: removes the native arrow on every browser */
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
 }
 
-.admin-sidebar-tournament-select:hover {
-  background-color: var(--card-hover);
+.t-picker-trigger:hover {
+  background: var(--card-hover);
   border-color: var(--border-hover);
 }
 
-.admin-sidebar-tournament-select:focus {
+.t-picker.open .t-picker-trigger,
+.t-picker-trigger:focus-visible {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
-.admin-sidebar-tournament-select:disabled,
-.admin-sidebar-tournament-select[data-empty="true"] {
+.t-picker-trigger-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.t-picker-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-picker-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.t-picker-meta:empty { display: none; }
+
+.t-picker-chevron {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.t-picker.open .t-picker-chevron {
+  transform: rotate(180deg);
+}
+
+.t-picker-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.t-picker-status::before {
+  content: "";
+  width: 5px; height: 5px; border-radius: 50%;
+}
+.t-picker-status-on  {
+  color: #16a34a;
+  border-color: rgba(22,163,74,0.30);
+  background: rgba(22,163,74,0.08);
+}
+.t-picker-status-on::before { background: #16a34a; }
+.t-picker-status-off {
   color: var(--text-muted);
-  cursor: not-allowed;
+  border-color: var(--border);
+  background: transparent;
+}
+.t-picker-status-off::before { background: var(--text-muted); }
+
+/* Popover */
+.t-picker-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  z-index: 60;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  animation: tPickerSlideIn 0.12s ease-out;
+}
+
+@keyframes tPickerSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.t-picker-empty {
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.t-picker-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text);
+  transition: background 0.10s ease;
+}
+
+.t-picker-item:hover {
+  background: var(--card-hover);
+}
+
+.t-picker-item.active {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+.t-picker-item.active .t-picker-item-name {
+  color: var(--primary);
+}
+
+.t-picker-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.t-picker-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-picker-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.t-picker-check {
+  flex-shrink: 0;
+  color: var(--primary);
 }
 
 .admin-nav {
