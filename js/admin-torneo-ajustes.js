@@ -25,7 +25,8 @@ const APJAdminTorneoAjustes = (function () {
     document.getElementById('aj-registration-open')?.addEventListener('change', onToggleRegistration);
 
     // Live preview: re-render the mock card on every change to a relevant field
-    ['aj-name', 'aj-start', 'aj-end', 'aj-type', 'aj-max-points', 'aj-registration-open']
+    // (type is no longer in the UI — it's preserved from the cached tournament)
+    ['aj-name', 'aj-start', 'aj-end', 'aj-max-points', 'aj-registration-open']
       .forEach(id => {
         document.getElementById(id)?.addEventListener('input', refreshMockCard);
         document.getElementById(id)?.addEventListener('change', refreshMockCard);
@@ -79,7 +80,6 @@ const APJAdminTorneoAjustes = (function () {
     document.getElementById('aj-start').value = (t.start_date || '').slice(0, 10);
     document.getElementById('aj-end').value = (t.end_date || '').slice(0, 10);
     document.getElementById('aj-location').value = t.location || '';
-    document.getElementById('aj-type').value = t.type || 'Regular';
     document.getElementById('aj-max-points').value = t.max_points || '';
     document.getElementById('aj-club-logo').value = t.club_logo_url || '';
     document.getElementById('aj-enabled').checked = !!t.is_enabled;
@@ -92,11 +92,13 @@ const APJAdminTorneoAjustes = (function () {
     // Only include fields with a real value so the PATCH never accidentally
     // nulls out something the user didn't touch (location, max_points,
     // club_logo_url, latitude, longitude). Required fields always sent.
+    // type is required by the backend but no longer editable in the UI —
+    // forward whatever the cached tournament had.
     const out = {
       name: document.getElementById('aj-name').value.trim(),
       start_date: document.getElementById('aj-start').value,
       end_date: document.getElementById('aj-end').value,
-      type: document.getElementById('aj-type').value,
+      type: currentTournament?.type || 'Regular',
     };
     const location = document.getElementById('aj-location').value.trim();
     if (location) out.location = location;
@@ -243,7 +245,7 @@ const APJAdminTorneoAjustes = (function () {
     const name = document.getElementById('aj-name')?.value.trim() || 'Nombre del torneo';
     const start = document.getElementById('aj-start')?.value || '';
     const end = document.getElementById('aj-end')?.value || '';
-    const type = document.getElementById('aj-type')?.value || 'Regular';
+    const type = currentTournament?.type || 'Regular';
     const maxPoints = document.getElementById('aj-max-points')?.value.trim() || '';
     const logo = document.getElementById('aj-club-logo')?.value.trim();
     const open = !!document.getElementById('aj-registration-open')?.checked;
