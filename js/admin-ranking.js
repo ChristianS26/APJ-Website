@@ -302,27 +302,81 @@ const APJAdminRanking = (function () {
     document.getElementById('rk-revert-btn')?.addEventListener('click', confirmRevert);
   }
 
-  // Confirm + execute: revert the most recent promotion of the player in
-  // this category. The backend returns 404 if there's no active promotion,
-  // which we surface with a clear message instead of a generic error.
-  async function confirmRevert() {
+  // Replace the modal body with an in-place confirm view (same pattern as
+  // openMoveForm). Avoids the native window.confirm() which doesn't match
+  // the rest of the admin's look.
+  function confirmRevert() {
     const p = state.currentProfile;
     if (!p) return;
+    const body = document.getElementById('rk-detail-body');
+    if (!body) return;
 
     const fullName = `${p.user?.first_name || ''} ${p.user?.last_name || ''}`.trim() || 'jugador';
     const catName = p.category?.name || 'esta categoría';
+    const currentPts = p.points ?? 0;
 
-    const ok = window.confirm(
-      `¿Revertir la última promoción de ${fullName} en ${catName}?\n\n` +
-      `Sus ${p.points ?? 0} pts en ${catName} se eliminarán y se le restaurarán los puntos originales en la categoría desde la cual fue promovida.`
-    );
-    if (!ok) return;
+    body.innerHTML = `
+      <div class="rk-revert-form">
+        <div class="rk-revert-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </div>
+        <h3 class="rk-revert-title">¿Revertir la última promoción?</h3>
+        <p class="rk-revert-body">
+          Vas a deshacer la última promoción de
+          <strong>${escapeHtml(fullName)}</strong> en
+          <strong>${escapeHtml(catName)}</strong>.
+        </p>
 
-    const btn = document.getElementById('rk-revert-btn');
+        <div class="rk-revert-effects">
+          <div class="rk-revert-effect">
+            <span class="rk-revert-effect-icon minus">−</span>
+            <span>Sus <strong>${currentPts} pts</strong> en ${escapeHtml(catName)} se eliminan.</span>
+          </div>
+          <div class="rk-revert-effect">
+            <span class="rk-revert-effect-icon plus">+</span>
+            <span>Se le restauran los puntos originales en la categoría desde la cual fue promovida.</span>
+          </div>
+          <div class="rk-revert-effect">
+            <span class="rk-revert-effect-icon check">✓</span>
+            <span>Si jugó torneos en ${escapeHtml(catName)} después de la promoción, esos puntos se conservan.</span>
+          </div>
+        </div>
+
+        <div id="rk-revert-error" class="rk-error hidden" style="margin-top:12px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+          <button type="button" class="btn btn-outline" id="rk-revert-cancel">Cancelar</button>
+          <button type="button" class="btn btn-primary rk-btn-danger" id="rk-revert-confirm">
+            Sí, revertir
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('rk-revert-cancel')?.addEventListener('click', () => {
+      // Re-render the original profile (no refetch needed).
+      const body = document.getElementById('rk-detail-body');
+      if (body && state.currentProfile) {
+        body.innerHTML = renderProfile(state.currentProfile);
+        bindMoveActions();
+      }
+    });
+
+    document.getElementById('rk-revert-confirm')?.addEventListener('click', () => doRevert(p));
+  }
+
+  async function doRevert(p) {
+    const fullName = `${p.user?.first_name || ''} ${p.user?.last_name || ''}`.trim() || 'jugador';
+    const btn = document.getElementById('rk-revert-confirm');
+    const cancelBtn = document.getElementById('rk-revert-cancel');
     if (btn) {
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Procesando...';
     }
+    if (cancelBtn) cancelBtn.disabled = true;
 
     try {
       const result = await APJApi.revertPlayerPromotion({
@@ -338,11 +392,16 @@ const APJAdminRanking = (function () {
       loadRanking();
     } catch (error) {
       const msg = mapRevertError(error);
-      APJToast?.error?.('No se pudo revertir', msg);
+      const errEl = document.getElementById('rk-revert-error');
+      if (errEl) {
+        errEl.textContent = msg;
+        errEl.classList.remove('hidden');
+      }
       if (btn) {
         btn.disabled = false;
-        btn.textContent = 'Revertir promoción';
+        btn.textContent = 'Sí, revertir';
       }
+      if (cancelBtn) cancelBtn.disabled = false;
     }
   }
 

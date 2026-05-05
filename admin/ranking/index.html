@@ -304,6 +304,60 @@
       font-size: 13px;
       line-height: 1.5;
     }
+
+    /* Custom in-place confirm para revertir promocion (reemplaza al
+       window.confirm nativo, mismo patron que el move form) */
+    .rk-revert-form { text-align: left; }
+    .rk-revert-icon {
+      width: 56px; height: 56px;
+      border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(245, 158, 11, 0.10);
+      color: #d97706;
+      margin: 0 0 12px 0;
+    }
+    .rk-revert-title {
+      margin: 0 0 8px 0;
+      font-size: 18px; font-weight: 700;
+    }
+    .rk-revert-body {
+      margin: 0 0 16px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .rk-revert-effects {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 14px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .rk-revert-effect {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .rk-revert-effect-icon {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+    }
+    .rk-revert-effect-icon.minus { background: rgba(220,38,38,0.12); color: #dc2626; }
+    .rk-revert-effect-icon.plus  { background: rgba(22,163,74,0.12); color: #16a34a; }
+    .rk-revert-effect-icon.check { background: rgba(37,99,235,0.12); color: #2563eb; font-size: 14px; }
+
+    /* Variante de boton primario en rojo para acciones destructivas */
+    .btn.btn-primary.rk-btn-danger {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+    .btn.btn-primary.rk-btn-danger:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+    }
   </style>
 </head>
 <body class="admin-page">
