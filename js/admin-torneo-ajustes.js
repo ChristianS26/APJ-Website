@@ -36,7 +36,6 @@ const APJAdminTorneoAjustes = (function () {
       document.getElementById('aj-logo-file')?.click();
     });
     document.getElementById('aj-logo-file')?.addEventListener('change', onLogoFileSelected);
-    document.getElementById('aj-logo-clear-btn')?.addEventListener('click', onClearLogo);
   }
 
   async function refresh() {
@@ -90,18 +89,25 @@ const APJAdminTorneoAjustes = (function () {
   }
 
   function readForm() {
-    return {
+    // Only include fields with a real value so the PATCH never accidentally
+    // nulls out something the user didn't touch (location, max_points,
+    // club_logo_url, latitude, longitude). Required fields always sent.
+    const out = {
       name: document.getElementById('aj-name').value.trim(),
       start_date: document.getElementById('aj-start').value,
       end_date: document.getElementById('aj-end').value,
-      location: document.getElementById('aj-location').value.trim() || null,
-      // Preserve lat/lng from the cached tournament — UI no longer exposes them.
-      latitude: currentTournament?.latitude ?? null,
-      longitude: currentTournament?.longitude ?? null,
       type: document.getElementById('aj-type').value,
-      max_points: document.getElementById('aj-max-points').value.trim() || null,
-      club_logo_url: document.getElementById('aj-club-logo').value.trim() || null,
     };
+    const location = document.getElementById('aj-location').value.trim();
+    if (location) out.location = location;
+
+    const maxPoints = document.getElementById('aj-max-points').value.trim();
+    if (maxPoints) out.max_points = maxPoints;
+
+    const clubLogo = document.getElementById('aj-club-logo').value.trim();
+    if (clubLogo) out.club_logo_url = clubLogo;
+
+    return out;
   }
 
   async function onSave(e) {
@@ -211,51 +217,15 @@ const APJAdminTorneoAjustes = (function () {
     }
   }
 
-  async function onClearLogo() {
-    if (!currentTournament) return;
-    if (!confirm('Quitar el logo del club? La card de la app dejara de mostrarlo.')) return;
-
-    const uploadBtn = document.getElementById('aj-logo-upload-btn');
-    const clearBtn = document.getElementById('aj-logo-clear-btn');
-    if (uploadBtn) uploadBtn.disabled = true;
-    if (clearBtn) clearBtn.disabled = true;
-    setStatus('Quitando logo...');
-
-    try {
-      // The PATCH club-logo endpoint requires non-blank; for "clear" we
-      // PATCH the tournament directly nulling the field.
-      await APJApi.updateTournament(
-        currentTournament.id,
-        { ...readForm(), club_logo_url: null },
-        currentTournament.categoryIds || [],
-      );
-      currentTournament.club_logo_url = null;
-      document.getElementById('aj-club-logo').value = '';
-      renderLogoPreview('');
-      refreshMockCard();
-      setStatus('');
-      APJToast?.success?.('Listo', 'Logo quitado');
-    } catch (error) {
-      setStatus('');
-      APJToast?.error?.('Error', humanizeError(error));
-    } finally {
-      if (uploadBtn) uploadBtn.disabled = false;
-      if (clearBtn) clearBtn.disabled = false;
-    }
-  }
-
   function renderLogoPreview(url) {
     const wrap = document.getElementById('aj-logo-image');
     const img = document.getElementById('aj-logo-preview');
-    const clearBtn = document.getElementById('aj-logo-clear-btn');
     if (url) {
       img.src = url;
       wrap?.classList.remove('empty');
-      clearBtn?.classList.remove('hidden');
     } else {
       img.removeAttribute('src');
       wrap?.classList.add('empty');
-      clearBtn?.classList.add('hidden');
     }
   }
 
