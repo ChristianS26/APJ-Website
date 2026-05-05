@@ -1,4 +1,5 @@
 // APJ Padel - Admin / Ranking
+// build-id: 2026-05-05T05:45Z — bump para invalidar cache de Vercel.
 // Mismo whitelist curado de categorias que iOS y Android (los apps no
 // muestran TODO lo que hay en la DB; muestran 11 categorias hardcoded en
 // orden especifico). El admin selecciona una, fetch /api/ranking, render
@@ -288,7 +289,7 @@ const APJAdminRanking = (function () {
         <button type="button" class="btn btn-outline" id="rk-move-btn">
           Mover a otra categoría
         </button>
-        ${(p.active_promotion && history.length === 0) ? `
+        ${shouldShowRevert(p, history) ? `
         <button type="button" class="btn btn-outline" id="rk-revert-btn">
           Revertir promoción
         </button>
@@ -302,6 +303,21 @@ const APJAdminRanking = (function () {
   function bindMoveActions() {
     document.getElementById('rk-move-btn')?.addEventListener('click', openMoveForm);
     document.getElementById('rk-revert-btn')?.addEventListener('click', confirmRevert);
+  }
+
+  // Defensive gate: only show "Revertir promocion" cuando el backend
+  // confirmo que hay una promocion activa (objeto con source_category_id
+  // valido) Y el jugador no jugo torneos en la categoria destino.
+  // Tolera respuestas viejas del backend (active_promotion ausente) sin
+  // mostrar el boton.
+  function shouldShowRevert(profile, history) {
+    const ap = profile?.active_promotion;
+    const hasPromotion = ap != null
+      && typeof ap === 'object'
+      && Number.isFinite(ap.source_category_id)
+      && ap.source_category_id > 0;
+    const noTournamentsHere = Array.isArray(history) && history.length === 0;
+    return hasPromotion && noTournamentsHere;
   }
 
   // Replace the modal body with an in-place confirm view (same pattern as
