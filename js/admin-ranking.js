@@ -288,9 +288,11 @@ const APJAdminRanking = (function () {
         <button type="button" class="btn btn-outline" id="rk-move-btn">
           Mover a otra categoría
         </button>
+        ${history.length === 0 ? `
         <button type="button" class="btn btn-outline" id="rk-revert-btn">
           Revertir promoción
         </button>
+        ` : ''}
       </div>
       <h4 class="rk-history-title">Historial</h4>
       ${historyHtml}
