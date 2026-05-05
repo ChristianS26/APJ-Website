@@ -3264,13 +3264,63 @@ a.profile-btn {
   --admin-sidebar-w: 240px;
 }
 
+/* Light theme — applies ONLY to the admin panel; the public site keeps the
+   dark theme defined at :root. Overrides every design token used in shared
+   components (cards, buttons, forms) so .profile-card etc. render light too. */
 body.admin-page {
+  --bg: #f7f8fa;
+  --bg-2: #ffffff;
+  --bg-3: #eef0f4;
+  --card: #ffffff;
+  --card-hover: #f5f6f8;
+  --border: rgba(15, 23, 42, 0.10);
+  --border-hover: rgba(15, 23, 42, 0.22);
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 18px 36px rgba(15, 23, 42, 0.10);
+  --primary-glow: rgba(16, 185, 129, 0.10);
+  --accent-glow: rgba(245, 158, 11, 0.10);
+  --stripe-glow: rgba(99, 91, 255, 0.10);
+  --error-glow: rgba(239, 68, 68, 0.10);
+  --success-glow: rgba(34, 197, 94, 0.10);
+
   background: var(--bg);
+  color: var(--text);
   height: 100vh;
   margin: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Buttons — the dark site relies on contrast with --bg-3; in light mode that
+   would render an invisible white-on-white outlined button. Force light-mode
+   defaults for outline buttons inside the admin panel. */
+body.admin-page .btn-outline {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.admin-page .btn-outline:hover {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+}
+
+/* Form inputs and selects — same idea: explicit white background and dark text
+   so they don't inherit the dark-theme bg-3 fill. */
+body.admin-page .form-input,
+body.admin-page .form-select,
+body.admin-page input,
+body.admin-page select,
+body.admin-page textarea {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--border);
 }
 
 #admin-shell-root {
@@ -3402,12 +3452,229 @@ body.admin-page {
   overflow-y: auto;
 }
 
+.admin-sidebar-tournament {
+  padding: 14px 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.admin-sidebar-tournament-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 8px 4px;
+}
+
+/* ------- Custom tournament picker (button + popover) ------- */
+.t-picker {
+  position: relative;
+}
+
+.t-picker-trigger {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 10px 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.t-picker-trigger:hover {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+}
+
+.t-picker.open .t-picker-trigger,
+.t-picker-trigger:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.t-picker-trigger-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.t-picker-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-picker-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.t-picker-meta:empty { display: none; }
+
+.t-picker-chevron {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.t-picker.open .t-picker-chevron {
+  transform: rotate(180deg);
+}
+
+.t-picker-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.t-picker-status::before {
+  content: "";
+  width: 5px; height: 5px; border-radius: 50%;
+}
+.t-picker-status-on  {
+  color: #16a34a;
+  border-color: rgba(22,163,74,0.30);
+  background: rgba(22,163,74,0.08);
+}
+.t-picker-status-on::before { background: #16a34a; }
+.t-picker-status-off {
+  color: var(--text-muted);
+  border-color: var(--border);
+  background: transparent;
+}
+.t-picker-status-off::before { background: var(--text-muted); }
+
+/* Popover */
+.t-picker-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  z-index: 60;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  animation: tPickerSlideIn 0.12s ease-out;
+}
+
+@keyframes tPickerSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.t-picker-empty {
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.t-picker-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text);
+  transition: background 0.10s ease;
+}
+
+.t-picker-item:hover {
+  background: var(--card-hover);
+}
+
+.t-picker-item.active {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+.t-picker-item.active .t-picker-item-name {
+  color: var(--primary);
+}
+
+.t-picker-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.t-picker-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-picker-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.t-picker-check {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
 .admin-nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 16px 10px;
+  gap: 14px;
+  padding: 14px 10px;
   flex: 1;
+}
+
+.admin-nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-nav-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 4px 12px;
+  margin-bottom: 2px;
 }
 
 .admin-nav-item {
@@ -3517,4 +3784,145 @@ body.admin-page {
   .admin-sidebar.open { transform: translateX(0); }
 
   .admin-main #admin-content { padding: 20px 16px 48px; }
+}
+
+/* ==========================================
+   PLAYER RESTRICTION PICKER (inscription form)
+   Shared between web /inscripcion/ and the admin
+   tournament restrictions config (admin uses
+   .day-chips + custom layout already).
+   ========================================== */
+
+.restriction-section {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.restriction-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.restriction-hint {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.restriction-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.restriction-type-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  background: var(--bg-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.restriction-type-btn:hover { background: var(--card-hover); color: var(--text); }
+
+.restriction-type-btn.active {
+  background: var(--primary-glow);
+  color: var(--text);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.restriction-type-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.restriction-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 16px 0 8px;
+}
+
+.day-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-chip {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.day-chip:hover { background: var(--card-hover); color: var(--text); }
+
+.day-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.time-chips-row {
+  margin: 0 -16px;            /* bleed past the parent's 16px padding */
+  padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.time-chips-row::-webkit-scrollbar { height: 6px; }
+.time-chips-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.time-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.time-chip {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.time-chip:hover { background: var(--card-hover); color: var(--text); }
+
+.time-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
 }

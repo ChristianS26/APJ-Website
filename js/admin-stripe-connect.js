@@ -18,6 +18,7 @@ const APJAdminStripeConnect = (function () {
     document.getElementById('connect-create-btn')?.addEventListener('click', handleCreateAccount);
     document.getElementById('connect-resume-btn')?.addEventListener('click', () => mountOnboarding());
     document.getElementById('connect-manage-btn')?.addEventListener('click', handleManageAccount);
+    document.getElementById('connect-payments-refresh-btn')?.addEventListener('click', loadRecentPayments);
   }
 
   function setState(stateId) {
@@ -111,8 +112,15 @@ const APJAdminStripeConnect = (function () {
         appearance: {
           overlays: 'dialog',
           variables: {
-            colorPrimary: '#635BFF',
-            fontFamily: 'Inter, system-ui, sans-serif'
+            colorPrimary: '#10b981',
+            colorBackground: '#ffffff',
+            colorText: '#0f172a',
+            colorSecondaryText: '#475569',
+            colorBorder: 'rgba(15,23,42,0.10)',
+            buttonPrimaryColorBackground: '#10b981',
+            buttonPrimaryColorText: '#ffffff',
+            fontFamily: 'Inter, system-ui, sans-serif',
+            borderRadius: '8px'
           }
         },
         locale: 'es'
@@ -162,6 +170,94 @@ const APJAdminStripeConnect = (function () {
       const showFinish = !!status?.requiresAction && !status?.onboardingComplete;
       finish.classList.toggle('hidden', !showFinish);
     }
+
+    // Kick off the payments feed once we know the account is connected.
+    loadRecentPayments();
+  }
+
+  async function loadRecentPayments() {
+    const container = document.getElementById('connect-payments-list');
+    if (!container) return;
+    const refreshBtn = document.getElementById('connect-payments-refresh-btn');
+    if (refreshBtn) refreshBtn.disabled = true;
+
+    container.innerHTML = '<div class="profile-loading-page" style="padding:32px 0;"><div class="spinner" style="width:24px; height:24px;"></div><p style="font-size:13px;">Cargando pagos...</p></div>';
+
+    try {
+      const rows = await APJApi.getConnectRecentPayments(50);
+      if (!Array.isArray(rows) || rows.length === 0) {
+        container.innerHTML = '<div style="padding:32px 24px; text-align:center; color:var(--text-secondary); font-size:14px;">Aún no hay pagos registrados.</div>';
+        return;
+      }
+      container.innerHTML = renderPaymentsTable(rows);
+    } catch (error) {
+      container.innerHTML = `<div style="padding:24px; color:#ef4444; font-size:13px;">${escapeHtml(humanizeError(error))}</div>`;
+    } finally {
+      if (refreshBtn) refreshBtn.disabled = false;
+    }
+  }
+
+  function renderPaymentsTable(rows) {
+    const head = `
+      <thead>
+        <tr>
+          <th style="text-align:left;">Fecha</th>
+          <th style="text-align:left;">Jugador</th>
+          <th style="text-align:left;">Torneo</th>
+          <th style="text-align:left;">Categoria</th>
+          <th style="text-align:right;">Monto</th>
+          <th style="text-align:left;">Status</th>
+          <th style="text-align:left;">Metodo</th>
+        </tr>
+      </thead>`;
+    const body = rows.map(r => {
+      const playerName = [r.player?.first_name, r.player?.last_name].filter(Boolean).join(' ');
+      const playerEmail = r.player?.email || '';
+      return `
+        <tr>
+          <td>${escapeHtml(formatDate(r.paid_at))}</td>
+          <td>
+            <div>${escapeHtml(playerName || '—')}</div>
+            <div class="connect-payments-subtle">${escapeHtml(playerEmail)}</div>
+          </td>
+          <td>${escapeHtml(r.tournament?.name || '—')}</td>
+          <td>${escapeHtml(r.category?.name || '—')}</td>
+          <td style="text-align:right; white-space:nowrap; font-variant-numeric: tabular-nums;">${escapeHtml(formatAmount(r.amount))}</td>
+          <td>${statusPill(r.status)}</td>
+          <td>${escapeHtml(r.method || '—')}</td>
+        </tr>`;
+    }).join('');
+    return `<div class="connect-payments-table-wrap"><table class="connect-payments-table">${head}<tbody>${body}</tbody></table></div>`;
+  }
+
+  function statusPill(status) {
+    const s = String(status || '').toLowerCase();
+    let color = 'yellow';
+    if (s === 'succeeded' || s === 'paid' || s === 'completed') color = 'green';
+    else if (s === 'failed' || s === 'cancelled' || s === 'canceled') color = 'orange';
+    return `<span class="connect-badge ${color}" style="font-size:11px;">${escapeHtml(status || '—')}</span>`;
+  }
+
+  function formatAmount(amountCents) {
+    if (amountCents == null) return '—';
+    const value = Number(amountCents) / 100;
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 }).format(value);
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleString('es-MX', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[<>&"']/g, c => ({
+      '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
+    }[c]));
   }
 
   function badge(label, color) {

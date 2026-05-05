@@ -376,7 +376,7 @@ const APJApi = (function() {
    * fully onboarded, or an Express Dashboard login link if it is.
    */
   async function getStripeConnectDashboardLink() {
-    return request('/api/payments/connect/dashboard-link', {
+    return request('/api/connect/dashboard-link', {
       redirectOnUnauth: false
     });
   }
@@ -387,7 +387,7 @@ const APJApi = (function() {
    * Returns { accountId, chargesEnabled, payoutsEnabled, onboardingComplete, requiresAction }.
    */
   async function getConnectAccountStatus() {
-    return request('/api/payments/connect/account-status', {
+    return request('/api/connect/account-status', {
       redirectOnUnauth: false
     });
   }
@@ -398,7 +398,7 @@ const APJApi = (function() {
    * Returns { accountId }.
    */
   async function createConnectAccount() {
-    return request('/api/payments/connect/create-account', {
+    return request('/api/connect/create-account', {
       method: 'POST',
       redirectOnUnauth: false
     });
@@ -409,9 +409,105 @@ const APJApi = (function() {
    * Returns { clientSecret }.
    */
   async function createConnectAccountSession() {
-    return request('/api/payments/connect/account-session', {
+    return request('/api/connect/account-session', {
       method: 'POST',
       redirectOnUnauth: false
+    });
+  }
+
+  /**
+   * Recent payments feed for the Stripe Connect admin view.
+   * Returns array of RecentPaymentRow with nested tournament/player/category.
+   */
+  async function getConnectRecentPayments(limit = 50) {
+    const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+    return request(`/api/connect/recent-payments?limit=${safeLimit}`, {
+      redirectOnUnauth: false
+    });
+  }
+
+  // ----- Tournaments (admin views read + write) -----
+  async function getTournamentById(id) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}`, {
+      auth: false, // public endpoint
+      redirectOnUnauth: false,
+    });
+  }
+  async function updateTournament(id, payload, categoryIds) {
+    // Backend expects UpdateTournamentWithCategoriesRequest:
+    //   { tournament: UpdateTournamentRequest, categoryIds: List<Int> }
+    // categoryIds must be non-empty and integers > 0.
+    const ids = (Array.isArray(categoryIds) ? categoryIds : [])
+      .map(v => parseInt(v, 10))
+      .filter(n => Number.isFinite(n) && n > 0);
+    return request(`/api/tournaments/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ tournament: payload, categoryIds: ids }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function setTournamentEnabled(id, enabled) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/enabled`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_enabled: !!enabled }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function setTournamentRegistrationOpen(id, open) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/registration-open`, {
+      method: 'PATCH',
+      body: JSON.stringify({ registration_open: !!open }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function updateTournamentClubLogo(id, url) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/club-logo`, {
+      method: 'PATCH',
+      body: JSON.stringify({ club_logo_url: url }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function getTournamentRestrictionConfig(id) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/restriction-config`, {
+      redirectOnUnauth: false,
+    });
+  }
+  async function saveTournamentRestrictionConfig(id, config) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/restriction-config`, {
+      method: 'PUT',
+      body: JSON.stringify(config),
+      redirectOnUnauth: false,
+    });
+  }
+  async function getTeamsByTournamentGrouped(tournamentId) {
+    return request(`/api/teams/by-tournament?tournamentId=${encodeURIComponent(tournamentId)}`, {
+      auth: false, // public endpoint per TeamRoutes
+      redirectOnUnauth: false,
+    });
+  }
+
+  // ----- Admin: Regular tournament categories CRUD -----
+  async function adminListRegularCategories() {
+    return request('/api/categories/admin/regular', { redirectOnUnauth: false });
+  }
+  async function adminCreateRegularCategory({ name, position, price }) {
+    return request('/api/categories/admin/regular', {
+      method: 'POST',
+      body: JSON.stringify({ name, position, price }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function adminUpdateRegularCategory(id, { name, position, price }) {
+    return request(`/api/categories/admin/regular/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ name, position, price }),
+      redirectOnUnauth: false,
+    });
+  }
+  async function adminDeleteRegularCategory(id) {
+    return request(`/api/categories/admin/regular/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      redirectOnUnauth: false,
     });
   }
 
@@ -451,6 +547,19 @@ const APJApi = (function() {
     getConnectAccountStatus,
     createConnectAccount,
     createConnectAccountSession,
+    getConnectRecentPayments,
+    adminListRegularCategories,
+    adminCreateRegularCategory,
+    adminUpdateRegularCategory,
+    adminDeleteRegularCategory,
+    getTournamentById,
+    updateTournament,
+    setTournamentEnabled,
+    setTournamentRegistrationOpen,
+    updateTournamentClubLogo,
+    getTournamentRestrictionConfig,
+    saveTournamentRestrictionConfig,
+    getTeamsByTournamentGrouped,
 
     // Error class
     ApiError

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restricciones | Admin APJ</title>
+  <meta name="description" content="Configura los días y horarios disponibles como restricción para los jugadores." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 9999px; transition: .15s;
+    }
+    .switch .slider::before {
+      content: ""; position: absolute;
+      height: 16px; width: 16px; left: 2px; top: 2px;
+      background: var(--text); border-radius: 50%; transition: .15s;
+    }
+    .switch input:checked + .slider { background: var(--primary); border-color: var(--primary); }
+    .switch input:checked + .slider::before { transform: translateX(18px); background: white; }
+
+    .day-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .day-chip {
+      padding: 8px 16px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .day-chip:hover { background: var(--card-hover); color: var(--text); border-color: var(--border-hover); }
+    .day-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .day-chip:disabled { cursor: not-allowed; opacity: 0.5; }
+
+    .day-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+    .time-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+    .time-row .form-group { margin-bottom: 0; }
+    .time-row input[type="time"], .time-row input[type="number"] {
+      max-width: 130px;
+    }
+
+    .restr-toggle-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0;
+    }
+    .restr-toggle-row .desc { flex: 1; }
+    .restr-toggle-row .desc strong { display: block; font-size: 14px; }
+    .restr-toggle-row .desc small { color: var(--text-secondary); font-size: 12px; }
+
+    .restr-section + .restr-section {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+    .restr-section h2 {
+      margin: 0 0 6px 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .restr-section .restr-section-hint {
+      margin: 0 0 12px 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .dirty-indicator {
+      font-size: 12px;
+      color: #d97706;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="profile-page-header">
+    <h1>Restricciones</h1>
+    <p id="restr-tournament-subtitle" style="color:var(--text-secondary);">Selecciona un torneo en el menu lateral.</p>
+  </div>
+
+  <div id="restr-empty">
+    <div class="profile-card">
+      <div class="profile-card-body" style="text-align:center; color:var(--text-secondary); padding:48px 24px;">
+        Selecciona un torneo arriba para configurar sus restricciones.
+      </div>
+    </div>
+  </div>
+
+  <div id="restr-content" class="hidden">
+    <!-- Publish toggle -->
+    <div class="profile-card" style="margin-bottom:16px;">
+      <div class="profile-card-body">
+        <div class="restr-toggle-row">
+          <div class="desc">
+            <strong>Publicar a jugadores</strong>
+            <small>Al activar, los jugadores podran ver e indicar restricciones durante su inscripcion.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="restr-enabled">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuration -->
+    <div class="profile-card">
+      <div class="profile-card-header">
+        <h2 style="font-size:16px; margin:0;">Configuración</h2>
+        <p style="margin:4px 0 0 0; color:var(--text-secondary); font-size:13px;">
+          Selecciona los días y rangos horarios que los jugadores podrán elegir.
+        </p>
+      </div>
+      <div class="profile-card-body">
+
+        <!-- Days picker -->
+        <div class="restr-section">
+          <h2>Días disponibles</h2>
+          <p class="restr-section-hint" id="restr-days-range-hint">
+            Solo se muestran los días dentro del rango del torneo.
+          </p>
+          <div class="day-chips" id="restr-day-chips"></div>
+          <div class="day-actions">
+            <button type="button" class="btn btn-outline btn-sm" id="restr-select-all">Seleccionar todos</button>
+            <button type="button" class="btn btn-outline btn-sm" id="restr-clear-all">Limpiar</button>
+          </div>
+        </div>
+
+        <!-- Time range -->
+        <div class="restr-section">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px;">
+            <h2 style="margin:0;">Rango horario</h2>
+            <label class="switch">
+              <input type="checkbox" id="restr-has-time-range">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <p class="restr-section-hint">
+            Si se activa, los jugadores podrán indicar un horario mínimo (ej. "solo puedo jugar a partir de las 20:00").
+          </p>
+
+          <div id="restr-time-fields" class="time-row hidden">
+            <div class="form-group">
+              <label class="form-label" for="restr-time-from">Desde</label>
+              <select id="restr-time-from" class="form-select"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="restr-time-to">Hasta</label>
+              <select id="restr-time-to" class="form-select"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="restr-slot-min">Intervalo (min)</label>
+              <select id="restr-slot-min" class="form-select">
+                <option value="15">15 min</option>
+                <option value="30" selected>30 min</option>
+                <option value="60">60 min</option>
+                <option value="90">90 min</option>
+                <option value="120">120 min</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div style="display:flex; align-items:center; gap:8px; justify-content: flex-end; margin-top: 24px;">
+          <span id="restr-dirty" class="dirty-indicator hidden">Cambios pendientes por guardar</span>
+          <button type="button" class="btn btn-outline" id="restr-discard">Descartar</button>
+          <button type="button" class="btn btn-primary" id="restr-save">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root"></div>
+
+<script src="/api/config"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-torneo-restricciones.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'restricciones' });
+    if (result) APJAdminTorneoRestricciones.start();
+  });
+</script>
+
+</body>
+</html>

@@ -8,8 +8,11 @@
 // Static asset prefixes (css, js, img, etc.) bypass via the matcher below.
 
 export const config = {
-  // Run on everything except shared static asset paths.
-  matcher: ['/((?!css/|js/|img/|apk/|favicon|robots|sitemap|_vercel).*)'],
+  // Run on everything except shared static asset paths and /api/ endpoints
+  // (Serverless Functions like /api/config must reach Vercel's runtime
+  // unrewritten — otherwise the middleware would rewrite them under /admin
+  // and produce a 404).
+  matcher: ['/((?!api/|css/|js/|img/|apk/|favicon|robots|sitemap|_vercel).*)'],
 };
 
 const ADMIN_HOSTS = new Set([

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torneo | Admin APJ</title>
+  <meta name="description" content="Administra torneos APJ — inscripciones y ajustes." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* Tabs */
+    .torneo-tabs {
+      display: flex; gap: 4px; border-bottom: 1px solid var(--border);
+      margin-top: 24px;
+    }
+    .torneo-tab {
+      background: transparent; border: none; cursor: pointer;
+      padding: 10px 18px; font-size: 14px; font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      margin-bottom: -1px;
+    }
+    .torneo-tab:hover { color: var(--text); }
+    .torneo-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Inscripciones table */
+    .ins-category-block { margin-bottom: 24px; }
+    .ins-category-header {
+      padding: 12px 16px;
+      background: var(--bg-3);
+      border-radius: 8px 8px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .ins-category-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+    .ins-category-count {
+      font-size: 12px; color: var(--text-secondary);
+      background: var(--card); padding: 2px 8px; border-radius: 9999px;
+      border: 1px solid var(--border);
+    }
+    .ins-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 0 0 8px 8px;
+    }
+    .ins-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ins-table thead th {
+      padding: 10px 14px; text-align: left;
+      font-weight: 600; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-secondary);
+      background: var(--bg-3); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .ins-table tbody td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    .ins-table tbody tr:last-child td { border-bottom: none; }
+    .ins-table tbody tr:hover { background: var(--card-hover); }
+    .ins-paid-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 9999px;
+      font-size: 11px; font-weight: 600;
+      border: 1px solid;
+    }
+    .ins-paid-pill.green { color: #16a34a; border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.08); }
+    .ins-paid-pill.gray  { color: var(--text-secondary); border-color: var(--border); background: var(--card); }
+
+    .torneo-toggle-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+    }
+    .torneo-toggle-row:last-child { border-bottom: none; }
+    .torneo-toggle-row .desc { flex: 1; }
+    .torneo-toggle-row .desc strong { display: block; font-size: 14px; }
+    .torneo-toggle-row .desc small { color: var(--text-secondary); font-size: 12px; }
+    .switch {
+      position: relative; display: inline-block; width: 40px; height: 22px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 9999px; transition: .15s;
+    }
+    .switch .slider::before {
+      content: ""; position: absolute;
+      height: 16px; width: 16px; left: 2px; top: 2px;
+      background: var(--text); border-radius: 50%; transition: .15s;
+    }
+    .switch input:checked + .slider {
+      background: var(--primary); border-color: var(--primary);
+    }
+    .switch input:checked + .slider::before {
+      transform: translateX(18px); background: white;
+    }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="profile-page-header">
+    <h1>Torneo</h1>
+    <p>Selecciona un torneo para ver sus inscripciones o editar su configuracion.</p>
+  </div>
+
+  <div id="torneo-error" class="hidden" role="alert" style="margin-bottom:16px; padding:12px 14px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:8px; color:#ef4444; font-size:14px;"></div>
+
+  <!-- Tournament selector -->
+  <div class="profile-card">
+    <div class="profile-card-body">
+      <label class="form-label" for="torneo-select">Torneo</label>
+      <select id="torneo-select" class="form-select">
+        <option value="">Cargando...</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tabs (hidden until a tournament is selected) -->
+  <div id="torneo-tabs-bar" class="torneo-tabs hidden">
+    <button type="button" class="torneo-tab active" data-tab="inscripciones">Inscripciones</button>
+    <button type="button" class="torneo-tab" data-tab="ajustes">Ajustes</button>
+  </div>
+
+  <!-- Inscripciones tab -->
+  <div id="torneo-tab-inscripciones" class="hidden" style="margin-top:16px;">
+    <div id="torneo-ins-list">
+      <div class="profile-loading-page" style="padding:32px 0;">
+        <div class="spinner" style="width:24px; height:24px;"></div>
+        <p style="font-size:13px;">Cargando inscripciones...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ajustes tab -->
+  <div id="torneo-tab-ajustes" class="hidden" style="margin-top:16px;">
+    <div class="profile-card">
+      <div class="profile-card-header">
+        <h2 style="font-size:16px; margin:0;">Datos del torneo</h2>
+      </div>
+      <div class="profile-card-body">
+        <form id="torneo-edit-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="torneo-edit-name">Nombre</label>
+            <input type="text" id="torneo-edit-name" class="form-input" required maxlength="120" placeholder="Nombre del torneo">
+            <div class="form-error"></div>
+          </div>
+
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-start">Fecha de inicio</label>
+              <input type="date" id="torneo-edit-start" class="form-input" required>
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-end">Fecha de fin</label>
+              <input type="date" id="torneo-edit-end" class="form-input" required>
+              <div class="form-error"></div>
+            </div>
+          </div>
+
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:2;">
+              <label class="form-label" for="torneo-edit-location">Ubicacion</label>
+              <input type="text" id="torneo-edit-location" class="form-input" maxlength="200" placeholder="Club / direccion">
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-type">Tipo</label>
+              <select id="torneo-edit-type" class="form-select" required>
+                <option value="Regular">Regular</option>
+                <option value="Relampago">Relampago</option>
+              </select>
+              <div class="form-error"></div>
+            </div>
+          </div>
+
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-lat">Latitud</label>
+              <input type="number" step="any" id="torneo-edit-lat" class="form-input" placeholder="20.6736">
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-lng">Longitud</label>
+              <input type="number" step="any" id="torneo-edit-lng" class="form-input" placeholder="-103.344">
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-max-points">Max points</label>
+              <input type="text" id="torneo-edit-max-points" class="form-input" placeholder="ej. 1000">
+              <div class="form-error"></div>
+            </div>
+          </div>
+
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="torneo-edit-club-logo">URL logo del club</label>
+              <input type="text" id="torneo-edit-club-logo" class="form-input" placeholder="https://...">
+              <div class="form-error"></div>
+            </div>
+          </div>
+
+          <div style="margin: 16px 0; border-top: 1px solid var(--border); padding-top: 8px;">
+            <div class="torneo-toggle-row">
+              <div class="desc">
+                <strong>Torneo activo</strong>
+                <small>Si esta apagado, el torneo no aparece publicamente.</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="torneo-edit-enabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="torneo-toggle-row">
+              <div class="desc">
+                <strong>Inscripciones abiertas</strong>
+                <small>Si esta apagado, los jugadores no pueden inscribirse.</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="torneo-edit-registration-open">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; justify-content: flex-end;">
+            <button type="button" class="btn btn-outline" id="torneo-edit-reset">Descartar</button>
+            <button type="submit" class="btn btn-primary" id="torneo-edit-save">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root"></div>
+
+<script src="/api/config"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-torneo.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'torneo' });
+    if (result) APJAdminTorneo.start();
+  });
+</script>
+
+</body>
+</html>

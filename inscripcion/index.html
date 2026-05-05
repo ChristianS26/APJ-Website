@@ -107,6 +107,36 @@
       <h2 class="step-title">Metodo de Pago</h2>
       <p class="step-subtitle">Elige como deseas pagar tu inscripcion</p>
 
+      <!-- Restriction picker (rendered only when admin enabled it on this tournament) -->
+      <div id="restriction-section" class="restriction-section hidden">
+        <div class="restriction-toggle-row">
+          <div>
+            <strong class="form-label" style="margin: 0;">¿Tienes alguna restriccion?</strong>
+            <p class="restriction-hint">Indica los dias o el horario minimo en los que puedes jugar.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="restriction-on">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div id="restriction-picker" class="hidden">
+          <div id="restriction-type-options" class="restriction-type-options"></div>
+
+          <div id="restriction-day-block" class="hidden">
+            <div class="restriction-section-title">Selecciona el día</div>
+            <div class="day-chips" id="restriction-day-chips"></div>
+          </div>
+
+          <div id="restriction-time-block" class="hidden">
+            <div class="restriction-section-title">Selecciona la hora mínima</div>
+            <div class="time-chips-row">
+              <div id="restriction-time-chips" class="time-chips"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Payment Method Selection -->
       <div class="payment-options">
         <div class="payment-option selected" data-method="card">
@@ -164,12 +194,6 @@
           </div>
         </div>
 
-        <!-- Restriction Field (optional) -->
-        <div class="form-group" style="margin-top: 24px;">
-          <label class="form-label">Restriccion de jugador (opcional)</label>
-          <input type="text" id="player-restriction" class="form-input" placeholder="Ej. No jugar el dia...">
-        </div>
-
         <!-- Stripe Payment Element -->
         <div id="stripe-payment-element"></div>
 
@@ -196,12 +220,6 @@
             Ingresa tu codigo de registro proporcionado por la organizacion.
           </p>
           <input type="text" id="registration-code" class="form-input" placeholder="XXXXXX">
-
-          <!-- Restriction Field (optional) -->
-          <div class="form-group" style="margin-top: 16px;">
-            <label class="form-label">Restriccion de jugador (opcional)</label>
-            <input type="text" id="player-restriction-code" class="form-input" placeholder="Ej. No jugar el dia...">
-          </div>
 
           <button type="button" id="submit-code" class="btn btn-primary btn-block btn-lg">
             Registrar con Codigo
@@ -230,11 +248,12 @@
 </footer>
 
 <!-- Scripts -->
-<script src="/js/config.js"></script>
+<script src="/api/config"></script>
 <script src="/js/api.js"></script>
 <script src="/js/validation.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/tournaments.js"></script>
+<script src="/js/restriction-picker.js"></script>
 <script src="/js/registration.js"></script>
 <script src="/js/payment.js"></script>
 <script src="/js/profile.js"></script>

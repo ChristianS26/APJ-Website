@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categorias | Admin APJ</title>
+  <meta name="description" content="Administra las categorias de torneos regulares de APJ." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .cats-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .cats-toolbar h1 { margin: 0; }
+    .cats-table-wrap { overflow-x: auto; width: 100%; }
+    .cats-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .cats-table thead th {
+      padding: 10px 16px; font-weight: 600; font-size: 12px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-3);
+      text-align: left; white-space: nowrap;
+    }
+    .cats-table tbody td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle;
+    }
+    .cats-table tbody tr:last-child td { border-bottom: none; }
+    .cats-table tbody tr:hover { background: var(--card-hover); }
+    .cats-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .cats-empty {
+      padding: 40px 24px; text-align: center; color: var(--text-secondary); font-size: 14px;
+    }
+    .cats-error {
+      padding: 12px 14px;
+      background: rgba(239,68,68,0.10);
+      border: 1px solid rgba(239,68,68,0.30);
+      border-radius: 8px;
+      color: #ef4444;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Modal */
+    .cats-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,0.45);
+      display: none; align-items: center; justify-content: center;
+      z-index: 200;
+    }
+    .cats-modal-overlay.active { display: flex; }
+    .cats-modal {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px;
+      width: 100%; max-width: 420px;
+      box-shadow: var(--shadow-lg);
+    }
+    .cats-modal-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cats-modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; }
+    .cats-modal-body { padding: 20px; }
+    .cats-modal-footer {
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 8px;
+    }
+    .cats-modal-close {
+      background: transparent; border: none; cursor: pointer; color: var(--text-secondary);
+      padding: 4px;
+    }
+    .cats-modal-close:hover { color: var(--text); }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="cats-toolbar profile-page-header" style="margin-bottom:24px;">
+    <div>
+      <h1>Categorias</h1>
+      <p style="margin:4px 0 0 0; color:var(--text-secondary);">Categorias usadas en torneos <strong>Regular</strong>. Crea, edita o elimina las que aparecen aqui.</p>
+    </div>
+    <button type="button" id="cats-create-btn" class="btn btn-primary">+ Nueva categoria</button>
+  </div>
+
+  <div id="cats-error" class="cats-error hidden" role="alert"></div>
+
+  <div class="profile-card">
+    <div class="profile-card-body" style="padding:0;">
+      <div id="cats-list">
+        <div class="profile-loading-page" style="padding:40px 0;">
+          <div class="spinner" style="width:28px; height:28px;"></div>
+          <p style="font-size:13px;">Cargando categorias...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create / Edit modal -->
+  <div id="cats-modal" class="cats-modal-overlay" role="dialog" aria-modal="true">
+    <div class="cats-modal">
+      <div class="cats-modal-header">
+        <h3 id="cats-modal-title">Nueva categoria</h3>
+        <button type="button" class="cats-modal-close" data-cats-close aria-label="Cerrar">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="cats-modal-body">
+        <form id="cats-form" novalidate>
+          <input type="hidden" id="cats-form-id" />
+          <div class="form-group">
+            <label class="form-label" for="cats-form-name">Nombre</label>
+            <input type="text" id="cats-form-name" class="form-input" required maxlength="80" placeholder="ej. Cuarta">
+            <div class="form-error"></div>
+          </div>
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="cats-form-position">Posicion</label>
+              <input type="number" id="cats-form-position" class="form-input" min="0" step="1" required placeholder="0">
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="cats-form-price">Precio (MXN)</label>
+              <input type="number" id="cats-form-price" class="form-input" min="0" step="1" required placeholder="0">
+              <div class="form-error"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="cats-modal-footer">
+        <button type="button" class="btn btn-outline" data-cats-close>Cancelar</button>
+        <button type="button" class="btn btn-primary" id="cats-form-submit">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div id="cats-delete-modal" class="cats-modal-overlay" role="dialog" aria-modal="true">
+    <div class="cats-modal">
+      <div class="cats-modal-header">
+        <h3>Eliminar categoria</h3>
+        <button type="button" class="cats-modal-close" data-cats-close aria-label="Cerrar">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="cats-modal-body">
+        <p style="margin:0; color:var(--text-secondary); font-size:14px;">
+          Vas a eliminar la categoria <strong id="cats-delete-name">—</strong>. Si esta categoria tiene torneos, equipos, ranking o pagos asociados, la operacion sera bloqueada por el sistema.
+        </p>
+      </div>
+      <div class="cats-modal-footer">
+        <button type="button" class="btn btn-outline" data-cats-close>Cancelar</button>
+        <button type="button" class="btn btn-primary" id="cats-delete-confirm" style="background:#ef4444; border-color:#ef4444;">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root"></div>
+
+<script src="/api/config"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-categories.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'categories' });
+    if (result) APJAdminCategories.start();
+  });
+</script>
+
+</body>
+</html>

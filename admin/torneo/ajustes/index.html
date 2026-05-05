@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ajustes del torneo | Admin APJ</title>
+  <meta name="description" content="Ajustes y datos del torneo seleccionado." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .torneo-toggle-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+    }
+    .torneo-toggle-row:last-child { border-bottom: none; }
+    .torneo-toggle-row .desc { flex: 1; }
+    .torneo-toggle-row .desc strong { display: block; font-size: 14px; }
+    .torneo-toggle-row .desc small { color: var(--text-secondary); font-size: 12px; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 9999px; transition: .15s;
+    }
+    .switch .slider::before {
+      content: ""; position: absolute;
+      height: 16px; width: 16px; left: 2px; top: 2px;
+      background: var(--text); border-radius: 50%; transition: .15s;
+    }
+    .switch input:checked + .slider { background: var(--primary); border-color: var(--primary); }
+    .switch input:checked + .slider::before { transform: translateX(18px); background: white; }
+
+    /* Logo uploader */
+    .logo-uploader {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 14px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    .logo-uploader-image {
+      width: 96px; height: 96px;
+      border-radius: 12px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-uploader-image img {
+      width: 100%; height: 100%; object-fit: contain;
+    }
+    .logo-uploader-image.empty img { display: none; }
+    .logo-uploader-image.empty::after {
+      content: "Sin logo";
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .logo-uploader-actions {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .logo-uploader-actions .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .logo-uploader-hint {
+      font-size: 12px; color: var(--text-secondary); margin: 0;
+    }
+
+    /* App card preview — mirrors the Tournament card in the mobile app:
+       row layout with logo on the left and info on the right. */
+    .app-preview-frame {
+      max-width: 380px;
+      margin: 0 auto;
+      border-radius: 24px;
+      padding: 16px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+    }
+    .app-card {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #E8E8E8;
+      border-radius: 16px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    }
+    .app-card-logo {
+      width: 76px;
+      height: 92px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .app-card-logo img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .app-card-logo .placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .app-card-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .app-card-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .app-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: #0f172a;
+      margin: 0;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .app-card-flag-lightning {
+      display: inline-flex; align-items: center;
+      width: 22px; height: 22px;
+      border-radius: 9999px;
+      background: rgba(255, 193, 7, 0.18);
+      border: 1px solid rgba(255, 193, 7, 0.4);
+      color: #B8860B;
+      flex-shrink: 0;
+    }
+    .app-card-flag-lightning svg { margin: auto; }
+    .app-card-points {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: -4px;
+    }
+    .app-card-points:empty { display: none; }
+    .app-card-meta {
+      display: flex; align-items: center; gap: 6px;
+      color: #64748b;
+      font-size: 13px;
+    }
+    .app-card-meta svg { flex-shrink: 0; opacity: 0.85; }
+    .app-card-status-row {
+      display: flex; gap: 8px;
+    }
+    .app-card-status {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .app-card-status.open {
+      color: #16a34a;
+      border-color: rgba(22,163,74,0.35);
+      background: rgba(22,163,74,0.10);
+    }
+    .app-card-status.upcoming {
+      color: #2563eb;
+      border-color: rgba(37,99,235,0.35);
+      background: rgba(37,99,235,0.10);
+    }
+    .app-card-status.closed {
+      color: #b91c1c;
+      border-color: rgba(185,28,28,0.35);
+      background: rgba(185,28,28,0.10);
+    }
+    .app-card-status.finalized {
+      color: #b91c1c;
+      border-color: rgba(185,28,28,0.45);
+      background: rgba(185,28,28,0.18);
+    }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="profile-page-header">
+    <h1>Ajustes del torneo</h1>
+    <p id="aj-tournament-subtitle" style="color:var(--text-secondary);">Selecciona un torneo en el menu lateral.</p>
+  </div>
+
+  <div id="aj-empty">
+    <div class="profile-card">
+      <div class="profile-card-body" style="text-align:center; color:var(--text-secondary); padding:48px 24px;">
+        Selecciona un torneo arriba para editar sus ajustes.
+      </div>
+    </div>
+  </div>
+
+  <div id="aj-content" class="hidden">
+    <div class="profile-card">
+      <div class="profile-card-header">
+        <h2 style="font-size:16px; margin:0;">Datos del torneo</h2>
+      </div>
+      <div class="profile-card-body">
+        <form id="aj-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="aj-name">Nombre</label>
+            <input type="text" id="aj-name" class="form-input" required maxlength="120" placeholder="Nombre del torneo">
+          </div>
+
+          <div class="form-row" style="display:flex; gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="aj-start">Fecha de inicio</label>
+              <input type="date" id="aj-start" class="form-input" required>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" for="aj-end">Fecha de fin</label>
+              <input type="date" id="aj-end" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="aj-location">Ubicacion</label>
+            <input type="text" id="aj-location" class="form-input" maxlength="200" placeholder="Club / direccion">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="aj-max-points">Max points</label>
+            <input type="text" id="aj-max-points" class="form-input" placeholder="ej. 1000" style="max-width: 200px;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Logo del club</label>
+            <div class="logo-uploader">
+              <div class="logo-uploader-image empty" id="aj-logo-image">
+                <img id="aj-logo-preview" src="" alt="Logo del club">
+              </div>
+              <div class="logo-uploader-actions">
+                <input type="file" id="aj-logo-file" accept="image/png,image/jpeg,image/webp" hidden>
+                <div class="row">
+                  <button type="button" class="btn btn-outline btn-sm" id="aj-logo-upload-btn">Subir imagen</button>
+                </div>
+                <p class="logo-uploader-hint">PNG, JPG o WebP. Máximo 10 MB. Subir una imagen reemplaza el logo actual.</p>
+                <p class="logo-uploader-hint hidden" id="aj-logo-status"></p>
+              </div>
+            </div>
+            <!-- Hidden field carries the URL into the form payload -->
+            <input type="hidden" id="aj-club-logo">
+          </div>
+
+          <!-- Preview en la app -->
+          <div class="form-group" style="margin-top:24px;">
+            <label class="form-label">Preview en la app</label>
+            <p class="logo-uploader-hint" style="margin: 0 0 12px 0;">Asi se ve la card del torneo con los datos actuales.</p>
+            <div class="app-preview-frame">
+              <div class="app-card">
+                <div class="app-card-logo">
+                  <img id="aj-mock-image" src="" alt="" style="display:none;">
+                  <div id="aj-mock-logo-placeholder" class="placeholder">APJ</div>
+                </div>
+                <div class="app-card-info">
+                  <div class="app-card-name-row">
+                    <h3 class="app-card-name" id="aj-mock-name">Nombre del torneo</h3>
+                    <span id="aj-mock-lightning" class="app-card-flag-lightning hidden" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </span>
+                  </div>
+                  <div class="app-card-points" id="aj-mock-points"></div>
+                  <div class="app-card-meta">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span id="aj-mock-date">Fecha</span>
+                  </div>
+                  <div class="app-card-status-row">
+                    <span id="aj-mock-status" class="app-card-status open">Inscripciones abiertas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin: 16px 0; border-top: 1px solid var(--border); padding-top: 8px;">
+            <div class="torneo-toggle-row">
+              <div class="desc">
+                <strong>Torneo activo</strong>
+                <small>Si esta apagado, el torneo no aparece publicamente.</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="aj-enabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="torneo-toggle-row">
+              <div class="desc">
+                <strong>Inscripciones abiertas</strong>
+                <small>Si esta apagado, los jugadores no pueden inscribirse.</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="aj-registration-open">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; justify-content: flex-end;">
+            <button type="button" class="btn btn-outline" id="aj-reset">Descartar</button>
+            <button type="submit" class="btn btn-primary" id="aj-save">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root"></div>
+
+<script src="/api/config"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-torneo-ajustes.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'ajustes' });
+    if (result) APJAdminTorneoAjustes.start();
+  });
+</script>
+
+</body>
+</html>

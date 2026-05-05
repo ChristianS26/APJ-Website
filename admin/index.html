@@ -4,51 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Panel Admin | APJ</title>
-  <meta name="description" content="Panel de administracion APJ Padel." />
   <meta name="robots" content="noindex,nofollow" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css">
+  <meta http-equiv="refresh" content="0; url=/admin/torneo/">
+  <script>location.replace('/admin/torneo/');</script>
 </head>
-<body class="admin-page">
-
-<template id="admin-page-template">
-  <div class="profile-page-header">
-    <h1>Panel Admin</h1>
-    <p>Bienvenido al panel de administracion. Selecciona una herramienta del menu lateral o de los accesos rapidos.</p>
-  </div>
-
-  <div class="profile-grid">
-    <a class="profile-card admin-quick-card" href="/admin/stripe-connect/">
-      <div class="profile-card-body" style="display:flex; gap:16px; align-items:center;">
-        <div style="width:48px; height:48px; border-radius:12px; background:var(--stripe-glow); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="#635BFF" aria-hidden="true">
-            <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 style="margin:0 0 4px 0; font-size:16px; font-weight:600;">Stripe Connect</h2>
-          <p style="margin:0; color:var(--text-secondary); font-size:13px;">Cuenta Stripe que recibe los pagos de inscripciones.</p>
-        </div>
-      </div>
-    </a>
-  </div>
-</template>
-
-<div id="admin-shell-root"></div>
-
-<script src="/js/config.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/validation.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/admin-shell.js"></script>
-<script src="/js/app.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    APJAdminShell.mount({ active: 'dashboard' });
-  });
-</script>
-
+<body>
+  <p>Redirigiendo a <a href="/admin/torneo/">/admin/torneo/</a>...</p>
 </body>
 </html>
