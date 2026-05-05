@@ -467,6 +467,18 @@ const APJApi = (function() {
       redirectOnUnauth: false,
     });
   }
+  async function getTournamentRestrictionConfig(id) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/restriction-config`, {
+      redirectOnUnauth: false,
+    });
+  }
+  async function saveTournamentRestrictionConfig(id, config) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/restriction-config`, {
+      method: 'PUT',
+      body: JSON.stringify(config),
+      redirectOnUnauth: false,
+    });
+  }
   async function getTeamsByTournamentGrouped(tournamentId) {
     return request(`/api/teams/by-tournament?tournamentId=${encodeURIComponent(tournamentId)}`, {
       auth: false, // public endpoint per TeamRoutes
@@ -545,6 +557,8 @@ const APJApi = (function() {
     setTournamentEnabled,
     setTournamentRegistrationOpen,
     updateTournamentClubLogo,
+    getTournamentRestrictionConfig,
+    saveTournamentRestrictionConfig,
     getTeamsByTournamentGrouped,
 
     // Error class

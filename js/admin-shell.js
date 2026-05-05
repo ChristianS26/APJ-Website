@@ -26,6 +26,13 @@ const APJAdminShell = (function () {
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg>'
         },
         {
+          id: 'restricciones',
+          label: 'Restricciones',
+          href: '/admin/torneo/restricciones/',
+          icon:
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+        },
+        {
           id: 'ajustes',
           label: 'Ajustes',
           href: '/admin/torneo/ajustes/',
