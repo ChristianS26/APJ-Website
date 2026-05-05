@@ -141,8 +141,11 @@ const APJAdminRanking = (function () {
           <td>${playerCell(u)}</td>
           <td style="text-align:right;">${tournaments}</td>
           <td style="text-align:right;"><span class="rk-points">${points}</span></td>
-          <td style="text-align:right; color:var(--text-secondary);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          <td style="text-align:right;">
+            <button type="button" class="rk-row-cta" data-uid="${escapeAttr(u.uid || '')}" title="Mover de categoría">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              <span>Mover</span>
+            </button>
           </td>
         </tr>`;
     }).join('');
@@ -169,6 +172,34 @@ const APJAdminRanking = (function () {
         if (uid) openDetail(uid);
       });
     });
+    // CTA "Mover" — abre directo el form de mover sin pasar por el
+    // detalle del jugador. stopPropagation para no disparar el click
+    // del row que abre el modal de detalle.
+    host.querySelectorAll('.rk-row-cta').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const uid = btn.getAttribute('data-uid');
+        const item = state.items.find(i => i.user?.uid === uid);
+        if (item) openMoveFromRow(item);
+      });
+    });
+  }
+
+  // Open the move form directly from a row click. We construct a minimal
+  // profile-shaped object (user + category + points) — el form solo
+  // necesita esos 3 campos. Saltamos el fetch del player profile para
+  // que la accion se sienta inmediata.
+  function openMoveFromRow(item) {
+    const modal = document.getElementById('rk-detail-modal');
+    if (!modal) return;
+    const cat = state.categories.find(c => c.id === state.selectedCategoryId);
+    state.currentProfile = {
+      user: item.user || {},
+      category: { id: cat?.id ?? state.selectedCategoryId, name: cat?.name ?? '' },
+      points: item.total_points ?? 0,
+    };
+    modal.classList.add('active');
+    openMoveForm();
   }
 
   // Case + accent insensitive — admin types "urias" and matches "Urías".

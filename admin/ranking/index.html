@@ -87,7 +87,7 @@
     .rk-table th:nth-child(2), .rk-table td:nth-child(2) { width: auto; }
     .rk-table th:nth-child(3), .rk-table td:nth-child(3) { width: 140px; }
     .rk-table th:nth-child(4), .rk-table td:nth-child(4) { width: 120px; }
-    .rk-table th:nth-child(5), .rk-table td:nth-child(5) { width: 80px; }
+    .rk-table th:nth-child(5), .rk-table td:nth-child(5) { width: 110px; }
     .rk-table thead th {
       padding: 10px 14px; text-align: left;
       font-weight: 600; font-size: 11px; text-transform: uppercase;
@@ -150,6 +150,25 @@
       font-weight: 700;
       color: var(--primary);
     }
+
+    /* CTA por fila: boton compacto pill que abre el move form directo */
+    .rk-row-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--text-secondary);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .rk-row-cta:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .rk-row-cta svg { display: block; }
     .rk-empty {
       padding: 48px 24px;
       text-align: center;
