@@ -3452,6 +3452,75 @@ body.admin-page textarea {
   overflow-y: auto;
 }
 
+.admin-sidebar-tournament {
+  padding: 14px 12px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.admin-sidebar-tournament-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 8px 4px;
+}
+
+.admin-sidebar-tournament-label::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.admin-sidebar-tournament-select {
+  width: 100%;
+  padding: 10px 32px 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.3;
+  color: var(--text);
+  background-color: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  /* custom chevron: removes the native arrow on every browser */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-sidebar-tournament-select:hover {
+  background-color: var(--card-hover);
+  border-color: var(--border-hover);
+}
+
+.admin-sidebar-tournament-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.admin-sidebar-tournament-select:disabled,
+.admin-sidebar-tournament-select[data-empty="true"] {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 .admin-nav {
   display: flex;
   flex-direction: column;
