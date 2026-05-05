@@ -95,7 +95,7 @@ const APJAdminTorneoInscripciones = (function () {
         </td>
         <td>${pill(aPaid ? 'Pagado' : 'Pendiente', aPaid ? 'green' : 'gray')}</td>
         <td>${pill(bPaid ? 'Pagado' : 'Pendiente', bPaid ? 'green' : 'gray')}</td>
-        <td style="color:var(--text-secondary); white-space: pre-line;">${formatRestriction(t.restriction)}</td>
+        <td>${formatRestriction(t.restriction)}</td>
       </tr>`;
   }
 
@@ -111,34 +111,42 @@ const APJAdminTorneoInscripciones = (function () {
   };
 
   function formatRestriction(raw) {
-    if (!raw || !String(raw).trim()) return '—';
+    if (!raw || !String(raw).trim()) {
+      return '<span style="color:var(--text-muted);">—</span>';
+    }
     const parsed = tryParseJson(raw);
     if (!parsed || typeof parsed !== 'object') {
-      // Legacy free text — show as-is.
-      return escapeHtml(raw);
+      // Legacy free text — render as a neutral chip.
+      return restrictionChip('💬', escapeHtml(raw), 'gray');
     }
-    const lines = [];
+    const chips = [];
     const days = Array.isArray(parsed.days)
       ? parsed.days.filter(d => Number.isInteger(d) && d >= 1 && d <= 7)
       : [];
     if (days.length > 0) {
-      const sortedNames = days
+      const names = days
         .slice()
         .sort((a, b) => a - b)
         .map(d => ISO_DAY_NAMES[d])
         .filter(Boolean)
         .join(', ');
-      const mode = parsed.mode === 'not' ? 'No puedo jugar' : 'Solo puedo jugar';
-      lines.push(`${mode}: ${sortedNames}`);
+      if (parsed.mode === 'not') {
+        chips.push(restrictionChip('🚫', `No puede jugar ${escapeHtml(names)}`, 'red'));
+      } else {
+        chips.push(restrictionChip('✅', `Solo juega ${escapeHtml(names)}`, 'green'));
+      }
     }
     if (typeof parsed.time_from === 'string' && /^\d{2}:\d{2}/.test(parsed.time_from)) {
-      lines.push(`Puedo jugar a partir de las: ${formatTime12(parsed.time_from)}`);
+      chips.push(restrictionChip('🕐', `Desde ${escapeHtml(formatTime12(parsed.time_from))}`, 'blue'));
     }
-    if (lines.length === 0) {
-      // Structured but empty — fall back to raw
-      return escapeHtml(raw);
+    if (chips.length === 0) {
+      return restrictionChip('💬', escapeHtml(raw), 'gray');
     }
-    return lines.map(escapeHtml).join('\n');
+    return `<div class="ins-restriction-chips">${chips.join('')}</div>`;
+  }
+
+  function restrictionChip(icon, label, color) {
+    return `<span class="ins-restriction-chip ${color}"><span class="ins-restriction-chip-icon">${icon}</span><span>${label}</span></span>`;
   }
 
   function tryParseJson(s) {

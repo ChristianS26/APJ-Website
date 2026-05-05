@@ -53,6 +53,32 @@
     }
     .ins-paid-pill.green { color: #16a34a; border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.08); }
     .ins-paid-pill.gray  { color: var(--text-secondary); border-color: var(--border); background: var(--card); }
+
+    /* Restriction chips — one per active rule (mode/days/time) */
+    .ins-restriction-chips {
+      display: flex; flex-direction: column; gap: 4px;
+      max-width: 280px;
+    }
+    .ins-restriction-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 9999px;
+      font-size: 12px; font-weight: 500;
+      border: 1px solid; line-height: 1.2;
+      width: fit-content;
+    }
+    .ins-restriction-chip-icon { font-size: 13px; line-height: 1; }
+    .ins-restriction-chip.green {
+      color: #16a34a; border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.08);
+    }
+    .ins-restriction-chip.red {
+      color: #dc2626; border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.08);
+    }
+    .ins-restriction-chip.blue {
+      color: #2563eb; border-color: rgba(37,99,235,0.35); background: rgba(37,99,235,0.08);
+    }
+    .ins-restriction-chip.gray {
+      color: var(--text-secondary); border-color: var(--border); background: var(--card);
+    }
   </style>
 </head>
 <body class="admin-page">
