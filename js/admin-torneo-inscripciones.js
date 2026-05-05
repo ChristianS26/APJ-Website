@@ -138,10 +138,45 @@ const APJAdminTorneoInscripciones = (function () {
     if (!raw || !String(raw).trim()) {
       return '<span style="color:var(--text-muted);">—</span>';
     }
-    const parsed = tryParseJson(raw);
-    if (!parsed || typeof parsed !== 'object') {
-      // Legacy free text — render as a neutral chip.
+    // The backend stores restrictions per-player as "NAME: payload" joined by
+    // " / ". Split, peel the name prefix, parse the JSON payload, render chips.
+    const entries = String(raw)
+      .split(' / ')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(splitNameAndPayload);
+
+    const showNames = entries.length > 1;
+    const chips = entries.flatMap(e => entryChips(e, showNames));
+    if (chips.length === 0) {
       return restrictionChip('💬', escapeHtml(raw), 'gray');
+    }
+    return `<div class="ins-restriction-chips">${chips.join('')}</div>`;
+  }
+
+  // "Christian Urias: {json}" -> { name: "Christian Urias", payload: "{json}" }
+  // "{json}"               -> { name: null, payload: "{json}" }
+  function splitNameAndPayload(s) {
+    const idx = s.indexOf(':');
+    if (idx <= 0) return { name: null, payload: s };
+    const maybeName = s.slice(0, idx).trim();
+    const rest = s.slice(idx + 1).trim();
+    // Heuristic: a name shouldn't contain { or " (those are JSON markers) and
+    // shouldn't be ridiculously long.
+    if (maybeName.length === 0 || maybeName.length > 80) return { name: null, payload: s };
+    if (/[{}"]/.test(maybeName)) return { name: null, payload: s };
+    return { name: maybeName, payload: rest };
+  }
+
+  function entryChips(entry, showNames) {
+    const parsed = tryParseJson(entry.payload);
+    const prefix = showNames && entry.name ? `${shortName(entry.name)}: ` : '';
+    if (!parsed || typeof parsed !== 'object') {
+      // Couldn't parse — keep the raw payload as a neutral chip.
+      const text = (entry.name && !showNames)
+        ? entry.payload
+        : `${prefix}${entry.payload}`;
+      return [restrictionChip('💬', escapeHtml(text), 'gray')];
     }
     const chips = [];
     const days = Array.isArray(parsed.days)
@@ -155,18 +190,27 @@ const APJAdminTorneoInscripciones = (function () {
         .filter(Boolean)
         .join(', ');
       if (parsed.mode === 'not') {
-        chips.push(restrictionChip('🚫', `No puede jugar ${escapeHtml(names)}`, 'red'));
+        chips.push(restrictionChip('🚫', `${escapeHtml(prefix)}No puede jugar ${escapeHtml(names)}`, 'red'));
       } else {
-        chips.push(restrictionChip('✅', `Solo juega ${escapeHtml(names)}`, 'green'));
+        chips.push(restrictionChip('✅', `${escapeHtml(prefix)}Solo juega ${escapeHtml(names)}`, 'green'));
       }
     }
     if (typeof parsed.time_from === 'string' && /^\d{2}:\d{2}/.test(parsed.time_from)) {
-      chips.push(restrictionChip('🕐', `Desde ${escapeHtml(formatTime12(parsed.time_from))}`, 'blue'));
+      chips.push(restrictionChip('🕐', `${escapeHtml(prefix)}Desde ${escapeHtml(formatTime12(parsed.time_from))}`, 'blue'));
     }
     if (chips.length === 0) {
-      return restrictionChip('💬', escapeHtml(raw), 'gray');
+      // Structured but empty — keep the prefixed payload visible
+      const text = (entry.name && !showNames)
+        ? entry.payload
+        : `${prefix}${entry.payload}`;
+      return [restrictionChip('💬', escapeHtml(text), 'gray')];
     }
-    return `<div class="ins-restriction-chips">${chips.join('')}</div>`;
+    return chips;
+  }
+
+  function shortName(full) {
+    const parts = String(full).trim().split(/\s+/);
+    return parts[0] || full;
   }
 
   function restrictionChip(icon, label, color) {
