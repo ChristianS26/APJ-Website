@@ -33,6 +33,85 @@
     }
     .switch input:checked + .slider { background: var(--primary); border-color: var(--primary); }
     .switch input:checked + .slider::before { transform: translateX(18px); background: white; }
+
+    /* Logo uploader */
+    .logo-uploader {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 14px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    .logo-uploader-image {
+      width: 96px; height: 96px;
+      border-radius: 12px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-uploader-image img {
+      width: 100%; height: 100%; object-fit: contain;
+    }
+    .logo-uploader-image.empty img { display: none; }
+    .logo-uploader-image.empty::after {
+      content: "Sin logo";
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .logo-uploader-actions {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .logo-uploader-actions .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .logo-uploader-hint {
+      font-size: 12px; color: var(--text-secondary); margin: 0;
+    }
+
+    /* App card preview — mocks the tournament card from the mobile app */
+    .app-preview-frame {
+      max-width: 360px;
+      margin: 0 auto;
+      border-radius: 24px;
+      padding: 12px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+    }
+    .app-card {
+      background: var(--bg-2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .app-card-image {
+      position: relative;
+      width: 100%; aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .app-card-image img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .app-card-status {
+      position: absolute; top: 12px; right: 12px;
+      padding: 4px 10px; border-radius: 9999px;
+      background: rgba(255,255,255,0.92); color: #16a34a;
+      font-size: 11px; font-weight: 700;
+      backdrop-filter: blur(6px);
+    }
+    .app-card-status.closed { color: var(--text-secondary); }
+    .app-card-body { padding: 14px 16px 16px; }
+    .app-card-name {
+      font-size: 16px; font-weight: 700; line-height: 1.25;
+      color: var(--text); margin: 0 0 4px 0;
+    }
+    .app-card-meta {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text-secondary); font-size: 13px;
+    }
+    .app-card-meta svg { flex-shrink: 0; }
   </style>
 </head>
 <body class="admin-page">
@@ -88,24 +167,54 @@
             </div>
           </div>
 
-          <div class="form-row" style="display:flex; gap:12px;">
-            <div class="form-group" style="flex:1;">
-              <label class="form-label" for="aj-lat">Latitud</label>
-              <input type="number" step="any" id="aj-lat" class="form-input" placeholder="20.6736">
-            </div>
-            <div class="form-group" style="flex:1;">
-              <label class="form-label" for="aj-lng">Longitud</label>
-              <input type="number" step="any" id="aj-lng" class="form-input" placeholder="-103.344">
-            </div>
-            <div class="form-group" style="flex:1;">
-              <label class="form-label" for="aj-max-points">Max points</label>
-              <input type="text" id="aj-max-points" class="form-input" placeholder="ej. 1000">
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="aj-max-points">Max points</label>
+            <input type="text" id="aj-max-points" class="form-input" placeholder="ej. 1000" style="max-width: 200px;">
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="aj-club-logo">URL logo del club</label>
-            <input type="text" id="aj-club-logo" class="form-input" placeholder="https://...">
+            <label class="form-label">Logo del club</label>
+            <div class="logo-uploader">
+              <div class="logo-uploader-image empty" id="aj-logo-image">
+                <img id="aj-logo-preview" src="" alt="Logo del club">
+              </div>
+              <div class="logo-uploader-actions">
+                <input type="file" id="aj-logo-file" accept="image/png,image/jpeg,image/webp" hidden>
+                <div class="row">
+                  <button type="button" class="btn btn-outline btn-sm" id="aj-logo-upload-btn">Subir imagen</button>
+                  <button type="button" class="btn btn-outline btn-sm hidden" id="aj-logo-clear-btn" style="color:#ef4444;">Quitar</button>
+                </div>
+                <p class="logo-uploader-hint">PNG, JPG o WebP. Máximo 10 MB. Se sube directamente y reemplaza el logo actual.</p>
+                <p class="logo-uploader-hint hidden" id="aj-logo-status"></p>
+              </div>
+            </div>
+            <!-- Hidden field carries the URL into the form payload -->
+            <input type="hidden" id="aj-club-logo">
+          </div>
+
+          <!-- Preview en la app -->
+          <div class="form-group" style="margin-top:24px;">
+            <label class="form-label">Preview en la app</label>
+            <p class="logo-uploader-hint" style="margin: 0 0 12px 0;">Asi se ve la card del torneo con los datos actuales.</p>
+            <div class="app-preview-frame">
+              <div class="app-card">
+                <div class="app-card-image">
+                  <img id="aj-mock-image" src="" alt="" style="display:none;">
+                  <span id="aj-mock-status" class="app-card-status">Inscripciones abiertas</span>
+                </div>
+                <div class="app-card-body">
+                  <h3 class="app-card-name" id="aj-mock-name">Nombre del torneo</h3>
+                  <div class="app-card-meta">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span id="aj-mock-date">Fecha</span>
+                  </div>
+                  <div class="app-card-meta" style="margin-top:4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span id="aj-mock-location">Ubicación</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div style="margin: 16px 0; border-top: 1px solid var(--border); padding-top: 8px;">

@@ -454,6 +454,13 @@ const APJApi = (function() {
       redirectOnUnauth: false,
     });
   }
+  async function updateTournamentClubLogo(id, url) {
+    return request(`/api/tournaments/${encodeURIComponent(id)}/club-logo`, {
+      method: 'PATCH',
+      body: JSON.stringify({ club_logo_url: url }),
+      redirectOnUnauth: false,
+    });
+  }
   async function getTeamsByTournamentGrouped(tournamentId) {
     return request(`/api/teams/by-tournament?tournamentId=${encodeURIComponent(tournamentId)}`, {
       auth: false, // public endpoint per TeamRoutes
@@ -531,6 +538,7 @@ const APJApi = (function() {
     updateTournament,
     setTournamentEnabled,
     setTournamentRegistrationOpen,
+    updateTournamentClubLogo,
     getTeamsByTournamentGrouped,
 
     // Error class
