@@ -599,67 +599,82 @@ const APJAuth = (function() {
   async function handleRegister(e) {
     e.preventDefault();
 
-    // Get country code and dial code from select
-    const countryCodeSelect = document.getElementById('register-country_code');
-    const countryCodeValue = countryCodeSelect.value; // e.g., "MX|+52"
-    const [countryIso, dialCode] = countryCodeValue.split('|');
-    const phoneNumber = document.getElementById('register-phone').value.trim();
-
-    // Build full phone in E.164 format (dialCode + number)
-    const fullPhone = phoneNumber ? `${dialCode}${phoneNumber.replace(/\D/g, '')}` : '';
-
-    const password = document.getElementById('register-password').value;
-    const confirmPassword = document.getElementById('register-confirm_password').value;
-
-    // Validate passwords match
-    APJValidation.clearFormErrors('register-form');
-    if (password !== confirmPassword) {
-      APJValidation.showFieldError('register-confirm_password', 'Las contrasenas no coinciden');
-      return;
-    }
-
-    const formData = {
-      first_name: document.getElementById('register-first_name').value.trim(),
-      last_name: document.getElementById('register-last_name').value.trim(),
-      email: document.getElementById('register-email').value.trim(),
-      password: password,
-      phone: fullPhone,
-      birthdate: document.getElementById('register-birthdate').value,
-      gender: document.getElementById('register-gender').value,
-      shirt_size: document.getElementById('register-shirt_size').value,
-      country_iso: countryIso
-    };
-
-    // Validate all fields
-    const validation = APJValidation.validateRegistration(formData);
-
-    if (!validation.isValid) {
-      Object.entries(validation.errors).forEach(([field, message]) => {
-        APJValidation.showFieldError(`register-${field}`, message);
-      });
-      return;
-    }
-
-    // Submit
     const submitBtn = document.getElementById('register-submit');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
+    let submitting = false;
 
     try {
-      await APJApi.register(formData);
+      // Get country code and dial code from select
+      const countryCodeSelect = document.getElementById('register-country_code');
+      const countryCodeValue = countryCodeSelect.value; // e.g., "MX|+52"
+      const [countryIso, dialCode] = countryCodeValue.split('|');
+      const phoneNumber = document.getElementById('register-phone').value.trim();
 
-      // Auto-login after registration
-      await APJApi.login(formData.email, formData.password);
+      // Build full phone in E.164 format (dialCode + number)
+      const fullPhone = phoneNumber ? `${dialCode}${phoneNumber.replace(/\D/g, '')}` : '';
 
-      closeModals();
-      updateAuthUI();
-      APJToast.success('Cuenta creada', 'Tu cuenta ha sido creada exitosamente');
-      window.dispatchEvent(new CustomEvent('apj:auth:login'));
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-confirm_password').value;
+
+      // Validate passwords match
+      APJValidation.clearFormErrors('register-form');
+      if (password !== confirmPassword) {
+        APJValidation.showFieldError('register-confirm_password', 'Las contrasenas no coinciden');
+        return;
+      }
+
+      const formData = {
+        first_name: document.getElementById('register-first_name').value.trim(),
+        last_name: document.getElementById('register-last_name').value.trim(),
+        email: document.getElementById('register-email').value.trim(),
+        password: password,
+        phone: fullPhone,
+        birthdate: document.getElementById('register-birthdate').value,
+        gender: document.getElementById('register-gender').value,
+        shirt_size: document.getElementById('register-shirt_size').value,
+        country_iso: countryIso
+      };
+
+      // Validate all fields
+      const validation = APJValidation.validateRegistration(formData);
+
+      if (!validation.isValid) {
+        Object.entries(validation.errors).forEach(([field, message]) => {
+          APJValidation.showFieldError(`register-${field}`, message);
+        });
+        return;
+      }
+
+      // Submit
+      submitting = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
+      }
+
+      try {
+        await APJApi.register(formData);
+
+        // Auto-login after registration
+        await APJApi.login(formData.email, formData.password);
+
+        closeModals();
+        updateAuthUI();
+        APJToast.success('Cuenta creada', 'Tu cuenta ha sido creada exitosamente');
+        window.dispatchEvent(new CustomEvent('apj:auth:login'));
+      } catch (error) {
+        APJToast.error('Error', error.message);
+      }
     } catch (error) {
-      APJToast.error('Error', error.message);
+      // Defensive: synchronous setup/validation failed unexpectedly (e.g.
+      // config script never loaded, so APJConfig is undefined). Without
+      // this guard the form silently does nothing.
+      console.error('handleRegister failed:', error);
+      APJToast.error('Error', 'No se pudo procesar el registro. Recarga la pagina e intenta de nuevo.');
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Crear Cuenta';
+      if (submitting && submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Crear Cuenta';
+      }
     }
   }
 
