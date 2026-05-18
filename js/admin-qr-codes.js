@@ -3,21 +3,19 @@
 // the public tournament detail URL (https://padeljalisco.com/torneos/detalle/?id=X).
 // Android App Links and iOS Universal Links intercept this URL so users with
 // the app installed land directly on the in-app detail; others fall back to web.
+//
+// Uses the qrcode-generator library (Kazuhiko Arase) self-hosted at
+// /js/vendor/qrcode.min.js — chosen over CDN-hosted node-qrcode because
+// privacy-extension users frequently have third-party CDN scripts blocked.
 
 const APJAdminQRCodes = (function () {
 
   const PUBLIC_BASE = 'https://padeljalisco.com';
   const DETAIL_PATH = '/torneos/detalle/';
+  const QR_SIZE_PX = 280;
+  const QR_ERROR_CORRECTION = 'M';
 
   function start() {
-    // The QRCode library is loaded via CDN. If it failed (CSP block, offline,
-    // CDN outage), surface that to the user instead of silently rendering nothing.
-    if (typeof window.QRCode === 'undefined' || typeof window.QRCode.toCanvas !== 'function') {
-      showError('No se cargo la libreria QR. Revisa tu conexion o el bloqueador.');
-      setEmptyState('Libreria QR no disponible.');
-      return;
-    }
-
     renderForSelectedTournament();
 
     // React to tournament changes from the shell picker. The shell dispatches
@@ -38,8 +36,8 @@ const APJAdminQRCodes = (function () {
   function renderForSelectedTournament() {
     const id = APJAdminShell.getSelectedTournamentId();
     // The shell uses strict equality (id === selectedId). If cache stores ids
-    // as numbers and localStorage returned a string, we end up with null.
-    // Fallback to a String coercion match so the QR works regardless of type.
+    // as numbers and localStorage returned a string, the lookup would return
+    // null — fall back to a String-coerced match so the QR works regardless.
     const tournament = lookupTournament(id);
     const nameEl = document.getElementById('qr-tournament-name');
     const urlInput = document.getElementById('qr-url-input');
@@ -47,7 +45,6 @@ const APJAdminQRCodes = (function () {
 
     if (!id) {
       const cache = APJAdminShell.getCachedTournaments();
-      // Distinguish "shell still loading" from "no tournament chosen"
       if (!cache || cache.length === 0) {
         setEmptyState('Cargando torneos...');
       } else {
@@ -59,29 +56,26 @@ const APJAdminQRCodes = (function () {
       return;
     }
 
-    if (!tournament) {
-      // We have an id but no matching tournament in cache yet. This happens
-      // briefly between the shell setting a savedId and the cache being
-      // populated; wait for the next TORNEO_CHANGED_EVENT.
-      setEmptyState('Cargando torneo...');
-      if (actions) actions.style.display = 'none';
-      return;
-    }
-
-    if (nameEl) nameEl.textContent = tournament.name || `Torneo ${id}`;
+    // Even if the cached tournament entry isn't ready yet, we can still
+    // build and surface the URL — the only thing missing is the friendly name.
     const url = buildTournamentUrl(id);
     if (urlInput) urlInput.value = url;
+    if (nameEl) nameEl.textContent = tournament?.name || `Torneo ${id}`;
 
     drawQr(url);
 
-    if (actions) actions.style.display = 'flex';
+    // Show actions only when the QR image actually rendered; otherwise the
+    // user can still copy the URL from the input above.
+    if (actions) {
+      const hasCanvas = !!document.getElementById('qr-canvas');
+      actions.style.display = hasCanvas ? 'flex' : 'none';
+    }
   }
 
   function lookupTournament(id) {
     if (!id) return null;
     const direct = APJAdminShell.getCachedTournament(id);
     if (direct) return direct;
-    // Type-flexible fallback
     const cache = APJAdminShell.getCachedTournaments();
     const target = String(id);
     return cache.find(t => String(t.id) === target) || null;
@@ -90,25 +84,58 @@ const APJAdminQRCodes = (function () {
   function drawQr(url) {
     const wrap = document.getElementById('qr-canvas-wrap');
     if (!wrap) return;
-    wrap.innerHTML = '';
-    const canvas = document.createElement('canvas');
-    canvas.id = 'qr-canvas';
-    wrap.appendChild(canvas);
+
+    if (typeof window.qrcode !== 'function') {
+      // Library didn't load. Show a clear message but leave the URL input
+      // untouched so the admin can still copy and share manually.
+      setEmptyState('No se pudo cargar la libreria QR. Comparte la URL de arriba.');
+      showError('La libreria QR no esta disponible (revisa la consola).');
+      return;
+    }
+
     try {
-      window.QRCode.toCanvas(canvas, url, {
-        errorCorrectionLevel: 'M',
-        margin: 1,
-        width: 280,
-        color: { dark: '#000000', light: '#FFFFFF' },
-      }, (err) => {
-        if (err) {
-          showError('No se pudo generar el QR: ' + (err.message || err));
-          return;
+      const qr = window.qrcode(0, QR_ERROR_CORRECTION);
+      qr.addData(url);
+      qr.make();
+      const moduleCount = qr.getModuleCount();
+
+      // Pick a cell size so the rendered QR is as close to QR_SIZE_PX as
+      // possible while keeping every module on a whole pixel — avoids the
+      // blurry edges you get when modules straddle pixel boundaries.
+      const cellSize = Math.max(2, Math.floor(QR_SIZE_PX / moduleCount));
+      const margin = cellSize;
+      const canvasSize = cellSize * moduleCount + margin * 2;
+
+      wrap.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      canvas.id = 'qr-canvas';
+      canvas.width = canvasSize;
+      canvas.height = canvasSize;
+      // Keep CSS size predictable across devices regardless of cell math
+      canvas.style.width = QR_SIZE_PX + 'px';
+      canvas.style.height = QR_SIZE_PX + 'px';
+      wrap.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
+      ctx.fillStyle = '#000000';
+      for (let row = 0; row < moduleCount; row++) {
+        for (let col = 0; col < moduleCount; col++) {
+          if (qr.isDark(row, col)) {
+            ctx.fillRect(
+              margin + col * cellSize,
+              margin + row * cellSize,
+              cellSize,
+              cellSize,
+            );
+          }
         }
-        hideError();
-      });
+      }
+      hideError();
     } catch (e) {
-      showError('Error al generar el QR: ' + (e.message || e));
+      setEmptyState('No se pudo generar el QR.');
+      showError('Error generando QR: ' + (e?.message || e));
     }
   }
 
