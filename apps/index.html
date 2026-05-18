@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Descargar la app | APJ Padel</title>
+  <meta name="description" content="Descarga la app oficial de la Asociacion de Padel Jalisco para iOS y Android." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script>
+    // Auto-redirect mobile visitors to their platform's store. Desktop users
+    // fall through and see the landing with both buttons.
+    (function () {
+      try {
+        var ua = navigator.userAgent || '';
+        if (/iPad|iPhone|iPod/i.test(ua)) {
+          window.location.replace('https://apps.apple.com/mx/app/padel-apj/id6749219984');
+        } else if (/Android/i.test(ua)) {
+          window.location.replace('https://play.google.com/store/apps/details?id=com.incodap.apj');
+        }
+      } catch (_) { /* ignore */ }
+    })();
+  </script>
+  <style>
+    .apps-container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+      text-align: center;
+    }
+    .apps-hero { margin-bottom: 32px; }
+    .apps-hero img {
+      width: 96px; height: 96px;
+      border-radius: 22px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .apps-hero h1 { margin: 20px 0 6px 0; font-size: 28px; }
+    .apps-hero p { margin: 0; color: var(--text-secondary); }
+
+    .apps-buttons {
+      display: flex; flex-direction: column; gap: 12px;
+      margin: 32px 0;
+    }
+    .apps-store-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 12px;
+      background: #000;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+    .apps-store-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .apps-store-btn svg { width: 28px; height: 28px; flex: 0 0 28px; }
+    .apps-store-btn-text {
+      display: flex; flex-direction: column; align-items: flex-start;
+      line-height: 1.15;
+    }
+    .apps-store-btn-text .small { font-size: 11px; font-weight: 400; opacity: 0.8; }
+    .apps-store-btn-text .big { font-size: 17px; }
+
+    .apps-apk-link {
+      display: block;
+      margin-top: 24px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .apps-apk-link:hover { color: var(--text); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="tournaments-header">
+  <div class="tournaments-header-inner">
+    <a href="/" class="tournaments-logo">
+      <div class="tournaments-logo-icon">APJ</div>
+      <span class="tournaments-logo-text">APJ Padel</span>
+    </a>
+  </div>
+</header>
+
+<main class="apps-container">
+  <div class="apps-hero">
+    <img src="/img/apj_logo.png" alt="APJ Padel">
+    <h1>Descarga la app de APJ</h1>
+    <p>Disponible para iOS y Android.</p>
+  </div>
+
+  <div class="apps-buttons">
+    <a href="https://apps.apple.com/mx/app/padel-apj/id6749219984" class="apps-store-btn" target="_blank" rel="noopener">
+      <svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true">
+        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM256.4 84.5c19.2-22.8 30.3-54.5 27.8-87.5-29 1.2-64.1 19.4-83.8 42.1-17.7 20.1-31.8 54-26.6 84.7 32.1 2.4 65.4-15.7 82.6-39.3z"/>
+      </svg>
+      <span class="apps-store-btn-text">
+        <span class="small">Descargar en</span>
+        <span class="big">App Store</span>
+      </span>
+    </a>
+    <a href="https://play.google.com/store/apps/details?id=com.incodap.apj" class="apps-store-btn" target="_blank" rel="noopener">
+      <svg viewBox="0 0 512 512" aria-hidden="true">
+        <path fill="#00d7fe" d="M325.3 234.3 104.6 13l280.8 161.2-60.1 60.1z"/>
+        <path fill="#ffce00" d="m104.6 499 220.7-221.3 60.1 60.1L104.6 499z"/>
+        <path fill="#03e676" d="m104.6 13 220.7 221.3-220.7 220.5z"/>
+        <path fill="#ff3a44" d="m385.4 337.8-60.1-60.1 91.6-52.6c11.3-6.4 11.3-20.1 0-26.5l-91.6-52.6 60.1-60.1 116.4 66.8c33.9 19.2 33.9 67.9 0 87.1l-116.4 66.8z" opacity=".85"/>
+      </svg>
+      <span class="apps-store-btn-text">
+        <span class="small">Descargar en</span>
+        <span class="big">Google Play</span>
+      </span>
+    </a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/">APJ Padel</a>
+      <a href="/torneos">Torneos</a>
+      <a href="/terms">Terminos</a>
+      <a href="/privacy">Privacidad</a>
+    </div>
+    <p class="copyright">&copy; 2026 Asociacion de Padel Jalisco. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+</body>
+</html>

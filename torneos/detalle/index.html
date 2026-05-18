@@ -12,18 +12,16 @@
   <script>
     // QR scan fallback: if the user scanned the QR on mobile WITHOUT the app
     // installed (App Links / Universal Links would have intercepted otherwise),
-    // send them to /descargar/ instead of showing the web detail. This is
-    // gated on ?from=qr so organic visitors keep seeing the web detail.
+    // send them to /apps/ — that page handles OS detection and dispatches to
+    // App Store / Play Store. Gated on ?from=qr so organic visitors keep
+    // seeing the web detail.
     (function () {
       try {
         var params = new URLSearchParams(window.location.search);
         if (params.get('from') !== 'qr') return;
         var ua = navigator.userAgent || '';
         var isMobile = /Android|iPad|iPhone|iPod/i.test(ua);
-        if (!isMobile) return;
-        var id = params.get('id') || '';
-        var dest = '/descargar/' + (id ? '?id=' + encodeURIComponent(id) + '&from=qr' : '');
-        window.location.replace(dest);
+        if (isMobile) window.location.replace('/apps/');
       } catch (_) { /* ignore */ }
     })();
   </script>

@@ -32,8 +32,9 @@ const APJAdminQRCodes = (function () {
     if (!tournamentId) return '';
     // The `from=qr` flag tells the web detail page that this visitor arrived
     // by scanning the QR (vs. e.g. a shared link). If they don't have the app,
-    // the detail page auto-redirects them to /descargar/ instead of showing
-    // the web detail — per organizers' request to push QR scanners to install.
+    // the detail page auto-redirects them to /apps/ (App Store / Play Store)
+    // instead of showing the web detail — per organizers' request to push QR
+    // scanners to install.
     return `${PUBLIC_BASE}${DETAIL_PATH}?id=${encodeURIComponent(tournamentId)}&from=qr`;
   }
 
