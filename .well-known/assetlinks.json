@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.incodap.apj",
+      "sha256_cert_fingerprints": [
+        "AB:4F:9A:26:B6:D9:96:60:2B:CC:77:1D:39:F2:18:7C:28:AC:EC:68:A5:B3:8E:FA:B3:58:92:C9:A3:02:7F:E2"
+      ]
+    }
+  }
+]

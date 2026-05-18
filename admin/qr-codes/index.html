@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR Codes | Admin APJ</title>
+  <meta name="description" content="Genera codigos QR para compartir el detalle del torneo." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .qr-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .qr-grid { grid-template-columns: 1fr; }
+    }
+    .qr-preview {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      padding: 20px;
+    }
+    .qr-canvas-wrap {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 280px;
+      min-width: 280px;
+    }
+    .qr-canvas-wrap canvas { display: block; }
+    .qr-empty-state {
+      color: var(--text-secondary);
+      font-size: 13px;
+      text-align: center;
+    }
+    .qr-info-card { padding: 20px; }
+    .qr-info-row {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 16px;
+    }
+    .qr-info-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-secondary); font-weight: 600;
+    }
+    .qr-info-value { font-size: 14px; word-break: break-all; }
+    .qr-url-box {
+      display: flex; gap: 8px; align-items: stretch;
+    }
+    .qr-url-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-3);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      word-break: break-all;
+    }
+    .qr-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .qr-help {
+      margin-top: 24px;
+      padding: 16px 18px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .qr-help strong { color: var(--text); }
+  </style>
+</head>
+<body class="admin-page">
+
+<template id="admin-page-template">
+  <div class="profile-page-header" style="margin-bottom:24px;">
+    <h1>QR Codes</h1>
+    <p style="margin:4px 0 0 0; color:var(--text-secondary);">
+      Genera un codigo QR para compartir el torneo seleccionado. Al escanearlo, los usuarios con la app instalada abren el detalle directamente; el resto cae al sitio web.
+    </p>
+  </div>
+
+  <div id="qr-error" class="hidden" style="padding:12px 14px; background:rgba(239,68,68,0.10); border:1px solid rgba(239,68,68,0.30); border-radius:8px; color:#ef4444; font-size:14px; margin-bottom:16px;" role="alert"></div>
+
+  <div class="qr-grid">
+    <div class="profile-card qr-preview-card">
+      <div class="qr-preview">
+        <div id="qr-canvas-wrap" class="qr-canvas-wrap">
+          <div id="qr-empty" class="qr-empty-state">
+            Selecciona un torneo arriba para generar el QR.
+          </div>
+        </div>
+        <div class="qr-actions" id="qr-actions" style="display:none;">
+          <button type="button" id="qr-download-btn" class="btn btn-primary">Descargar PNG</button>
+          <button type="button" id="qr-copy-img-btn" class="btn btn-outline">Copiar imagen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card qr-info-card">
+      <div class="qr-info-row">
+        <div class="qr-info-label">Torneo</div>
+        <div class="qr-info-value" id="qr-tournament-name">—</div>
+      </div>
+      <div class="qr-info-row">
+        <div class="qr-info-label">URL del QR</div>
+        <div class="qr-url-box">
+          <input type="text" id="qr-url-input" class="qr-url-input" readonly value="" />
+          <button type="button" id="qr-copy-url-btn" class="btn btn-outline" style="white-space:nowrap;">Copiar</button>
+        </div>
+      </div>
+
+      <div class="qr-help">
+        <p style="margin:0 0 8px 0;"><strong>Como funciona:</strong></p>
+        <ul style="margin:0; padding-left:18px;">
+          <li>Al escanear el QR con la camara, si el usuario tiene la app APJ instalada (Android o iOS), se abre directamente el detalle del torneo dentro de la app.</li>
+          <li>Si no tiene la app, se abre el detalle del torneo en el sitio web (<code>padeljalisco.com</code>).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="admin-shell-root">
+  <div class="admin-shell-loading">
+    <div class="spinner"></div>
+    <p>Cargando QR codes...</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/validation.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin-shell.js"></script>
+<script src="/js/admin-qr-codes.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const result = await APJAdminShell.mount({ active: 'qr-codes' });
+    if (result) APJAdminQRCodes.start();
+  });
+</script>
+
+</body>
+</html>

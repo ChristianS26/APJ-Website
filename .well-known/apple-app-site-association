@@ -1,0 +1,24 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "W6GR3V5VR9.com.incodap.Padel-App",
+          "W6GR3V5VR9.com.incodap.Padel-App.staging"
+        ],
+        "components": [
+          {
+            "/": "/torneos/detalle/",
+            "?": { "id": "?*" },
+            "comment": "Detalle de torneo con id en query"
+          },
+          {
+            "/": "/torneos/detalle",
+            "?": { "id": "?*" },
+            "comment": "Variante sin trailing slash"
+          }
+        ]
+      }
+    ]
+  }
+}
