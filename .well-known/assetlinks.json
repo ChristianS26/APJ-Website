@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.incodap.apj",
       "sha256_cert_fingerprints": [
-        "AB:4F:9A:26:B6:D9:96:60:2B:CC:77:1D:39:F2:18:7C:28:AC:EC:68:A5:B3:8E:FA:B3:58:92:C9:A3:02:7F:E2"
+        "AB:4F:9A:26:B6:D9:96:60:2B:CC:77:1D:39:F2:18:7C:28:AC:EC:68:A5:B3:8E:FA:B3:58:92:C9:A3:02:7F:E2",
+        "D5:25:B1:FE:CD:2E:A5:E2:6D:68:F4:AC:67:09:4C:B8:07:4D:C9:34:23:17:96:0C:83:12:AB:21:A1:B7:2B:3D"
       ]
     }
   }
