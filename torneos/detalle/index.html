@@ -9,6 +9,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+  <script>
+    // QR scan fallback: if the user scanned the QR on mobile WITHOUT the app
+    // installed (App Links / Universal Links would have intercepted otherwise),
+    // send them to /descargar/ instead of showing the web detail. This is
+    // gated on ?from=qr so organic visitors keep seeing the web detail.
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('from') !== 'qr') return;
+        var ua = navigator.userAgent || '';
+        var isMobile = /Android|iPad|iPhone|iPod/i.test(ua);
+        if (!isMobile) return;
+        var id = params.get('id') || '';
+        var dest = '/descargar/' + (id ? '?id=' + encodeURIComponent(id) + '&from=qr' : '');
+        window.location.replace(dest);
+      } catch (_) { /* ignore */ }
+    })();
+  </script>
 </head>
 <body class="tournaments-page">
 
