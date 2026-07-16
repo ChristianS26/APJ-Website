@@ -51,50 +51,201 @@
       font-weight: 700;
     }
 
-    .reglamento-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    .pdf-viewer {
-      width: 100%;
-      height: 85vh;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: var(--bg-2);
-    }
-
-    .pdf-viewer iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .pdf-fallback {
-      display: none;
-      text-align: center;
-      padding: 60px 24px;
-      color: var(--text-secondary);
-    }
-
-    .pdf-fallback svg {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 16px;
-      stroke: var(--text-muted);
-    }
-
-    .pdf-fallback p {
-      margin-bottom: 20px;
-      font-size: 15px;
-    }
-
     .download-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .reglamento-body {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .reglamento-body h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary-light);
+    }
+
+    .reglamento-body h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    .reglamento-body p,
+    .reglamento-body li {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .reglamento-body ul,
+    .reglamento-body ol {
+      padding-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    .reglamento-body li {
+      margin-bottom: 8px;
+    }
+
+    .reglamento-body strong {
+      color: var(--text);
+    }
+
+    .reglamento-intro {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .torneo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: border-color var(--transition);
+    }
+
+    .torneo-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .torneo-card h3 {
+      margin-top: 0;
+      color: var(--primary-light);
+    }
+
+    .puntos-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+
+    .puntos-table th,
+    .puntos-table td {
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .puntos-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .puntos-table td {
+      color: var(--text-secondary);
+    }
+
+    .puntos-table td:last-child {
+      color: var(--primary-light);
+      font-weight: 600;
+    }
+
+    .grupo-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      font-size: 14px;
+    }
+
+    .grupo-table th,
+    .grupo-table td {
+      padding: 8px 12px;
+      text-align: center;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .grupo-table th {
+      background: var(--bg-3);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .warning-box {
+      background: var(--accent-glow);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      color: var(--accent-light);
+      font-size: 14px;
+    }
+
+    .nota-box {
+      background: var(--primary-glow);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 24px 0;
+      color: var(--primary-light);
+      font-size: 14px;
+    }
+
+    .reglamento-toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .reglamento-toc h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+
+    .reglamento-toc ol {
+      padding-left: 20px;
+      margin-bottom: 0;
+      columns: 2;
+      column-gap: 32px;
+    }
+
+    .reglamento-toc li {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .reglamento-toc a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .reglamento-toc a:hover {
+      color: var(--primary);
+    }
+
+    .reglamento-fecha {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
     }
 
     @media (max-width: 600px) {
@@ -106,12 +257,29 @@
         font-size: 1.2rem;
       }
 
-      .reglamento-container {
-        padding: 16px;
+      .reglamento-body {
+        padding: 24px 16px 60px;
       }
 
-      .pdf-viewer {
-        height: 75vh;
+      .reglamento-body h2 {
+        font-size: 1.2rem;
+        margin-top: 36px;
+      }
+
+      .reglamento-toc ol {
+        columns: 1;
+      }
+
+      .puntos-table th,
+      .puntos-table td {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .grupo-table th,
+      .grupo-table td {
+        padding: 6px 8px;
+        font-size: 12px;
       }
     }
   </style>
@@ -134,43 +302,493 @@
   </div>
 </header>
 
-<main class="reglamento-container">
-  <div class="pdf-viewer" id="pdfViewer">
-    <iframe src="/reglamento/reglamento-apj.pdf" title="Reglamento Oficial APJ"></iframe>
+<main class="reglamento-body">
+
+  <div class="reglamento-intro">
+    La APJ emite el siguiente reglamento que servirá como base para la realización de torneos en el estado. Todos los torneos que se jueguen en el estado deberán de ser informados y en su caso avalados por la APJ sin excepción. Los clubes en el estado tendrán la libertad de organizar los torneos que deseen, sin embargo, para un mayor beneficio de todas las personas e instituciones involucradas será obligatorio avisar a la asociación la realizacion de estos.
+    <br><br>
+    Los lineamientos que a continuación emite la APJ son para darle orden y estructura al circuito en Jalisco, buscando ofrecer un estándar de calidad a nuestros socios y afiliados. La APJ se reserva el derecho de mejorar estos estándares en cualquier momento siempre en beneficio del circuito.
   </div>
 
-  <div class="pdf-fallback" id="pdfFallback">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-    <p>Tu navegador no puede mostrar el PDF directamente. Descárgalo para consultarlo.</p>
-    <a href="/reglamento/reglamento-apj.pdf" download class="btn btn-primary">Descargar Reglamento</a>
+  <nav class="reglamento-toc">
+    <h3>Contenido</h3>
+    <ol>
+      <li><a href="#afiliacion">Afiliación</a></li>
+      <li><a href="#formato">Formato de Competencia</a></li>
+      <li><a href="#puntos">Puntuación y Premios</a></li>
+      <li><a href="#categorias">Categorías</a></li>
+      <li><a href="#lineamientos">Lineamientos de Participación</a></li>
+      <li><a href="#inscripciones">Inscripciones</a></li>
+      <li><a href="#sistema">Sistema de Competencia</a></li>
+      <li><a href="#cuadros-finales">Cuadros Finales</a></li>
+      <li><a href="#elaboracion-cuadro">Elaboración del Cuadro</a></li>
+      <li><a href="#cambio-parejas">Cambio de Parejas</a></li>
+      <li><a href="#desempate">Criterio de Desempate</a></li>
+      <li><a href="#default">Default</a></li>
+      <li><a href="#horarios">Horarios</a></li>
+      <li><a href="#reprogramados">Partidos Reprogramados</a></li>
+      <li><a href="#punto-discusion">Punto de Discusión</a></li>
+      <li><a href="#pelota">La Pelota</a></li>
+      <li><a href="#coaching">Coaching</a></li>
+      <li><a href="#amonestaciones">Amonestaciones</a></li>
+      <li><a href="#tiempos">Tiempos, Cambios y Descansos</a></li>
+      <li><a href="#interrupciones">Interrupción durante Puntos</a></li>
+      <li><a href="#ascensos">Ascensos y Descensos</a></li>
+      <li><a href="#requisitos">Requisitos y Obligaciones</a></li>
+      <li><a href="#conducta">Código de Conducta</a></li>
+      <li><a href="#vestimenta">Código de Vestimenta</a></li>
+      <li><a href="#deslinde">Deslinde de Responsabilidades</a></li>
+    </ol>
+  </nav>
+
+  <!-- AFILIACIÓN -->
+  <h2 id="afiliacion">Afiliación</h2>
+  <ol>
+    <li>Podrá participar cualquier jugador en el circuito que esté o no afiliado a la APJ.</li>
+    <li>La Afiliación tendrá un valor de $400 por todo el año 2023, siendo la misma bonificada al 100% hasta el 30/06/2023, pasado ese tiempo el valor será lo mencionado anteriormente.</li>
+    <li>Todo participante en una competición autorizada incluida en el calendario oficial de la APJ que no esté <strong>AFILIADO</strong> podrá participar, pero deberá pagar una cuota de afiliación puntual a definir por cada torneo, así mismo no tendrá ningún beneficio mencionado en el punto anterior y <strong>no puntuará para el RANKING APJ</strong>, tampoco podrá participar en Máster Final en caso de que hubiese calificado.</li>
+  </ol>
+
+  <!-- FORMATO DE COMPETENCIA -->
+  <h2 id="formato">Formato de Competencia</h2>
+
+  <div class="torneo-card">
+    <h3>Torneos TR 500 (Relámpagos)</h3>
+    <p>Se juega todo el torneo un mismo día. Son 3 partidos al azar asegurados a un set, 6 iguales se jugará un tie-break a 7 puntos. Estos resultados nos llevan a una tabla general donde clasifican las mejores 8 parejas.</p>
+    <p>Los 4tos de final se juegan en modo de liga: 1 vs 8, 2 vs 7, 3 vs 6, 4 vs 5. Siempre que se avance de rondas el mejor clasificado va con el peor clasificado.</p>
   </div>
+
+  <div class="torneo-card">
+    <h3>Torneos TR 750 (Relámpagos)</h3>
+    <p>Se juega una categoría un mismo día. Son 3 partidos al azar asegurados a un set, 6 iguales se jugará un tie-break a 7 puntos. Estos resultados nos llevan a una tabla general donde clasifican las mejores 8 parejas.</p>
+    <p>Ese mismo día se juegan los 4tos de final en modo de liga: 1 vs 8, 2 vs 7, 3 vs 6, 4 vs 5. El día final del torneo se juegan semis y final en la modalidad de 2 de 3 sets jugando un súper tie-break a 10 puntos para definir el 3er set. Siempre que se avance de rondas el mejor clasificado va con el peor clasificado.</p>
+  </div>
+
+  <div class="torneo-card">
+    <h3>Torneos GS 1000</h3>
+    <p>Se jugará a dos de tres sets con punto de oro en cada juego, en caso de empatar a 6 juegos iguales se jugará un tie-break a 7 puntos.</p>
+    <p>Por cuestiones de causa de fuerza mayor (climatológicos, infraestructura, etc.) la organización podrá disponer de que los partidos se jueguen a 2 de 3 sets, jugando un súper tie-break a 10 puntos para definir el 3er set o cancelar el torneo y poner nueva fecha.</p>
+  </div>
+
+  <div class="torneo-card">
+    <h3>Torneos Major 1250</h3>
+    <p>Se jugará a dos de tres sets con punto de oro en cada juego, en caso de empatar a 6 juegos iguales se jugará un tie-break a 7 puntos.</p>
+    <p>Por cuestiones de causa de fuerza mayor (climatológicos, infraestructura, etc.) la organización podrá disponer de que los partidos se jueguen a 2 de 3 sets, jugando un súper tie-break a 10 puntos para definir el 3er set o cancelar el torneo y poner nueva fecha. <strong>Es un upgrade en premios y kit de bienvenida a cargo del club.</strong></p>
+  </div>
+
+  <div class="torneo-card">
+    <h3>Máster Final SGS 1500</h3>
+    <p>Solo podrán participar las primeras 8 parejas del ranking siendo la puntuación individual (solo pueden participar los primeros 16 jugadores del ranking), aclarando que podrán participar siempre y cuando hayan jugado como mínimo el <strong>50% de los torneos disputados</strong>.</p>
+    <p>Aunque un jugador tenga los puntos suficientes para participar en el Máster Final, no estará habilitado para disputarlo si no cumple con la regla anterior. Se libera el espacio para el jugador en la posición número 17 y así sucesivamente. En caso de que no se cumplan las 16 personas con el 50% de los torneos jugados, el siguiente método de elección será el ranking.</p>
+    <p>El método de competencia será de dos grupos con cuatro parejas cada uno, donde jugarán en formato Round-Robin clasificando las mejores dos parejas de cada grupo a semifinales (eliminación directa) donde se cruza el 1er lugar del grupo 1 vs el 2do lugar del grupo 2 y el 1er lugar del grupo 2 vs el 2do lugar del grupo 1.</p>
+  </div>
+
+  <!-- PUNTUACIÓN Y PREMIOS -->
+  <h2 id="puntos">Puntuación y Premios</h2>
+
+  <h3>TR 500</h3>
+  <table class="puntos-table">
+    <thead><tr><th>Ronda</th><th>Puntos</th></tr></thead>
+    <tbody>
+      <tr><td>Fase de Grupos</td><td>80 pts</td></tr>
+      <tr><td>Cuartos de Final</td><td>200 pts</td></tr>
+      <tr><td>Semifinal</td><td>300 pts</td></tr>
+      <tr><td>Finalista</td><td>400 pts</td></tr>
+      <tr><td>Campeón</td><td>500 pts</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Premios TR 500:</strong></p>
+  <ul>
+    <li><strong>16+ parejas:</strong> Campeones $6,000 + vales de patrocinadores. Subcampeones $3,000 + vales de patrocinadores.</li>
+    <li><strong>12+ parejas:</strong> Campeones $4,000 + vales de patrocinadores. Subcampeones $2,000 + vales de patrocinadores.</li>
+    <li><strong>6+ parejas:</strong> Campeones $2,000 + vales de patrocinadores. Subcampeones conjunto de indumentaria.</li>
+  </ul>
+
+  <h3>TR 750</h3>
+  <table class="puntos-table">
+    <thead><tr><th>Ronda</th><th>Puntos</th></tr></thead>
+    <tbody>
+      <tr><td>Fase de Grupos</td><td>120 pts</td></tr>
+      <tr><td>Cuartos de Final</td><td>250 pts</td></tr>
+      <tr><td>Semifinal</td><td>400 pts</td></tr>
+      <tr><td>Finalista</td><td>550 pts</td></tr>
+      <tr><td>Campeón</td><td>750 pts</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Premios TR 750:</strong></p>
+  <ul>
+    <li><strong>16+ parejas:</strong> Campeones $6,000 + vales de patrocinadores. Subcampeones $3,000 + vales de patrocinadores.</li>
+    <li><strong>12+ parejas:</strong> Campeones $4,000 + vales de patrocinadores. Subcampeones $2,000 + vales de patrocinadores.</li>
+    <li><strong>6+ parejas:</strong> Campeones $2,000 + vales de patrocinadores. Subcampeones conjunto de indumentaria.</li>
+  </ul>
+
+  <h3>GS 1000</h3>
+  <table class="puntos-table">
+    <thead><tr><th>Ronda</th><th>Puntos</th></tr></thead>
+    <tbody>
+      <tr><td>Fase de Grupos</td><td>150 pts</td></tr>
+      <tr><td>Octavos de Final</td><td>200 pts</td></tr>
+      <tr><td>Cuartos de Final</td><td>350 pts</td></tr>
+      <tr><td>Semifinal</td><td>650 pts</td></tr>
+      <tr><td>Finalista</td><td>800 pts</td></tr>
+      <tr><td>Campeón</td><td>1000 pts</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Premios GS 1000:</strong> La bolsa garantizada será de <strong>$100,000.00 M.N.</strong> en premios. *Sujeto a aforo.</p>
+
+  <h3>Major 1250</h3>
+  <table class="puntos-table">
+    <thead><tr><th>Ronda</th><th>Puntos</th></tr></thead>
+    <tbody>
+      <tr><td>Fase de Grupos</td><td>200 pts</td></tr>
+      <tr><td>Octavos de Final</td><td>300 pts</td></tr>
+      <tr><td>Cuartos de Final</td><td>450 pts</td></tr>
+      <tr><td>Semifinal</td><td>750 pts</td></tr>
+      <tr><td>Finalista</td><td>950 pts</td></tr>
+      <tr><td>Campeón</td><td>1250 pts</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Premios Major 1250:</strong> La bolsa garantizada será <strong>MAYOR a $100,000.00 M.N.</strong> en premios. *Sujeto a aforo.</p>
+
+  <h3>Máster Final SGS 1500</h3>
+  <table class="puntos-table">
+    <thead><tr><th>Ronda</th><th>Puntos</th></tr></thead>
+    <tbody>
+      <tr><td>Fase de Grupos</td><td>300 pts</td></tr>
+      <tr><td>Cuartos de Final</td><td>600 pts</td></tr>
+      <tr><td>Semifinal</td><td>800 pts</td></tr>
+      <tr><td>Finalista</td><td>1000 pts</td></tr>
+      <tr><td>Campeón</td><td>1500 pts</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Premios Máster Final:</strong> La bolsa garantizada será de <strong>$150,000.00 M.N.</strong> en premios. *Sujeto a aforo.</p>
+
+  <!-- CATEGORÍAS -->
+  <h2 id="categorias">Categorías</h2>
+  <p>Las categorías reglamentarias de la APJ serán las siguientes:</p>
+  <ul>
+    <li>1ra Mixta y Femenil</li>
+    <li>2da Mixta y Femenil</li>
+    <li>3ra Mixta y Femenil</li>
+    <li>4ta Mixta y Femenil</li>
+    <li>5ta Mixta y Femenil</li>
+    <li>6ta Mixta y Femenil</li>
+    <li>Seniors +50</li>
+    <li>Seniors +60</li>
+  </ul>
+
+  <!-- LINEAMIENTOS DE PARTICIPACIÓN -->
+  <h2 id="lineamientos">Lineamientos de Participación en cada Categoría</h2>
+  <ul>
+    <li>Cada jugador participará en su categoría correspondiente a su nivel de juego y solo podrá participar en <strong>una sola categoría</strong>. Excepto en torneos de formato TR500 y TR750. En caso de no saber la categoría la podrán consultarla con el árbitro general de la APJ.</li>
+    <li>En caso de que un jugador quede en una categoría que no corresponde, el árbitro general de la APJ podrá dar de baja a la pareja para un buen funcionamiento de la categoría y <strong>sin reembolso alguno</strong>.</li>
+  </ul>
+
+  <!-- INSCRIPCIONES -->
+  <h2 id="inscripciones">Inscripciones</h2>
+  <p>Todas las inscripciones se deben de realizar en tiempo y forma, es obligatorio hacerla mediante el método actual, ahí mismo se les proporcionará los costos, la forma de pago y número de cuenta. <strong>El cierre de inscripciones será 36 horas anterior al comienzo del torneo.</strong></p>
+
+  <h3>Competiciones fuera de Jalisco</h3>
+  <p>Todos los torneos fuera de Jalisco tendrán una normativa distinta en cuanto a la segmentación de parejas, adicional a la posibilidad de jugar, además de su categoría, la categoría inmediata superior, si y solo si, sin restricción alguna de horario y sin posibilidad de acceder al Máster Final SGS 1500 en la categoría superior.</p>
+
+  <!-- SISTEMA DE COMPETENCIA -->
+  <h2 id="sistema">Sistema de Competencia</h2>
+
+  <h3>Elaboración de Cuadro</h3>
+  <p>La elaboración de los cuadros y horarios estará a cargo de la APJ y es obligación de los jugadores revisarlo en los medios oficiales.</p>
+
+  <h3>Grupos GS1000 y Major 1250</h3>
+  <ul>
+    <li>Todos los grupos deberán de tener una cabeza de serie, el cual saldrá de acuerdo con el ranking publicado en la página oficial de la APJ.</li>
+    <li>Para el primer torneo del año todos los jugadores empezarán sin puntos y sin ranking, de esta manera todos comienzan en igualdad de condiciones.</li>
+    <li>Todas las categorías y jugadores deberán estar acomodados de acuerdo con el ranking obtenido después del primer torneo. En caso de algún empate en puntos entre 2 o más parejas, el criterio de desempate es de forma individual, es decir, el jugador que esté mejor clasificado en el ranking tomará una mejor posición en el cuadro arrastrando a su pareja. En caso de persistir el empate será el otro compañero quien lo defina. Si el empate continúa se sortearán los lugares entre las parejas empatadas.</li>
+    <li>La pareja número 1 de acuerdo al ranking deberá ocupar la cabeza de serie del grupo 1, la pareja número 2 del ranking deberá ocupar la cabeza de serie del grupo 2 y así sucesivamente hasta cubrir todos los grupos.</li>
+    <li>En caso que los grupos de una misma categoría no tengan el mismo número de parejas, se elimina un resultado a las parejas de los grupos con mayor número; el resultado que se elimina es el segundo mejor resultado. En caso que se tenga que eliminar un resultado y exista un default ganado, el resultado que se elimina es el default ganado.</li>
+  </ul>
+
+  <!-- CUADROS FINALES -->
+  <h2 id="cuadros-finales">Cuadros Finales GS1000 y Major 1250</h2>
+  <ul>
+    <li>La pareja ganadora del grupo 1 tomará la siembra 1 en el cuadro de finales, la pareja ganadora del grupo 2 tomará la siembra 2 y así sucesivamente.</li>
+    <li>La pareja sembrada en el número 1 siempre va por arriba de la llave, y la pareja número 2 siempre va por debajo de la llave.</li>
+    <li>Para acomodar en el cuadro de finales a la pareja 3 se colocará por la parte superior de la llave y la pareja 4 se colocará por la parte inferior de la llave.</li>
+  </ul>
+
+  <p><strong>4tos de final:</strong></p>
+  <p>1 vs 8 &nbsp;|&nbsp; 2 vs 7 &nbsp;|&nbsp; 3 vs 6 &nbsp;|&nbsp; 4 vs 5</p>
+
+  <p><strong>8vos de final:</strong></p>
+  <p>1 vs 16 &nbsp;|&nbsp; 2 vs 15 &nbsp;|&nbsp; 3 vs 14 &nbsp;|&nbsp; 4 vs 13 &nbsp;|&nbsp; 5 vs 12 &nbsp;|&nbsp; 6 vs 11 &nbsp;|&nbsp; 7 vs 10 &nbsp;|&nbsp; 8 vs 9</p>
+
+  <ul>
+    <li>En caso de que el cuadro final lo necesite, avanzarán los segundos lugares de los grupos, teniendo en cuenta el criterio de desempate para definir quiénes de los segundos lugares son los mejores en base a resultados.</li>
+    <li>Si se diera el caso de que 2 parejas del mismo grupo se enfrenten nuevamente en la primera ronda del cuadro de finales, se tendrá que hacer el cambio de la siguiente manera: 5 por el 6 o 7 por 8.</li>
+  </ul>
+
+  <!-- ELABORACIÓN DEL CUADRO PAREJA POR PAREJA -->
+  <h2 id="elaboracion-cuadro">Elaboración del Cuadro Pareja por Pareja</h2>
+  <p>Cada categoría se abrirá con un <strong>mínimo de 12 parejas</strong>, de lo contrario se declara desierta. En el caso de la categoría de 1ra fuerza, esta podrá ser celebrada con un mínimo de <strong>9 parejas</strong>.</p>
+
+  <p>Opciones en el caso de tener categorías con menos de 12 parejas:</p>
+  <ul>
+    <li>Se abre la categoría con condiciones generales y convencionales.</li>
+    <li>Se declara desierta y no se opera.</li>
+    <li>Se celebra la categoría, pero con balance de premios proporcional y acorde a los inscritos.</li>
+  </ul>
+
+  <h3>Bloque 1</h3>
+
+  <p><strong>6 parejas:</strong> 2 grupos (3-3). Los primeros 2 lugares de cada grupo pasan a semifinales.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td></tr>
+      <tr><td>Sembrado 4</td><td>Sembrado 3</td></tr>
+      <tr><td>Sembrado 5</td><td>Sembrado 6</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>7 parejas:</strong> 2 grupos (3-4). Los 2 primeros lugares de cada grupo pasan a semifinales.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td></tr>
+      <tr><td>Sembrado 4</td><td>Sembrado 3</td></tr>
+      <tr><td>Sembrado 5</td><td>Sembrado 6</td></tr>
+      <tr><td></td><td>Sembrado 7</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>8 parejas:</strong> 2 grupos (4-4). Los 2 primeros lugares de cada grupo pasan a semifinales.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td></tr>
+      <tr><td>Sembrado 4</td><td>Sembrado 3</td></tr>
+      <tr><td>Sembrado 5</td><td>Sembrado 6</td></tr>
+      <tr><td>Sembrado 8</td><td>Sembrado 7</td></tr>
+    </tbody>
+  </table>
+
+  <div class="nota-box">Para este bloque: la pareja ganadora del grupo (sembrado 1 y 2) se cruza con el segundo lugar del otro grupo. Es decir, el 2do lugar del grupo 1 se enfrenta al 1er lugar del grupo 2 y viceversa.</div>
+
+  <h3>Bloque 2</h3>
+
+  <p><strong>9 parejas:</strong> 3 grupos (3-3-3). Los primeros lugares del grupo 1 y 2 pasan directo a semifinales, el 1er lugar del grupo 3 pasa a cuartos de final junto a todos los segundos lugares.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th><th>Grupo 3</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td><td>Sembrado 3</td></tr>
+      <tr><td>Sembrado 6</td><td>Sembrado 5</td><td>Sembrado 4</td></tr>
+      <tr><td>Sembrado 7</td><td>Sembrado 8</td><td>Sembrado 9</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>10 parejas:</strong> 3 grupos (3-3-4). Misma dinámica que con 9 parejas.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th><th>Grupo 3</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td><td>Sembrado 3</td></tr>
+      <tr><td>Sembrado 6</td><td>Sembrado 5</td><td>Sembrado 4</td></tr>
+      <tr><td>Sembrado 7</td><td>Sembrado 8</td><td>Sembrado 9</td></tr>
+      <tr><td></td><td></td><td>Sembrado 10</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>11 parejas:</strong> 3 grupos (3-4-4). Misma dinámica.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th><th>Grupo 3</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td><td>Sembrado 3</td></tr>
+      <tr><td>Sembrado 6</td><td>Sembrado 5</td><td>Sembrado 4</td></tr>
+      <tr><td>Sembrado 7</td><td>Sembrado 8</td><td>Sembrado 9</td></tr>
+      <tr><td></td><td>Sembrado 11</td><td>Sembrado 10</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>12 parejas:</strong> 4 grupos (3-3-3-3). Los 2 primeros lugares de cada grupo pasan a 4tos de final.</p>
+  <table class="grupo-table">
+    <thead><tr><th>Grupo 1</th><th>Grupo 2</th><th>Grupo 3</th><th>Grupo 4</th></tr></thead>
+    <tbody>
+      <tr><td>Sembrado 1</td><td>Sembrado 2</td><td>Sembrado 3</td><td>Sembrado 4</td></tr>
+      <tr><td>Sembrado 8</td><td>Sembrado 7</td><td>Sembrado 6</td><td>Sembrado 5</td></tr>
+      <tr><td>Sembrado 9</td><td>Sembrado 10</td><td>Sembrado 11</td><td>Sembrado 12</td></tr>
+    </tbody>
+  </table>
+
+  <div class="nota-box"><strong>NOTA:</strong> Cualquier asunto relacionado con la elaboración de los cuadros no considerado en este reglamento o considerado como extraordinario, será resuelto por el organizador y árbitro general del torneo, en conjunto con el de la APJ.</div>
+
+  <!-- CAMBIO DE PAREJAS -->
+  <h2 id="cambio-parejas">Cambio de Parejas en el Cuadro</h2>
+  <ul>
+    <li>Se podrán hacer modificaciones de pareja antes del cierre de inscripciones.</li>
+    <li><strong>No se reembolsará</strong> el monto de inscripción una vez publicado el cuadro o grupos de competencia por parte de la APJ.</li>
+    <li>Si por algún motivo se realiza un cambio de parejas sin autorización de la APJ, la pareja será acreedora a una sanción y en automático queda fuera del cuadro de competencia.</li>
+    <li>Se podrá hacer cambio de jugador una vez ya publicado el draw siempre y cuando exista la aprobación por parte del comité organizador APJ y este tenga cuando mucho los mismos puntos en ranking.</li>
+    <li>Cualquier jugador que ya haya disputado su primer partido debidamente inscrito, <strong>no puede ser sustituido por ninguna causa</strong> durante el transcurso del torneo. Tampoco se puede tomar la identidad de otra persona. En caso de comprobarse alguna infracción, el jugador será descalificado y sujeto a sanción.</li>
+  </ul>
+
+  <!-- CRITERIO DE DESEMPATE -->
+  <h2 id="desempate">Criterio de Desempate</h2>
+  <ol>
+    <li>Enfrentamiento directo (cuando el empate sea entre 2 parejas).</li>
+    <li>Diferencia de sets.</li>
+    <li>Diferencia de juegos.</li>
+    <li>Más juegos ganados.</li>
+    <li>Mejor posición del ranking de la pareja.</li>
+  </ol>
+
+  <!-- DEFAULT -->
+  <h2 id="default">Default</h2>
+  <p>El árbitro del torneo tiene la obligación de marcar el default al <strong>minuto 16</strong> a cualquier pareja, en cualquier categoría, a partir del horario establecido en el cuadro (el default se marcará teniendo o no teniendo cancha disponible).</p>
+  <p>Es responsabilidad de todos los jugadores registrarse en mesa de control al llegar a las instalaciones del club sede para confirmar su presencia y quedar en espera de la cancha. Si el jugador no registra su entrada y pasan 15 minutos después de su hora de partido se aplicará el default.</p>
+
+  <div class="warning-box"><strong>Una vez marcado el default este será irrevocable</strong>, aunque los jugadores se pongan de acuerdo.</div>
+
+  <ul>
+    <li><strong>GS1000 y Major 1250:</strong> El default se marcará como 6/0, 6/0 para la pareja ganadora y 0/6, 0/6 para la perdedora.</li>
+    <li><strong>TR 500 y TR 750:</strong> El default se marcará como 6/3 para la ganadora y 3/6 para la perdedora.</li>
+  </ul>
+
+  <h3>Default en partidos reprogramados y/o suspendidos por fuerza mayor</h3>
+  <p>Se marcará default si no llegan a su partido dentro de los 15 minutos de tolerancia, con un marcador de 6/0 6/0 en contra. En caso de ser un partido ya empezado se les asignarán los games consecutivos que necesite la pareja para ganar el partido.</p>
+
+  <!-- HORARIOS -->
+  <h2 id="horarios">Horarios</h2>
+  <ul>
+    <li>La APJ puede poner un máximo de <strong>2 partidos por día</strong> en cada categoría. En caso de surgir algún factor climatológico se podrán programar 3 o más partidos por día.</li>
+    <li>El tiempo máximo permitido para descanso entre partido y partido es de <strong>15 minutos en zona de grupos</strong>. Esta regla aplica en <strong>45 minutos para las fases finales</strong> (eliminación directa). *Para semifinal y final se podrá dar un descanso máximo de 60 minutos.</li>
+    <li>Los jugadores de primera fuerza tendrán la exclusividad de las canchas principales.</li>
+    <li>El cambio de horario de partidos después de la publicación de los cuadros es responsabilidad del árbitro general, y solo se autorizará bajo los siguientes puntos:
+      <ol>
+        <li>Los 4 jugadores implicados tienen que estar de acuerdo y dejarlo asentado mediante grupo de WhatsApp.</li>
+        <li>Lo tiene que autorizar el árbitro general del torneo y dependerá del espacio de canchas y horarios.</li>
+        <li>Se podrá jugar en alguna sede alterna únicamente por algún factor climatológico o por causas de fuerza mayor.</li>
+        <li>Una vez hecho el cambio se tomará como horario oficial y se respetará como tal.</li>
+        <li>En caso de existir un problema entre jugadores por el cambio de horario, la APJ tomará en cuenta el horario oficial.</li>
+      </ol>
+    </li>
+  </ul>
+
+  <p>Por cuestiones de causa de fuerza mayor la organización podrá disponer de que los partidos se jueguen a 2 de 3 sets, jugando un súper tie-break para definir el 3er set o cancelar el torneo y poner nueva fecha.</p>
+  <p>En caso que el partido sea suspendido por razones ajenas a los jugadores (lluvia, falta de luz, etc.) al reiniciarse los jugadores tendrán derecho a 3 minutos de calentamiento y el partido deberá empezar exactamente donde y cómo finalizó al suspenderse.</p>
+  <p>En caso de no poder concluir una jornada por cuestiones climatológicas, la APJ, director del torneo en turno y encargado del club sede, tendrán la obligación de reagendar los partidos suspendidos y pendientes en base a la disponibilidad de canchas del día siguiente.</p>
+
+  <!-- PARTIDOS REPROGRAMADOS -->
+  <h2 id="reprogramados">Partidos Reprogramados</h2>
+  <p>Se podrán hacer reprogramaciones de partidos siempre y cuando exista aprobación entera de ambas parejas y VoBo del comité organizador APJ además de disponibilidad por parte de las instalaciones.</p>
+
+  <!-- PUNTO DE DISCUSIÓN -->
+  <h2 id="punto-discusion">Punto de Discusión</h2>
+  <p>Los jugadores son responsables de sus propios partidos. Cuando un punto esté en duda se repetirá con dos saques. Esto para fomentar el juego limpio. Si el árbitro general fue testigo de ese punto podrá tomar la decisión. <strong>Por ningún motivo el público podrá definir el punto.</strong></p>
+  <p>En caso de presentarse este problema en más de 3 ocasiones en el mismo partido, el árbitro general tendrá que designar un árbitro y los jugadores estarán obligados a respetar sus decisiones.</p>
+
+  <h3>Entrega de Resultados</h3>
+  <p>Es responsabilidad de la pareja ganadora entregar en mesa de control los resultados y pelotas al finalizar el partido.</p>
+
+  <!-- LA PELOTA -->
+  <h2 id="pelota">La Pelota</h2>
+  <p>La pelota oficial en cualquier evento tendrá que ser avalada por la APJ. El tipo de pelota designada será en función a las condiciones específicas en donde se celebre cada enfrentamiento.</p>
+
+  <!-- COACHING -->
+  <h2 id="coaching">Coaching</h2>
+  <p>Queda autorizado por la APJ el coaching durante los partidos, pero <strong>solo en los cambios de lado o al finalizar el set</strong> (solo por una persona).</p>
+  <ul>
+    <li>El coach deberá de tener obligatoriamente una identificación que lo avale.</li>
+    <li>La pareja debe declarar a su entrenador a la APJ, a más tardar, <strong>1 hora antes</strong> de su partido.</li>
+    <li>Para poder asesorar a sus jugadores durante un partido, el entrenador debe presentarse e informar a la APJ antes del inicio del partido.</li>
+    <li>Un entrenador puede asesorar a varias parejas que participan en el torneo.</li>
+    <li>Una pareja <strong>no puede cambiar de entrenador</strong> durante el torneo; solo el entrenador declarado será asignado durante la duración del torneo.</li>
+    <li>Durante un juego no arbitrado, el entrenador no debe bajo ninguna circunstancia intervenir durante las discusiones entre jugadores.</li>
+    <li>Durante un partido arbitrado, y en caso de disputa, el entrenador en ningún caso podrá intervenir ante el árbitro.</li>
+    <li>En caso de comportamiento reprobable por parte del entrenador, el código de conducta se aplicará a la pareja que asesora.</li>
+  </ul>
+
+  <!-- AMONESTACIONES -->
+  <h2 id="amonestaciones">Amonestaciones</h2>
+  <p>Cualquier acto o comentario que el árbitro general considere falta o código de conducta antideportiva será sancionado de la siguiente manera:</p>
+  <ol>
+    <li><strong>1er WARNING — Verbal:</strong> El árbitro principal deberá interrumpir el juego después de que termine el punto y amonestar de forma verbal a la pareja (aunque la falta haya sido individual).</li>
+    <li><strong>2do WARNING — Punto en contra:</strong> Si continúan con actitud antideportiva, el árbitro sancionará a la pareja quitándole un punto directamente en el marcador. En caso de no tener ningún punto en ese juego se le otorgará un punto a la pareja contraria.</li>
+    <li><strong>3er WARNING — Expulsión del partido:</strong> Si continúa la actitud antideportiva, el árbitro deberá detener el partido sin importar que la pelota esté en juego y expulsar del partido a la pareja infractora, dando como vencedores a la pareja contraria.</li>
+    <li><strong>Descalificación directa:</strong> En caso de agresión física o verbal grave, el árbitro podrá descalificar de forma inmediata al jugador o técnico autor de la falta.</li>
+  </ol>
+
+  <!-- TIEMPOS, CAMBIOS, DESCANSOS, LESIONES -->
+  <h2 id="tiempos">Tiempos, Cambios, Descansos y Lesiones</h2>
+  <ul>
+    <li>Los jugadores tendrán un máximo de <strong>5 minutos de calentamiento</strong>.</li>
+    <li>El descanso entre sets será de <strong>120 segundos</strong>.</li>
+    <li>El descanso entre cambio de lado en juegos impares será de <strong>90 segundos</strong>.</li>
+    <li>El descanso entre juegos pares será de un máximo de <strong>20 segundos</strong>.</li>
+    <li>Después del primer juego y durante la muerte súbita, el juego será continuo y los jugadores cambiarán de lado sin ningún descanso.</li>
+    <li>Entre punto y punto se tiene un máximo de <strong>20 segundos</strong> para dar inicio al siguiente punto.</li>
+    <li><strong>Lesión:</strong> Se otorgarán 3 minutos para su atención o recuperación, pudiendo volver a recibirla en el próximo cambio de lado, con un tiempo máximo de 5 minutos.</li>
+    <li><strong>Calambres musculares:</strong> El jugador puede recibir tratamiento solo durante el tiempo asignado para el cambio de lado (no se puede solicitar tiempo muerto médico por calambres). Puede haber 2 tratamientos por jugador en 2 cambios de lado, no necesariamente consecutivos, tiempo máximo 5 minutos.</li>
+    <li><strong>Sangrado:</strong> El árbitro principal deberá detener el partido. Se puede conceder hasta un total de 15 minutos para garantizar el control de la hemorragia. El juego no podrá reanudarse hasta que la mancha de sangre se haya limpiado adecuadamente.</li>
+  </ul>
+
+  <!-- INTERRUPCIÓN DURANTE PUNTOS -->
+  <h2 id="interrupciones">Interrupción durante Puntos</h2>
+  <p>Si en un partido el punto es interrumpido por un factor externo al juego, este tendrá que ser pausado y el punto tendrá que repetirse. El jugador que esté sirviendo tendrá de nuevo 2 saques más para poder reiniciar el punto.</p>
+  <p>En el caso de que a un jugador se le caiga parte del equipo (gorra, lentes, reloj, bola del short), la pareja tendrá una advertencia y el punto deberá de repetirse. Si esto vuelve a suceder a la misma pareja, <strong>la pareja será penalizada con un punto en contra</strong>.</p>
+
+  <!-- ASCENSOS Y DESCENSOS -->
+  <h2 id="ascensos">Ascensos y Descensos</h2>
+  <ul>
+    <li>Serán cada <strong>6 meses</strong> a excepción de que el árbitro general determine que algún jugador esté muy fuerte en alguna categoría.</li>
+    <li>El jugador que ascienda pasará con el <strong>50% de sus puntos</strong> acumulados en su categoría anterior.</li>
+    <li>El jugador que desciende de categoría, descenderá con <strong>0 puntos</strong> aunque hayan sido obtenidos en la categoría superior.</li>
+  </ul>
+
+  <!-- REQUISITOS Y OBLIGACIONES -->
+  <h2 id="requisitos">Requisitos y Obligaciones</h2>
+  <ul>
+    <li>Es requisito y obligación de cada jugador hacer el trámite de inscripción de cada torneo de forma puntual y oportuna a través de la página web de la APJ.</li>
+    <li>Es responsabilidad de cada uno de los jugadores investigar los horarios de sus partidos en la página web o redes sociales de la APJ.</li>
+    <li>El jugador se hace completamente responsable al elegir su compañero de juego y tiene que estar consciente de que, si por algún motivo el compañero con el que está oficialmente inscrito no puede jugar, en automático es default y <strong>no se reembolsará la inscripción</strong>.</li>
+    <li>El jugador tiene que respetar los horarios establecidos y presentarse de forma puntual.</li>
+    <li>Es responsabilidad de todos los jugadores registrarse en la mesa de control al llegar a las instalaciones del club sede para confirmar su presencia.</li>
+    <li>Todas las parejas son responsables de presentarse (los 2 jugadores a confirmar su asistencia en la mesa de control).</li>
+    <li>Es responsabilidad de los jugadores presentarse en cancha asignada por mesa de control, teniendo como un máximo de 4 minutos. Si alguno de los participantes no se presenta en cancha y el tiempo de tolerancia de 5 minutos ha concluido, el árbitro general tiene la obligación de aplicar el default a la pareja incompleta.</li>
+  </ul>
+
+  <!-- CÓDIGO DE CONDUCTA -->
+  <h2 id="conducta">Código de Conducta</h2>
+  <ul>
+    <li>Respetar los horarios establecidos y presentarse puntual para disputar sus partidos.</li>
+    <li>Respetar a todos los jugadores, espectadores, organizadores de torneo y socios de los clubes, y guardar un comportamiento adecuado dentro y fuera de las canchas e instalaciones.</li>
+    <li>Respetar cualquier decisión tomada por el árbitro general del torneo que tenga bases en el presente reglamento.</li>
+    <li>Estar presentes en la entrega de trofeos si eres ganador de alguna categoría. En caso de no estar presente se tendrá que comunicar a la APJ para recibir su premio, mismo que tendrá una vigencia de <strong>15 días</strong> después de finalizar el torneo.</li>
+    <li>Queda terminantemente prohibido que un jugador haga uso de la fuerza para provocar o lastimar a su adversario. Si la situación continúa el jugador será expulsado sin réplica alguna.</li>
+  </ul>
+
+  <!-- CÓDIGO DE VESTIMENTA -->
+  <h2 id="vestimenta">Código de Vestimenta</h2>
+  <p>Todos los jugadores deberán portar la vestimenta adecuada para jugar al pádel, de no ser así no se les permitirá participar.</p>
+
+  <!-- DESLINDE DE RESPONSABILIDADES -->
+  <h2 id="deslinde">Deslinde de Responsabilidades</h2>
+  <p>Cualquier punto no especificado en el presente reglamento de competencia será analizado y revisado por la APJ de forma individual para los fines que este requiera.</p>
+  <p>Ni el club sede ni la APJ serán responsables de cualquier accidente o lesión que llegase a presentar durante el desarrollo del evento, esto será considerado como riesgo deportivo.</p>
+
+  <div class="reglamento-fecha">
+    <strong>NOTA:</strong> Este reglamento anula los anteriores reglamentos. Publicado el 20 de mayo de 2025.
+  </div>
+
 </main>
 
 <footer>
   <div class="footer-inner">
     <div class="footer-links">
       <a href="/">APJ Padel</a>
+      <a href="/reglamento/">Reglamento</a>
       <a href="/terms">Términos y Condiciones</a>
       <a href="/privacy">Política de Privacidad</a>
     </div>
     <p class="copyright">&copy; 2026 Asociación de Pádel Jalisco. Todos los derechos reservados.</p>
   </div>
 </footer>
-
-<script>
-  // Fallback for browsers/devices that can't render PDF inline
-  const iframe = document.querySelector('#pdfViewer iframe');
-  iframe.addEventListener('error', function() {
-    document.getElementById('pdfViewer').style.display = 'none';
-    document.getElementById('pdfFallback').style.display = 'block';
-  });
-
-  // On mobile, some browsers can't embed PDFs — detect and show fallback
-  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    document.getElementById('pdfViewer').style.display = 'none';
-    document.getElementById('pdfFallback').style.display = 'block';
-  }
-</script>
 
 </body>
 </html>
