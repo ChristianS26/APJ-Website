@@ -129,13 +129,24 @@
     .ins-restriction-chip.gray {
       color: var(--text-secondary); border-color: var(--border); background: var(--card);
     }
+    .ins-total-count {
+      display: inline-flex; align-items: center;
+      font-size: 13px; font-weight: 600;
+      padding: 4px 12px; border-radius: 999px;
+      color: #6366f1; border: 1px solid #6366f1;
+      background: rgba(99,102,241,0.12);
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body class="admin-page">
 
 <template id="admin-page-template">
   <div class="profile-page-header">
-    <h1>Inscripciones</h1>
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <h1>Inscripciones</h1>
+      <span id="ins-total-count" class="ins-total-count" style="display:none;"></span>
+    </div>
     <p id="ins-tournament-subtitle" style="color:var(--text-secondary);">Selecciona un torneo en el menu lateral.</p>
   </div>
 

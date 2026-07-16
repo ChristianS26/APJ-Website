@@ -14,6 +14,8 @@ const APJAdminTorneoInscripciones = (function () {
     const list = document.getElementById('ins-list');
     const subtitle = document.getElementById('ins-tournament-subtitle');
 
+    setTotalCount(null);
+
     if (!id) {
       if (subtitle) subtitle.textContent = 'Selecciona un torneo en el menu lateral.';
       if (list) list.innerHTML = `
@@ -46,9 +48,13 @@ const APJAdminTorneoInscripciones = (function () {
     const list = document.getElementById('ins-list');
     if (!list) return;
     if (!Array.isArray(groups) || groups.length === 0) {
+      setTotalCount(0);
       list.innerHTML = '<div class="profile-card"><div class="profile-card-body" style="text-align:center; color:var(--text-secondary); padding:32px 24px;">Aun no hay equipos inscritos en este torneo.</div></div>';
       return;
     }
+
+    const total = groups.reduce((sum, g) => sum + (Array.isArray(g.teams) ? g.teams.length : 0), 0);
+    setTotalCount(total);
 
     list.innerHTML = groups.map(group => {
       const catName = group.categoryName || group.category?.name || 'Sin categoria';
@@ -79,6 +85,20 @@ const APJAdminTorneoInscripciones = (function () {
           </div>
         </div>`;
     }).join('');
+  }
+
+  // Shows the tournament-wide pair count in the page header; pass null to
+  // hide it (no tournament selected, loading, or error states).
+  function setTotalCount(total) {
+    const badge = document.getElementById('ins-total-count');
+    if (!badge) return;
+    if (total === null || total === undefined) {
+      badge.style.display = 'none';
+      badge.textContent = '';
+      return;
+    }
+    badge.textContent = `${total} ${total === 1 ? 'pareja inscrita' : 'parejas inscritas'}`;
+    badge.style.display = 'inline-flex';
   }
 
   // ----- Category color palette -----
