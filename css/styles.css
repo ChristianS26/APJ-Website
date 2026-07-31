@@ -28,14 +28,17 @@
   --apj-ball: #c3d63c;
   --paper-white: #ffffff;
 
-  /* --- Superficies (tema papel, por defecto) --- */
-  --bg: #f2efe7;
+  /* --- Superficies (tema claro, por defecto) ---
+     Lienzo y tarjetas comparten el blanco: lo que separa una cosa de otra es
+     el filete, no el relleno. --bg-3 es el unico gris de apoyo (cabeceras de
+     tarjeta, chips, huecos de imagen). */
+  --bg: #ffffff;
   --bg-2: #ffffff;
-  --bg-3: #e7e2d6;
+  --bg-3: #f1f2f4;
   --surface: #ffffff;
   --card: #ffffff;
-  --card-hover: #fffdf7;
-  --header-bg: rgba(242, 239, 231, 0.88);
+  --card-hover: #fafbfc;
+  --header-bg: rgba(255, 255, 255, 0.9);
 
   /* --- Tinta --- */
   --text: #16181c;
@@ -44,14 +47,14 @@
   --text-muted: #6e747e;
 
   /* --- Filetes --- */
-  --border: rgba(22, 24, 28, 0.16);
-  --border-hover: rgba(22, 24, 28, 0.42);
-  --rule: rgba(22, 24, 28, 0.055);
+  --border: rgba(22, 24, 28, 0.17);
+  --border-hover: rgba(22, 24, 28, 0.44);
+  --rule: rgba(22, 24, 28, 0.045);
 
   /* --- Bloque de tinta (secciones invertidas) --- */
   --ink: #14161a;
-  --ink-text: #f4f1e9;
-  --ink-rule: rgba(244, 241, 233, 0.16);
+  --ink-text: #f4f4f3;
+  --ink-rule: rgba(244, 244, 243, 0.16);
 
   /* --- Semánticos --- */
   --primary: #0e7a3d;
@@ -93,7 +96,7 @@
 
   /* --- Firma tricolor (el blanco de la bandera va en hueso para que
          siga leyéndose sobre placas blancas) --- */
-  --tricolor-mid: #e6dfcd;
+  --tricolor-mid: #e2e4e8;
   --tricolor: linear-gradient(90deg,
       var(--apj-green) 0 33.34%,
       var(--tricolor-mid) 33.34% 66.67%,
@@ -122,18 +125,18 @@
   --card-hover: #1d2128;
   --header-bg: rgba(16, 18, 21, 0.9);
 
-  --text: #f4f1e9;
-  --text-primary: #f4f1e9;
+  --text: #f2f3f4;
+  --text-primary: #f2f3f4;
   --text-secondary: #a9afb9;
   --text-muted: #7d8490;
 
-  --border: rgba(244, 241, 233, 0.14);
-  --border-hover: rgba(244, 241, 233, 0.38);
-  --rule: rgba(244, 241, 233, 0.045);
+  --border: rgba(242, 243, 244, 0.14);
+  --border-hover: rgba(242, 243, 244, 0.38);
+  --rule: rgba(242, 243, 244, 0.045);
 
   --ink: #08090b;
-  --ink-text: #f4f1e9;
-  --ink-rule: rgba(244, 241, 233, 0.14);
+  --ink-text: #f2f3f4;
+  --ink-rule: rgba(242, 243, 244, 0.14);
 
   --primary: #1ea75b;
   --primary-light: #35c274;
@@ -157,7 +160,7 @@
   --shadow-lg: 0 24px 52px rgba(0, 0, 0, 0.62);
   --shadow-hard: 5px 5px 0 rgba(0, 0, 0, 0.75);
 
-  --tricolor-mid: #ddd6c4;
+  --tricolor-mid: #d8dade;
   --tricolor: linear-gradient(90deg,
       var(--apj-green) 0 33.34%,
       var(--tricolor-mid) 33.34% 66.67%,
@@ -1153,7 +1156,7 @@ section {
 }
 
 .app-section p {
-  color: rgba(244, 241, 233, 0.7);
+  color: rgba(242, 243, 244, 0.7);
 }
 
 .app-features {
@@ -1181,7 +1184,7 @@ section {
 }
 
 .app-feature span {
-  color: rgba(244, 241, 233, 0.7);
+  color: rgba(242, 243, 244, 0.7);
   font-size: 13.5px;
   line-height: 1.55;
 }
@@ -1251,7 +1254,7 @@ section {
   align-items: center;
   gap: 9px;
   padding: 7px 13px;
-  background: var(--bg);
+  background: var(--bg-3);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 10.5px;
@@ -1292,7 +1295,7 @@ section {
 .payment-type-icon {
   width: 38px;
   height: 38px;
-  background: var(--bg);
+  background: var(--bg-3);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   display: flex;
@@ -1322,7 +1325,7 @@ section {
   align-items: flex-start;
   gap: 14px;
   padding: 18px 20px;
-  background: var(--bg);
+  background: var(--bg-3);
   border: 1px solid var(--border);
   border-left: 3px solid var(--apj-green);
   border-radius: var(--radius-sm);
@@ -1952,14 +1955,14 @@ footer::before {
 
 .loading-content {
   text-align: center;
-  color: #f4f1e9;
+  color: #f2f3f4;
 }
 
 .loading-content .spinner {
   width: 44px;
   height: 44px;
   border-width: 3px;
-  border-color: rgba(244, 241, 233, 0.25);
+  border-color: rgba(242, 243, 244, 0.25);
   border-top-color: var(--apj-red);
   margin: 0 auto 16px;
 }
@@ -2675,7 +2678,7 @@ footer::before {
 .profile-card-header {
   padding: 18px 24px;
   border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--bg-3);
 }
 
 .profile-card-header h2 {
@@ -3634,7 +3637,7 @@ footer::before {
   width: 100%;
   padding: 13px 14px;
   text-align: left;
-  background: var(--bg);
+  background: var(--bg-3);
   color: var(--text-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -3681,7 +3684,7 @@ footer::before {
   padding: 8px 15px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--bg-3);
   color: var(--text-secondary);
   font-family: var(--font-body);
   font-size: 12px;
@@ -3739,12 +3742,12 @@ footer::before {
 
 /* El panel mantiene el tema claro siempre (herramienta de trabajo) */
 body.admin-page {
-  --bg: #f4f2ec;
+  --bg: #f5f6f8;
   --bg-2: #ffffff;
-  --bg-3: #e9e5db;
+  --bg-3: #eaecef;
   --surface: #ffffff;
   --card: #ffffff;
-  --card-hover: #faf8f3;
+  --card-hover: #f7f8fa;
   --border: rgba(22, 24, 28, 0.14);
   --border-hover: rgba(22, 24, 28, 0.38);
   --rule: rgba(22, 24, 28, 0.07);
