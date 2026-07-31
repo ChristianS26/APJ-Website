@@ -5,14 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Reglamento Oficial | APJ Padel</title>
   <meta name="description" content="Reglamento oficial de la Asociación de Pádel Jalisco (APJ). Consulta las reglas y normativas de nuestros torneos." />
+  <meta name="theme-color" content="#f2efe7" />
+  <link rel="icon" href="/img/apj_logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apj_logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <style>
+    /* ---- Cabecera del reglamento ---- */
     .reglamento-header {
-      padding: 40px 24px 24px;
-      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 24px;
+      background: var(--header-bg);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
       border-bottom: 1px solid var(--border);
     }
 
@@ -29,26 +38,37 @@
     .reglamento-header-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      min-width: 0;
     }
 
-    .reglamento-header-left a {
-      color: var(--text-secondary);
+    .reglamento-header-left > a {
+      color: var(--text-muted);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       display: flex;
       align-items: center;
       gap: 6px;
       transition: color var(--transition);
     }
 
-    .reglamento-header-left a:hover {
-      color: var(--primary);
+    .reglamento-header-left > a:hover {
+      color: var(--apj-red);
+      text-decoration: none;
     }
 
-    .reglamento-header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
+    .reglamento-header-title {
+      font-family: var(--font-display);
+      font-size: clamp(0.8rem, 2.2vw, 1rem);
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .download-btn {
@@ -57,27 +77,81 @@
       gap: 8px;
     }
 
+    /* ---- Portada del documento ---- */
+    .reglamento-cover {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 56px 24px 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .reglamento-cover-title h1 {
+      font-size: clamp(2.2rem, 6vw, 3.6rem);
+      margin-bottom: 12px;
+    }
+
+    .reglamento-cover .eyebrow {
+      margin-bottom: 14px;
+    }
+
+    .reglamento-cover-plaque {
+      position: relative;
+      padding: 14px 16px 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      transform: rotate(-1.4deg);
+      flex-shrink: 0;
+    }
+
+    .reglamento-cover-plaque::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 5px;
+      background: var(--tricolor);
+    }
+
+    .reglamento-cover-plaque img {
+      display: block;
+      width: 128px;
+      height: auto;
+    }
+
+    /* ---- Cuerpo ---- */
     .reglamento-body {
       max-width: var(--max-width);
       margin: 0 auto;
-      padding: 40px 24px 80px;
+      padding: 44px 24px 90px;
     }
 
     .reglamento-body h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-top: 48px;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--primary);
-      color: var(--primary-light);
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+      text-transform: uppercase;
+      letter-spacing: -0.015em;
+      margin-top: 56px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--text);
+      color: var(--text);
+    }
+
+    .reglamento-body h2::before {
+      display: none;
     }
 
     .reglamento-body h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       margin-top: 32px;
       margin-bottom: 12px;
+      color: var(--text);
     }
 
     .reglamento-body p,
@@ -102,32 +176,37 @@
     }
 
     .reglamento-intro {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       color: var(--text-secondary);
       line-height: 1.8;
-      margin-bottom: 32px;
-      padding: 24px;
-      background: var(--card);
+      margin-bottom: 34px;
+      padding: 26px 28px;
+      background: var(--bg-2);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-left: 3px solid var(--apj-red);
+      border-radius: var(--radius-sm);
     }
 
     .torneo-card {
-      background: var(--card);
+      background: var(--bg-2);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       padding: 24px;
-      margin-bottom: 20px;
-      transition: border-color var(--transition);
+      margin-bottom: 16px;
+      transition: border-color var(--transition), transform var(--transition);
     }
 
     .torneo-card:hover {
       border-color: var(--border-hover);
+      transform: translateX(2px);
     }
 
     .torneo-card h3 {
       margin-top: 0;
-      color: var(--primary-light);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--apj-green);
     }
 
     .puntos-table {
@@ -139,26 +218,35 @@
 
     .puntos-table th,
     .puntos-table td {
-      padding: 10px 16px;
+      padding: 11px 16px;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
 
+    .puntos-table thead th {
+      border-bottom: 2px solid var(--text);
+    }
+
     .puntos-table th {
       color: var(--text-muted);
-      font-weight: 600;
-      font-size: 12px;
+      font-weight: 700;
+      font-size: 10.5px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.16em;
     }
 
     .puntos-table td {
       color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .puntos-table tbody tr:hover td {
+      background: var(--bg-2);
     }
 
     .puntos-table td:last-child {
-      color: var(--primary-light);
-      font-weight: 600;
+      font-family: var(--font-display);
+      color: var(--apj-red);
     }
 
     .grupo-table {
@@ -170,63 +258,74 @@
 
     .grupo-table th,
     .grupo-table td {
-      padding: 8px 12px;
+      padding: 9px 12px;
       text-align: center;
       border: 1px solid var(--border);
       color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
 
     .grupo-table th {
       background: var(--bg-3);
       color: var(--text);
-      font-weight: 600;
-      font-size: 13px;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .warning-box {
-      background: var(--accent-glow);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: var(--radius-md);
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
       padding: 16px 20px;
-      margin: 16px 0;
-      color: var(--accent-light);
+      margin: 18px 0;
+      color: var(--text-secondary);
       font-size: 14px;
     }
 
     .nota-box {
-      background: var(--primary-glow);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: var(--radius-md);
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--apj-green);
+      border-radius: var(--radius-sm);
       padding: 16px 20px;
       margin: 24px 0;
-      color: var(--primary-light);
+      color: var(--text-secondary);
       font-size: 14px;
     }
 
     .reglamento-toc {
-      background: var(--card);
+      background: var(--bg-2);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      margin-bottom: 40px;
+      border-radius: var(--radius-sm);
+      padding: 26px 28px;
+      margin-bottom: 44px;
     }
 
     .reglamento-toc h3 {
       margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 1rem;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
     }
 
     .reglamento-toc ol {
       padding-left: 20px;
       margin-bottom: 0;
       columns: 2;
-      column-gap: 32px;
+      column-gap: 40px;
     }
 
     .reglamento-toc li {
-      margin-bottom: 6px;
-      font-size: 14px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
     }
 
     .reglamento-toc a {
@@ -236,25 +335,34 @@
     }
 
     .reglamento-toc a:hover {
-      color: var(--primary);
+      color: var(--apj-red);
+      text-decoration: none;
     }
 
     .reglamento-fecha {
       text-align: center;
       color: var(--text-muted);
-      font-size: 13px;
-      margin-top: 48px;
-      padding-top: 24px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-top: 56px;
+      padding-top: 26px;
       border-top: 1px solid var(--border);
     }
 
     @media (max-width: 600px) {
       .reglamento-header {
-        padding: 20px 16px 16px;
+        padding: 10px 16px;
       }
 
-      .reglamento-header h1 {
-        font-size: 1.2rem;
+      .reglamento-cover {
+        padding: 32px 16px 0;
+        gap: 20px;
+      }
+
+      .reglamento-cover-plaque img {
+        width: 96px;
       }
 
       .reglamento-body {
@@ -290,10 +398,13 @@
   <div class="reglamento-header-inner">
     <div class="reglamento-header-left">
       <a href="/">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Inicio
       </a>
-      <h1>Reglamento Oficial APJ</h1>
+      <a href="/" class="brand">
+        <span class="brand-mark"><img src="/img/apj_logo.png" alt="Asociación de Pádel Jalisco"></span>
+      </a>
+      <span class="reglamento-header-title">Reglamento Oficial APJ</span>
     </div>
     <a href="/reglamento/reglamento-apj.pdf" download class="btn btn-primary btn-sm download-btn">
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -301,6 +412,17 @@
     </a>
   </div>
 </header>
+
+<div class="reglamento-cover">
+  <div class="reglamento-cover-title">
+    <span class="eyebrow">Documento normativo · Circuito APJ</span>
+    <h1>Reglamento Oficial</h1>
+    <p>Lineamientos vigentes para todos los torneos avalados en Jalisco.</p>
+  </div>
+  <div class="reglamento-cover-plaque">
+    <img src="/img/apj_logo.png" alt="Logotipo oficial de la Asociación de Pádel Jalisco">
+  </div>
+</div>
 
 <main class="reglamento-body">
 

@@ -150,7 +150,7 @@ const APJAdminShell = (function () {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
           </button>
           <a href="/admin/" class="admin-header-brand">
-            <div class="admin-header-brand-icon">APJ</div>
+            <div class="admin-header-brand-icon"><img src="/img/apj_logo.png" alt="APJ"></div>
             <span class="admin-header-brand-text">Admin</span>
           </a>
         </div>

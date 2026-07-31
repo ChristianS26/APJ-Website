@@ -7,294 +7,162 @@
   <meta name="description" content="Aviso de Privacidad Integral de la Asociación para la mejora del pádel en México (APJ)." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#f2efe7" />
+  <link rel="icon" href="/img/apj_logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apj_logo.png">
+  <link rel="stylesheet" href="/css/styles.css">
   <style>
-  :root {
-    --bg: #0f0f0f;
-    --bg-2: #1a1a1a;
-    --bg-3: #252525;
-    --card: rgba(255,255,255,0.03);
-    --border: rgba(255,255,255,0.08);
-    --text: #ffffff;
-    --text-secondary: #a1a1a1;
-    --text-muted: #666666;
-    --primary: #10b981;
-    --primary-light: #34d399;
-    --primary-dark: #059669;
-    --primary-glow: rgba(16, 185, 129, 0.15);
-    --accent-glow: rgba(245, 158, 11, 0.15);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --max-width: 900px;
-    --transition: 0.2s ease;
-  }
-
-  @media (prefers-color-scheme: light) {
-    :root {
-      --bg: #fafafa;
-      --bg-2: #ffffff;
-      --bg-3: #f5f5f5;
-      --card: rgba(255,255,255,0.8);
-      --border: rgba(0,0,0,0.08);
-      --text: #111111;
-      --text-secondary: #555555;
-      --text-muted: #888888;
-      --primary-glow: rgba(16, 185, 129, 0.1);
-      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+    /* Aviso de privacidad: documento a una columna */
+    main {
+      max-width: 780px;
+      padding-top: 52px;
     }
-  }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+    .hero {
+      padding-top: 56px;
+    }
 
-  body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text);
-    background: var(--bg);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+    .hero h1 {
+      max-width: none;
+      font-size: clamp(1.75rem, 4.6vw, 2.85rem);
+    }
 
-  .hero {
-    position: relative;
-    padding: 48px 24px;
-    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-  }
+    .hero-inner {
+      padding-bottom: 44px;
+    }
 
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -20%;
-    width: 60%;
-    height: 200%;
-    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
-    pointer-events: none;
-  }
+    .hero-subtitle {
+      border-left: 0;
+      padding-left: 0;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
 
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    right: -10%;
-    width: 50%;
-    height: 150%;
-    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
-    pointer-events: none;
-  }
+    .hero-logo img {
+      width: 156px;
+    }
 
-  .hero-inner {
-    position: relative;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 32px;
-  }
+    section {
+      margin-bottom: 44px;
+    }
 
-  .hero-logo {
-    flex-shrink: 0;
-    width: 90px;
-    height: 90px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-md), 0 0 40px rgba(16, 185, 129, 0.2);
-  }
+    h2 {
+      font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+    }
 
-  .hero-logo-text {
-    color: #ffffff;
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
+    p {
+      text-align: justify;
+      hyphens: auto;
+    }
 
-  .hero-content { display: flex; flex-direction: column; gap: 8px; }
+    p:last-child {
+      margin-bottom: 0;
+    }
 
-  @media (max-width: 600px) {
-    .hero-inner { flex-direction: column; text-align: center; }
-    .hero-logo { width: 80px; height: 80px; }
-    .hero-logo-text { font-size: 1.75rem; }
-  }
+    /* Ficha del documento */
+    .doc-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      margin-bottom: 40px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
 
-  h1 {
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      padding: 14px 16px;
+      background: var(--bg-2);
+    }
 
-  .hero-subtitle {
-    font-size: 14px;
-    color: var(--text-secondary);
-  }
+    .meta-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
 
-  main {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
+    .meta-value {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
 
-  .doc-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 32px;
-  }
+    .intro {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--apj-red);
+      border-radius: var(--radius-sm);
+      padding: 26px 28px;
+      margin-bottom: 44px;
+    }
 
-  .meta-item {
-    display: flex;
-    flex-direction: column;
-    padding: 12px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-  }
+    .intro p {
+      color: var(--text-secondary);
+      margin: 0;
+    }
 
-  .meta-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-  }
+    .contact-box {
+      position: relative;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 28px;
+      margin-top: 48px;
+      overflow: hidden;
+    }
 
-  .meta-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-  }
+    .contact-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--tricolor);
+    }
 
-  .intro {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    margin-bottom: 40px;
-  }
+    .contact-box h3 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin: 6px 0 14px;
+      color: var(--text-muted);
+    }
 
-  .intro p {
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  section { margin-bottom: 40px; }
-
-  h2 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text);
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  h2::before {
-    content: '';
-    flex-shrink: 0;
-    width: 4px;
-    height: 24px;
-    margin-top: 2px;
-    background: var(--primary);
-    border-radius: 2px;
-  }
-
-  p {
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    text-align: justify;
-  }
-
-  p:last-child {
-    margin-bottom: 0;
-  }
-
-  a {
-    color: var(--primary-light);
-    text-decoration: none;
-    transition: color var(--transition);
-  }
-
-  a:hover {
-    color: var(--primary);
-    text-decoration: underline;
-  }
-
-  .contact-box {
-    background: linear-gradient(135deg, var(--primary-glow), transparent);
-    border: 1px solid var(--primary);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    margin-top: 40px;
-  }
-
-  .contact-box h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--primary-light);
-  }
-
-  .contact-box p {
-    margin-bottom: 12px;
-  }
-
-  .contact-email {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: var(--bg-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-  }
-
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 24px;
-    text-align: center;
-  }
-
-  .footer-inner { max-width: var(--max-width); margin: 0 auto; }
-
-  .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-
-  .footer-links a {
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
-
-  .copyright {
-    font-size: 13px;
-    color: var(--text-muted);
-  }
+    .contact-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 13.5px;
+    }
   </style>
 </head>
 <body>
 
 <header class="hero">
   <div class="hero-inner">
-    <a href="/" class="hero-logo">
-      <span class="hero-logo-text">APJ</span>
-    </a>
     <div class="hero-content">
+      <span class="hero-badge">Documento legal</span>
       <h1>Aviso de Privacidad Integral</h1>
       <div class="hero-subtitle">Asociacion para la mejora del padel en Mexico</div>
     </div>
+    <a href="/" class="hero-logo">
+      <img src="/img/apj_logo.png" alt="Logotipo oficial de la Asociación de Pádel Jalisco">
+    </a>
   </div>
 </header>
 

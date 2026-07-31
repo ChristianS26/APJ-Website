@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Descargar la app | APJ Padel</title>
   <meta name="description" content="Descarga la app oficial de la Asociacion de Padel Jalisco para iOS y Android." />
+  <meta name="theme-color" content="#f2efe7" />
+  <link rel="icon" href="/img/apj_logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apj_logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <script>
     // Auto-redirect mobile visitors to their platform's store. Desktop users
@@ -27,50 +30,108 @@
     .apps-container {
       max-width: 560px;
       margin: 0 auto;
-      padding: 48px 20px 80px;
+      padding: 64px 20px 96px;
       text-align: center;
     }
-    .apps-hero { margin-bottom: 32px; }
-    .apps-hero img {
-      width: 96px; height: 96px;
-      border-radius: 22px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+
+    .apps-hero { margin-bottom: 40px; }
+
+    /* Placa oficial: el logotipo siempre sobre blanco */
+    .apps-logo-plaque {
+      position: relative;
+      display: inline-block;
+      padding: 18px 20px 22px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transform: rotate(-1.4deg);
     }
-    .apps-hero h1 { margin: 20px 0 6px 0; font-size: 28px; }
-    .apps-hero p { margin: 0; color: var(--text-secondary); }
+
+    .apps-logo-plaque::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 6px;
+      background: var(--tricolor);
+    }
+
+    .apps-hero img {
+      display: block;
+      width: 168px;
+      height: auto;
+    }
+
+    .apps-hero h1 {
+      margin: 32px 0 10px 0;
+      font-size: clamp(1.8rem, 6vw, 2.4rem);
+    }
+
+    .apps-hero p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
 
     .apps-buttons {
-      display: flex; flex-direction: column; gap: 12px;
-      margin: 32px 0;
+      display: flex; flex-direction: column; gap: 10px;
+      margin: 36px 0 0;
     }
+
     .apps-store-btn {
       display: inline-flex; align-items: center; justify-content: center;
-      gap: 12px;
-      background: #000;
-      color: #fff;
-      padding: 14px 22px;
-      border-radius: 12px;
+      gap: 14px;
+      background: var(--text);
+      color: var(--bg-2);
+      padding: 15px 22px;
+      border: 1px solid var(--text);
+      border-radius: var(--radius-sm);
       text-decoration: none;
-      font-weight: 600;
-      transition: transform 0.1s ease, opacity 0.2s ease;
+      font-weight: 700;
+      transition: transform var(--transition), box-shadow var(--transition);
     }
-    .apps-store-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .apps-store-btn svg { width: 28px; height: 28px; flex: 0 0 28px; }
+
+    .apps-store-btn:hover {
+      color: var(--bg-2);
+      text-decoration: none;
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-hard-red);
+    }
+
+    .apps-store-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+    .apps-store-btn svg { width: 26px; height: 26px; flex: 0 0 26px; }
+
     .apps-store-btn-text {
       display: flex; flex-direction: column; align-items: flex-start;
       line-height: 1.15;
     }
-    .apps-store-btn-text .small { font-size: 11px; font-weight: 400; opacity: 0.8; }
-    .apps-store-btn-text .big { font-size: 17px; }
+
+    .apps-store-btn-text .small {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; opacity: 0.7;
+    }
+
+    .apps-store-btn-text .big {
+      font-family: var(--font-display);
+      font-size: 15px;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+    }
 
     .apps-apk-link {
       display: block;
-      margin-top: 24px;
-      color: var(--text-secondary);
-      font-size: 13px;
+      margin-top: 26px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       text-decoration: none;
     }
-    .apps-apk-link:hover { color: var(--text); text-decoration: underline; }
+
+    .apps-apk-link:hover { color: var(--apj-red); text-decoration: none; }
   </style>
 </head>
 <body>
@@ -78,17 +139,19 @@
 <header class="tournaments-header">
   <div class="tournaments-header-inner">
     <a href="/" class="tournaments-logo">
-      <div class="tournaments-logo-icon">APJ</div>
-      <span class="tournaments-logo-text">APJ Padel</span>
+      <div class="tournaments-logo-icon"><img src="/img/apj_logo.png" alt="Asociación de Pádel Jalisco"></div>
+      <span class="tournaments-logo-text">APJ Pádel<span class="brand-sub">Jalisco · México</span></span>
     </a>
   </div>
 </header>
 
 <main class="apps-container">
   <div class="apps-hero">
-    <img src="/img/apj_logo.png" alt="APJ Padel">
+    <div class="apps-logo-plaque">
+      <img src="/img/apj_logo.png" alt="Logotipo oficial de la Asociación de Pádel Jalisco">
+    </div>
     <h1>Descarga la app de APJ</h1>
-    <p>Disponible para iOS y Android.</p>
+    <p>Disponible para iOS y Android</p>
   </div>
 
   <div class="apps-buttons">
