@@ -809,6 +809,12 @@ section {
   margin-bottom: 80px;
 }
 
+/* Los enlaces de ancla no deben quedar tapados por la barra fija */
+section[id],
+[id]:target {
+  scroll-margin-top: 90px;
+}
+
 .section-head {
   display: flex;
   align-items: center;
@@ -1075,6 +1081,12 @@ section {
   margin-bottom: 3px;
 }
 
+.app-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .app-cta {
   display: inline-flex;
   align-items: center;
@@ -1082,18 +1094,32 @@ section {
   padding: 14px 26px;
   background: #fff;
   color: #0c1016;
+  border: 1px solid transparent;
   border-radius: var(--radius-pill);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.012em;
   text-decoration: none;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
 }
 
 .app-cta:hover {
   color: #0c1016;
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Segunda tienda: mismo peso visual, menos jerarquía */
+.app-cta-ghost {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: var(--ink-text);
+}
+
+.app-cta-ghost:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--ink-text);
+  box-shadow: none;
 }
 
 /* ==========================================================================
