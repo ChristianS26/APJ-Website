@@ -6,12 +6,13 @@
   <title>Descargar la app | APJ Padel</title>
   <meta name="description" content="Descarga la app oficial de la Asociacion de Padel Jalisco para iOS y Android." />
   <meta name="theme-color" content="#f2efe7" />
-  <link rel="icon" href="/img/apj_logo.png" type="image/png">
-  <link rel="apple-touch-icon" href="/img/apj_logo.png">
+  <link rel="icon" href="/img/apj_icon_180.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apj_icon_180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/theme.js"></script>
   <script>
     // Auto-redirect mobile visitors to their platform's store. Desktop users
     // fall through and see the landing with both buttons.
@@ -36,29 +37,15 @@
 
     .apps-hero { margin-bottom: 40px; }
 
-    /* Placa oficial: el logotipo siempre sobre blanco */
     .apps-logo-plaque {
-      position: relative;
       display: inline-block;
-      padding: 18px 20px 22px;
-      background: #fff;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      transform: rotate(-1.4deg);
-    }
-
-    .apps-logo-plaque::after {
-      content: '';
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 6px;
-      background: var(--tricolor);
     }
 
     .apps-hero img {
       display: block;
-      width: 168px;
+      width: 176px;
       height: auto;
+      filter: drop-shadow(0 12px 22px rgba(22, 24, 28, 0.14));
     }
 
     .apps-hero h1 {

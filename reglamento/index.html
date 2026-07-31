@@ -6,12 +6,13 @@
   <title>Reglamento Oficial | APJ Padel</title>
   <meta name="description" content="Reglamento oficial de la Asociación de Pádel Jalisco (APJ). Consulta las reglas y normativas de nuestros torneos." />
   <meta name="theme-color" content="#f2efe7" />
-  <link rel="icon" href="/img/apj_logo.png" type="image/png">
-  <link rel="apple-touch-icon" href="/img/apj_logo.png">
+  <link rel="icon" href="/img/apj_icon_180.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apj_icon_180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/theme.js"></script>
   <style>
     /* ---- Cabecera del reglamento ---- */
     .reglamento-header {
@@ -99,27 +100,14 @@
     }
 
     .reglamento-cover-plaque {
-      position: relative;
-      padding: 14px 16px 18px;
-      background: #fff;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-md);
-      transform: rotate(-1.4deg);
       flex-shrink: 0;
-    }
-
-    .reglamento-cover-plaque::after {
-      content: '';
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 5px;
-      background: var(--tricolor);
     }
 
     .reglamento-cover-plaque img {
       display: block;
-      width: 128px;
+      width: 132px;
       height: auto;
+      filter: drop-shadow(0 10px 18px rgba(22, 24, 28, 0.13));
     }
 
     /* ---- Cuerpo ---- */

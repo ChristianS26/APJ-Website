@@ -104,62 +104,68 @@
       var(--apj-red) 66.67% 100%);
 }
 
-/* Tema "cancha de noche" */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #101215;
-    --bg-2: #171a1f;
-    --bg-3: #1f232a;
-    --surface: #171a1f;
-    --card: #171a1f;
-    --card-hover: #1d2128;
-    --header-bg: rgba(16, 18, 21, 0.9);
+/* Tema "cancha de noche".
+   theme.js escribe data-theme en <html> antes del primer pintado: usa lo que
+   el jugador eligió y, si nunca eligió, lo que dicte el sistema. Sin JS el
+   sitio se queda en papel (que es el tema por defecto de :root). */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
 
-    --text: #f4f1e9;
-    --text-primary: #f4f1e9;
-    --text-secondary: #a9afb9;
-    --text-muted: #7d8490;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101215;
+  --bg-2: #171a1f;
+  --bg-3: #1f232a;
+  --surface: #171a1f;
+  --card: #171a1f;
+  --card-hover: #1d2128;
+  --header-bg: rgba(16, 18, 21, 0.9);
 
-    --border: rgba(244, 241, 233, 0.14);
-    --border-hover: rgba(244, 241, 233, 0.38);
-    --rule: rgba(244, 241, 233, 0.045);
+  --text: #f4f1e9;
+  --text-primary: #f4f1e9;
+  --text-secondary: #a9afb9;
+  --text-muted: #7d8490;
 
-    --ink: #08090b;
-    --ink-text: #f4f1e9;
-    --ink-rule: rgba(244, 241, 233, 0.14);
+  --border: rgba(244, 241, 233, 0.14);
+  --border-hover: rgba(244, 241, 233, 0.38);
+  --rule: rgba(244, 241, 233, 0.045);
 
-    --primary: #1ea75b;
-    --primary-light: #35c274;
-    --primary-dark: #12813f;
-    --primary-glow: rgba(30, 167, 91, 0.16);
-    --accent: #d7a02c;
-    --accent-light: #ecb844;
-    --accent-glow: rgba(215, 160, 44, 0.15);
-    --error: #ef5350;
-    --error-glow: rgba(239, 83, 80, 0.15);
-    --success: #1ea75b;
-    --success-glow: rgba(30, 167, 91, 0.16);
-    --stripe-glow: rgba(99, 91, 255, 0.18);
+  --ink: #08090b;
+  --ink-text: #f4f1e9;
+  --ink-rule: rgba(244, 241, 233, 0.14);
 
-    --apj-red: #e6444f;
-    --apj-red-dark: #b21f2b;
-    --apj-green: #1ea75b;
+  --primary: #1ea75b;
+  --primary-light: #35c274;
+  --primary-dark: #12813f;
+  --primary-glow: rgba(30, 167, 91, 0.16);
+  --accent: #d7a02c;
+  --accent-light: #ecb844;
+  --accent-glow: rgba(215, 160, 44, 0.15);
+  --error: #ef5350;
+  --error-glow: rgba(239, 83, 80, 0.15);
+  --success: #1ea75b;
+  --success-glow: rgba(30, 167, 91, 0.16);
+  --stripe-glow: rgba(99, 91, 255, 0.18);
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.55);
-    --shadow-lg: 0 24px 52px rgba(0, 0, 0, 0.62);
-    --shadow-hard: 5px 5px 0 rgba(0, 0, 0, 0.75);
+  --apj-red: #e6444f;
+  --apj-red-dark: #b21f2b;
+  --apj-green: #1ea75b;
 
-    --tricolor-mid: #ddd6c4;
-    --tricolor: linear-gradient(90deg,
-        var(--apj-green) 0 33.34%,
-        var(--tricolor-mid) 33.34% 66.67%,
-        var(--apj-red) 66.67% 100%);
-    --tricolor-v: linear-gradient(180deg,
-        var(--apj-green) 0 33.34%,
-        var(--tricolor-mid) 33.34% 66.67%,
-        var(--apj-red) 66.67% 100%);
-  }
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 52px rgba(0, 0, 0, 0.62);
+  --shadow-hard: 5px 5px 0 rgba(0, 0, 0, 0.75);
+
+  --tricolor-mid: #ddd6c4;
+  --tricolor: linear-gradient(90deg,
+      var(--apj-green) 0 33.34%,
+      var(--tricolor-mid) 33.34% 66.67%,
+      var(--apj-red) 66.67% 100%);
+  --tricolor-v: linear-gradient(180deg,
+      var(--apj-green) 0 33.34%,
+      var(--tricolor-mid) 33.34% 66.67%,
+      var(--apj-red) 66.67% 100%);
 }
 
 /* ==========================================================================
@@ -336,8 +342,23 @@ a:hover {
 }
 
 /* ==========================================================================
-   4. PLACA DE MARCA (el logotipo oficial siempre sobre blanco)
+   4. MARCA (el logotipo oficial, en PNG transparente, va directo sobre el
+      fondo: sin recuadros ni placas)
    ========================================================================== */
+
+/* En tema oscuro el verde del escudo se apaga contra el fondo casi negro;
+   se aclara lo justo para recuperar contraste sin desvirtuar el color. */
+:root[data-theme="dark"] .brand-mark img,
+:root[data-theme="dark"] .tournaments-logo-icon img,
+:root[data-theme="dark"] .profile-logo-icon img,
+:root[data-theme="dark"] .registration-logo-icon img,
+:root[data-theme="dark"] .admin-header-brand-icon img,
+:root[data-theme="dark"] .hero-logo img,
+:root[data-theme="dark"] .apps-hero img,
+:root[data-theme="dark"] .reglamento-cover-plaque img,
+:root[data-theme="dark"] img[src*="apj_logo"] {
+  filter: brightness(1.22) saturate(1.06);
+}
 
 .brand,
 .tournaments-logo,
@@ -370,15 +391,12 @@ a:hover {
   align-items: center;
   justify-content: center;
   width: auto;
-  height: 40px;
-  padding: 5px 9px 7px;
-  background: var(--paper-white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
+  height: 38px;
+  background: none;
+  border: 0;
+  border-radius: 0;
   font-size: 0;
-  overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform var(--transition);
 }
 
 .brand-mark img,
@@ -391,28 +409,12 @@ a:hover {
   width: auto;
 }
 
-/* Filete tricolor al pie de cada placa */
-.brand-mark::after,
-.tournaments-logo-icon::after,
-.profile-logo-icon::after,
-.registration-logo-icon::after,
-.admin-header-brand-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  background: var(--tricolor);
-}
-
 .brand:hover .brand-mark,
 .tournaments-logo:hover .tournaments-logo-icon,
 .profile-logo:hover .profile-logo-icon,
 .registration-logo:hover .registration-logo-icon,
 .admin-header-brand:hover .admin-header-brand-icon {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .brand-text,
@@ -525,6 +527,53 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+/* ==========================================================================
+   5b. INTERRUPTOR DE TEMA (lo inyecta js/theme.js)
+   ========================================================================== */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.theme-toggle:hover {
+  color: var(--apj-red);
+  border-color: var(--border-hover);
+  background: var(--card-hover);
+}
+
+.theme-toggle svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+/* Sol en tema papel, luna en tema noche */
+.theme-toggle .theme-icon-dark { display: none; }
+:root[data-theme="dark"] .theme-toggle .theme-icon-dark { display: block; }
+:root[data-theme="dark"] .theme-toggle .theme-icon-light { display: none; }
+
+/* Páginas sin barra de navegación (documentos legales): flotante discreto */
+.theme-toggle-floating {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 120;
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Grupo de sesión */
@@ -698,7 +747,7 @@ a.profile-btn:hover {
   padding-bottom: 56px;
 }
 
-/* La placa del logotipo oficial */
+/* El logotipo oficial, sin caja: respira sobre el papel */
 .hero-logo {
   order: 2;
   flex-shrink: 0;
@@ -706,33 +755,18 @@ a.profile-btn:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 22px 24px 26px;
-  background: var(--paper-white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  transform: rotate(-1.4deg);
   transition: transform 320ms var(--ease);
 }
 
 .hero-logo:hover {
-  transform: rotate(0deg) translateY(-3px);
+  transform: translateY(-4px);
 }
 
 .hero-logo img {
   display: block;
-  width: 208px;
+  width: 268px;
   height: auto;
-}
-
-.hero-logo::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 6px;
-  background: var(--tricolor);
+  filter: drop-shadow(0 14px 26px rgba(22, 24, 28, 0.16));
 }
 
 /* Fallback si la placa se usa sin imagen */
@@ -860,8 +894,8 @@ a.profile-btn:hover {
 }
 
 @keyframes plaque {
-  from { opacity: 0; transform: rotate(-5deg) translateY(24px); }
-  to { opacity: 1; transform: rotate(-1.4deg) translateY(0); }
+  from { opacity: 0; transform: scale(0.94) translateY(18px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* ==========================================================================
@@ -2978,8 +3012,8 @@ footer::before {
 
 .tournament-card-image img[src*="apj_logo"] {
   object-fit: contain;
-  padding: 26px;
-  background: var(--paper-white);
+  padding: 30px;
+  background: var(--bg-3);
 }
 
 .tournament-card:hover .tournament-card-image img {
@@ -3179,8 +3213,8 @@ footer::before {
 
 .detail-flyer img[src*="apj_logo"] {
   object-fit: contain;
-  background: var(--paper-white);
-  padding: 12px;
+  background: var(--bg-3);
+  padding: 14px;
 }
 
 .detail-info {
@@ -3380,22 +3414,7 @@ footer::before {
   width: 104px;
   height: 104px;
   margin: 0 auto 22px;
-  background: var(--paper-white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  box-shadow: var(--shadow-md);
   position: relative;
-}
-
-.download-app-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 4px;
-  background: var(--tricolor);
 }
 
 .download-app-icon img {
@@ -4584,10 +4603,6 @@ body.admin-page textarea {
   .hero-content > * {
     animation: none;
     opacity: 1;
-    transform: rotate(-1.4deg);
-  }
-
-  .hero-content > * {
     transform: none;
   }
 }
