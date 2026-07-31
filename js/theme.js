@@ -4,11 +4,13 @@
 // data-theme en <html> antes del primer pintado para que no haya destello de
 // tema equivocado al recargar.
 //
-// Precedencia: eleccion guardada del usuario > preferencia del sistema.
-// Mientras el usuario no elija nada, el sitio sigue al sistema en vivo.
+// El tema por defecto es CLARO (papel), sin importar como tenga el sistema
+// configurado el visitante: es la identidad de la APJ. El oscuro solo aparece
+// si el jugador lo pide con el boton, y entonces se recuerda.
 
 (function () {
   var STORAGE_KEY = 'apj_theme';
+  var DEFAULT_THEME = 'light';
   var root = document.documentElement;
 
   function stored() {
@@ -18,12 +20,6 @@
     } catch (_) {
       return null; // modo privado / cookies bloqueadas
     }
-  }
-
-  function systemTheme() {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
   }
 
   function apply(theme) {
@@ -40,19 +36,9 @@
   }
 
   // 1. Resolver el tema cuanto antes (aun sin <body>).
-  apply(stored() || systemTheme());
+  apply(stored() || DEFAULT_THEME);
 
-  // 2. Seguir al sistema mientras no haya eleccion explicita.
-  if (window.matchMedia) {
-    var mq = window.matchMedia('(prefers-color-scheme: dark)');
-    var onChange = function () {
-      if (!stored()) apply(systemTheme());
-    };
-    if (mq.addEventListener) mq.addEventListener('change', onChange);
-    else if (mq.addListener) mq.addListener(onChange);
-  }
-
-  // 3. Inyectar el boton cuando exista el DOM.
+  // 2. Inyectar el boton cuando exista el DOM.
   var ICONS =
     '<svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
     '<circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>' +
