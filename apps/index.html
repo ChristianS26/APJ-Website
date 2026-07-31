@@ -55,11 +55,8 @@
 
     .apps-hero p {
       margin: 0;
-      color: var(--text-muted);
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+      color: var(--text-secondary);
+      font-size: 16.5px;
     }
 
     .apps-buttons {
@@ -72,53 +69,67 @@
       gap: 14px;
       background: var(--text);
       color: var(--bg-2);
-      padding: 15px 22px;
-      border: 1px solid var(--text);
-      border-radius: var(--radius-sm);
+      padding: 15px 24px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-pill);
       text-decoration: none;
-      font-weight: 700;
-      transition: transform var(--transition), box-shadow var(--transition);
+      font-weight: 600;
+      box-shadow: var(--shadow-md);
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
     }
 
     .apps-store-btn:hover {
       color: var(--bg-2);
       text-decoration: none;
-      transform: translate(-2px, -2px);
-      box-shadow: var(--shadow-hard-red);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .apps-store-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+    /* La segunda tienda pesa menos: fondo propio en lugar de tinta */
+    .apps-store-btn + .apps-store-btn {
+      background: var(--bg-2);
+      color: var(--text);
+      border-color: var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .apps-store-btn + .apps-store-btn:hover {
+      color: var(--text);
+      box-shadow: var(--shadow-md);
+    }
+
+    .apps-store-btn:active { transform: translateY(0) scale(0.99); }
     .apps-store-btn svg { width: 26px; height: 26px; flex: 0 0 26px; }
 
     .apps-store-btn-text {
       display: flex; flex-direction: column; align-items: flex-start;
-      line-height: 1.15;
+      line-height: 1.2;
     }
 
     .apps-store-btn-text .small {
-      font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em;
-      text-transform: uppercase; opacity: 0.7;
+      font-size: 12px; font-weight: 500; opacity: 0.7;
     }
 
     .apps-store-btn-text .big {
       font-family: var(--font-display);
-      font-size: 15px;
-      letter-spacing: 0.01em;
-      text-transform: uppercase;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.022em;
     }
 
     .apps-apk-link {
-      display: block;
+      display: inline-block;
       margin-top: 26px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
       color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      font-size: 14px;
+      font-weight: 500;
       text-decoration: none;
+      transition: background var(--transition), color var(--transition);
     }
 
-    .apps-apk-link:hover { color: var(--apj-red); text-decoration: none; }
+    .apps-apk-link:hover { background: var(--bg-3); color: var(--text); text-decoration: none; }
   </style>
 </head>
 <body>

@@ -16,93 +16,82 @@
   <style>
     /* Aviso de privacidad: documento a una columna */
     main {
-      max-width: 780px;
-      padding-top: 52px;
+      max-width: 760px;
+      padding-top: 56px;
     }
 
     .hero {
-      padding-top: 56px;
+      padding-top: 64px;
     }
 
     .hero h1 {
       max-width: none;
-      font-size: clamp(1.75rem, 4.6vw, 2.85rem);
+      font-size: clamp(1.95rem, 4.6vw, 2.8rem);
     }
 
     .hero-inner {
-      padding-bottom: 44px;
+      padding-bottom: 52px;
     }
 
     .hero-subtitle {
-      border-left: 0;
-      padding-left: 0;
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      font-size: 16.5px;
+      color: var(--text-secondary);
     }
 
     .hero-logo img {
-      width: 156px;
+      width: 176px;
     }
 
     section {
-      margin-bottom: 44px;
+      margin-bottom: 48px;
     }
 
     h2 {
-      font-size: clamp(1.1rem, 2.2vw, 1.3rem);
-    }
-
-    p {
-      text-align: justify;
-      hyphens: auto;
+      font-size: clamp(1.25rem, 2.2vw, 1.5rem);
     }
 
     p:last-child {
       margin-bottom: 0;
     }
 
-    /* Ficha del documento */
+    /* Ficha del documento: dos fichas con elevación */
     .doc-meta {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
       margin-bottom: 40px;
-      background: var(--border);
-      border: 1px solid var(--border);
     }
 
     .meta-item {
       display: flex;
       flex-direction: column;
-      padding: 14px 16px;
+      padding: 16px 18px;
       background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xs);
     }
 
     .meta-label {
-      font-size: 9.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
+      font-size: 13px;
+      font-weight: 500;
       color: var(--text-muted);
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .meta-value {
-      font-size: 13.5px;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
       color: var(--text);
     }
 
     .intro {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--apj-red);
-      border-radius: var(--radius-sm);
+      background: var(--primary-glow);
+      border-radius: var(--radius-xl);
       padding: 26px 28px;
-      margin-bottom: 44px;
+      margin-bottom: 48px;
     }
 
     .intro p {
@@ -111,44 +100,29 @@
     }
 
     .contact-box {
-      position: relative;
       background: var(--bg-2);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 28px;
-      margin-top: 48px;
-      overflow: hidden;
-    }
-
-    .contact-box::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--tricolor);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 30px;
+      margin-top: 52px;
     }
 
     .contact-box h3 {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin: 6px 0 14px;
-      color: var(--text-muted);
+      font-size: 1.15rem;
+      margin: 0 0 12px;
+      color: var(--text);
     }
 
     .contact-email {
       display: inline-flex;
       align-items: center;
       gap: 9px;
-      padding: 11px 16px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-weight: 700;
-      font-size: 13.5px;
+      padding: 12px 18px;
+      background: var(--bg-3);
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+      font-size: 14.5px;
     }
   </style>
 </head>

@@ -40,29 +40,21 @@
     .delete-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
       overflow: hidden;
     }
 
-    .delete-card::before {
-      content: '';
-      display: block;
-      height: 4px;
-      background: var(--tricolor);
-    }
-
     .delete-card-body {
-      padding: 24px;
+      padding: 26px;
     }
 
     .delete-warning {
       display: flex;
       gap: 12px;
-      padding: 16px;
+      padding: 18px;
       background: var(--error-glow);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--error);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-lg);
       margin-bottom: 24px;
     }
 
@@ -98,22 +90,22 @@
       align-items: center;
       gap: 12px;
       padding: 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      background: var(--bg-3);
+      border-radius: var(--radius-lg);
       margin-bottom: 24px;
     }
 
     .delete-user-avatar {
       width: 40px;
       height: 40px;
-      border-radius: var(--radius-sm);
-      background: var(--apj-green);
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--apj-green), var(--primary-dark));
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-display);
       font-size: 13px;
+      font-weight: 600;
       color: white;
       flex-shrink: 0;
       overflow: hidden;
@@ -160,11 +152,11 @@
     .delete-step-label code {
       background: var(--error-glow);
       color: var(--error);
-      padding: 2px 8px;
-      border-radius: 4px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
       font-weight: 600;
       font-size: 14px;
-      letter-spacing: 1px;
+      letter-spacing: 0.06em;
     }
 
     #delete-confirm-input {
@@ -177,7 +169,7 @@
 
     #delete-confirm-input.input-valid {
       border-color: var(--error);
-      box-shadow: 0 0 0 3px var(--error-glow);
+      box-shadow: 0 0 0 4px var(--error-glow);
     }
 
     /* Step 2: Final confirmation */
@@ -226,26 +218,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
+      gap: 8px;
       background: var(--error);
       color: white;
       border: 1px solid var(--error);
       cursor: pointer;
       font-family: var(--font-body);
-      font-weight: 700;
-      font-size: 12.5px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 13px 26px;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition);
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.012em;
+      padding: 12px 22px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 8px 20px rgba(224, 53, 58, 0.26);
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
     }
 
     .btn-danger:hover:not(:disabled) {
-      background: #9f141f;
-      border-color: #9f141f;
-      transform: translate(-2px, -2px);
-      box-shadow: 5px 5px 0 rgba(22, 24, 28, 0.9);
+      background: #c02a2f;
+      border-color: #c02a2f;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(224, 53, 58, 0.32);
     }
 
     .btn-danger:disabled {
