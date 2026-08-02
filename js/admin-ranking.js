@@ -225,14 +225,20 @@ const APJAdminRanking = (function () {
     openMoveForm();
   }
 
-  // Case + accent insensitive — admin types "urias" and matches "Urías".
+  // Cada palabra de la consulta debe aparecer en el nombre o el apellido, en cualquier
+  // orden. Antes se comparaba la consulta como subcadena del nombre completo, asi que
+  // "Erick Bernal" no encontraba a "ERICK ALONSO BERNAL LICEA".
+  // Sigue siendo insensible a mayusculas y acentos: la base tiene "GONZALEZ" y
+  // "GONZALEZ" acentuado conviviendo, y nadie teclea el acento al buscar.
   function applyFilter(items, query) {
-    if (!query) return items;
-    const norm = normalize(query);
+    const tokens = normalize(query).split(/\s+/).filter(Boolean);
+    if (!tokens.length) return items;
     return items.filter(item => {
       const u = item.user || {};
-      const name = `${u.first_name || ''} ${u.last_name || ''}`;
-      return normalize(name).includes(norm);
+      const fields = [u.first_name, u.last_name]
+        .filter(Boolean)
+        .map(normalize);
+      return tokens.every(token => fields.some(f => f.includes(token)));
     });
   }
 
@@ -240,6 +246,9 @@ const APJAdminRanking = (function () {
     return String(s || '')
       .toLowerCase()
       .normalize('NFD')
+      // Rango de marcas combinantes que deja NFD. Va con escapes y no con los caracteres
+      // literales: escritos crudos son invisibles y cualquier reguardado del archivo en
+      // otra codificacion los rompe en silencio.
       .replace(/[̀-ͯ]/g, '');
   }
 
