@@ -4233,3 +4233,63 @@ body.admin-page textarea {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   Selector de corte de playera
+   Dos botones tipo segmentado. Es un <div> y no un <select> porque un <option>
+   no puede llevar SVG, y el corte se elige con la silueta de la prenda junto a
+   la etiqueta. Ver js/shirt-size.js.
+   ========================================================================== */
+
+.shirt-cut-group {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.shirt-cut-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.shirt-cut-option + .shirt-cut-option {
+  border-left: 1px solid var(--border);
+}
+
+.shirt-cut-option:hover {
+  background: var(--bg-3);
+}
+
+.shirt-cut-option.is-active {
+  background: var(--primary-glow);
+  font-weight: 600;
+}
+
+.shirt-cut-option:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+/* El color es refuerzo, no el diferenciador: las siluetas ya difieren en forma
+   (recta contra entallada), asi que siguen leyendose con daltonismo. */
+.shirt-cut-icon {
+  flex: none;
+}
+
+.shirt-cut-icon--hombre { color: #2f6bd4; }
+.shirt-cut-icon--dama   { color: #d14a8a; }
+
+/* Sobre fondo oscuro los tonos del dia quedan turbios. */
+:root[data-theme="dark"] .shirt-cut-icon--hombre { color: #7fb0ff; }
+:root[data-theme="dark"] .shirt-cut-icon--dama   { color: #ff8cc0; }

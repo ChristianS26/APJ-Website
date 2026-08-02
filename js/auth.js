@@ -151,8 +151,8 @@ const APJAuth = (function() {
                   <div class="form-error"></div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="register-shirt_cut">Corte de playera <span class="required">*</span></label>
-                  <select id="register-shirt_cut" class="form-select" required></select>
+                  <label class="form-label">Corte de playera <span class="required">*</span></label>
+                  <div id="register-shirt_cut"></div>
                   <div class="form-error"></div>
                 </div>
               </div>
@@ -317,12 +317,11 @@ const APJAuth = (function() {
 
     // Avisa del tope del corte dama en vez de dejar que la persona lo descubra al no
     // encontrar su talla.
-    function updateShirtCutHint(cutId, hintId) {
-      const cut = document.getElementById(cutId)?.value;
+    function updateShirtCutHint(binding, hintId) {
       const hint = document.getElementById(hintId);
       if (!hint) return;
-      hint.textContent = cut === 'DAMA'
-        ? 'El corte dama llega hasta L. Si necesitas una talla mayor, cambia a corte hombre.'
+      hint.textContent = binding && binding.getCut() === 'DAMA'
+        ? 'El corte de mujer llega hasta L. Si necesitas una talla mayor, elige el de hombre.'
         : '';
     }
 
@@ -333,11 +332,11 @@ const APJAuth = (function() {
     // solo se leia en el encabezado del grupo. Ver js/shirt-size.js.
     const genderSelect = document.getElementById('register-gender');
     registerShirtBinding = APJShirtSize.bind({
-      cutSelect: document.getElementById('register-shirt_cut'),
+      cutContainer: document.getElementById('register-shirt_cut'),
       sizeSelect: document.getElementById('register-shirt_size'),
       getGender: () => genderSelect?.value || '',
       onChange: () => {
-        updateShirtCutHint('register-shirt_cut', 'register-shirt_size-hint');
+        updateShirtCutHint(registerShirtBinding, 'register-shirt_size-hint');
         validateRegisterForm();
       },
     });

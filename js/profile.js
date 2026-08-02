@@ -88,7 +88,7 @@ const APJProfile = (function() {
    */
   function bindEvents() {
     shirtBinding = APJShirtSize.bind({
-      cutSelect: document.getElementById('profile-shirt_cut'),
+      cutContainer: document.getElementById('profile-shirt_cut'),
       sizeSelect: document.getElementById('profile-shirt_size'),
       getGender: () => document.getElementById('profile-gender')?.value || '',
       onChange: updateShirtCutHint,
@@ -198,8 +198,8 @@ const APJProfile = (function() {
   function updateShirtCutHint() {
     const hint = document.getElementById('profile-shirt_size-hint');
     if (!hint) return;
-    hint.textContent = document.getElementById('profile-shirt_cut')?.value === 'DAMA'
-      ? 'El corte dama llega hasta L. Si necesitas una talla mayor, cambia a corte hombre.'
+    hint.textContent = shirtBinding && shirtBinding.getCut() === 'DAMA'
+      ? 'El corte de mujer llega hasta L. Si necesitas una talla mayor, elige el de hombre.'
       : '';
   }
 
