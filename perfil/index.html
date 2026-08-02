@@ -140,12 +140,17 @@
               <div class="form-error"></div>
             </div>
             <div class="form-group">
-              <label class="form-label" for="profile-shirt_size">Talla de playera</label>
-              <select id="profile-shirt_size" class="form-select">
-                <option value="">Seleccionar genero primero</option>
-              </select>
+              <label class="form-label" for="profile-shirt_cut">Corte de playera</label>
+              <select id="profile-shirt_cut" class="form-select"></select>
               <div class="form-error"></div>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-shirt_size">Talla de playera</label>
+            <select id="profile-shirt_size" class="form-select"></select>
+            <div class="form-hint" id="profile-shirt_size-hint"></div>
+            <div class="form-error"></div>
           </div>
 
           <button type="submit" class="btn btn-primary" id="profile-save-btn">
@@ -204,6 +209,7 @@
 <!-- Scripts -->
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/shirt-size.js"></script>
 <script src="/js/validation.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/profile.js"></script>

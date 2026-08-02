@@ -9,6 +9,7 @@ const APJAuth = (function() {
   // Rate limiting state for forgot password
   const FORGOT_PASSWORD_MAX_ATTEMPTS = 3;
   const FORGOT_PASSWORD_BLOCK_SECONDS = 300; // 5 minutes
+  let registerShirtBinding = null;
   let forgotPasswordAttempts = 0;
   let forgotPasswordBlockedUntil = null;
   let forgotPasswordCountdownInterval = null;
@@ -150,30 +151,17 @@ const APJAuth = (function() {
                   <div class="form-error"></div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="register-shirt_size">Talla de playera <span class="required">*</span></label>
-                  <select id="register-shirt_size" class="form-select" required>
-                    <option value="">Seleccionar</option>
-                    <optgroup label="Mujer">
-                      <option value="XS-MUJER">XS - Mujer</option>
-                      <option value="S-MUJER">S - Mujer</option>
-                      <option value="M-MUJER">M - Mujer</option>
-                      <option value="L-MUJER">L - Mujer</option>
-                    </optgroup>
-                    <optgroup label="Hombre">
-                      <option value="XS-HOMBRE">XS - Hombre</option>
-                      <option value="S-HOMBRE">S - Hombre</option>
-                      <option value="M-HOMBRE">M - Hombre</option>
-                      <option value="L-HOMBRE">L - Hombre</option>
-                      <option value="XL-HOMBRE">XL - Hombre</option>
-                      <option value="2XL-HOMBRE">2XL - Hombre</option>
-                      <option value="3XL-HOMBRE">3XL - Hombre</option>
-                      <option value="4XL-HOMBRE">4XL - Hombre</option>
-                      <option value="5XL-HOMBRE">5XL - Hombre</option>
-                      <option value="6XL-HOMBRE">6XL - Hombre</option>
-                    </optgroup>
-                  </select>
+                  <label class="form-label" for="register-shirt_cut">Corte de playera <span class="required">*</span></label>
+                  <select id="register-shirt_cut" class="form-select" required></select>
                   <div class="form-error"></div>
                 </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="register-shirt_size">Talla de playera <span class="required">*</span></label>
+                <select id="register-shirt_size" class="form-select" required></select>
+                <div class="form-hint" id="register-shirt_size-hint"></div>
+                <div class="form-error"></div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-block" id="register-submit" disabled>
@@ -327,11 +315,39 @@ const APJAuth = (function() {
     // Register form submit
     document.getElementById('register-form')?.addEventListener('submit', handleRegister);
 
+    // Avisa del tope del corte dama en vez de dejar que la persona lo descubra al no
+    // encontrar su talla.
+    function updateShirtCutHint(cutId, hintId) {
+      const cut = document.getElementById(cutId)?.value;
+      const hint = document.getElementById(hintId);
+      if (!hint) return;
+      hint.textContent = cut === 'DAMA'
+        ? 'El corte dama llega hasta L. Si necesitas una talla mayor, cambia a corte hombre.'
+        : '';
+    }
+
     // Forgot password form submit
     document.getElementById('forgot-password-form')?.addEventListener('submit', handleForgotPassword);
 
-    // Gender change - validate form
-    document.getElementById('register-gender')?.addEventListener('change', validateRegisterForm);
+    // Corte + talla: dos selects encadenados en vez de un solo desplegable donde el corte
+    // solo se leia en el encabezado del grupo. Ver js/shirt-size.js.
+    const genderSelect = document.getElementById('register-gender');
+    registerShirtBinding = APJShirtSize.bind({
+      cutSelect: document.getElementById('register-shirt_cut'),
+      sizeSelect: document.getElementById('register-shirt_size'),
+      getGender: () => genderSelect?.value || '',
+      onChange: () => {
+        updateShirtCutHint('register-shirt_cut', 'register-shirt_size-hint');
+        validateRegisterForm();
+      },
+    });
+    registerShirtBinding?.reset();
+
+    // Gender change - proponer corte y validar
+    genderSelect?.addEventListener('change', function() {
+      registerShirtBinding?.syncWithGender(genderSelect.value);
+      validateRegisterForm();
+    });
 
     // Validate register form on input
     const registerForm = document.getElementById('register-form');
@@ -356,7 +372,7 @@ const APJAuth = (function() {
     const phone = document.getElementById('register-phone')?.value.trim() || '';
     const birthdate = document.getElementById('register-birthdate')?.value || '';
     const gender = document.getElementById('register-gender')?.value || '';
-    const shirtSize = document.getElementById('register-shirt_size')?.value || '';
+    const shirtSize = registerShirtBinding ? registerShirtBinding.getValue() : '';
 
     // Check all required fields
     const isFirstNameValid = firstName.length >= 2;
@@ -367,7 +383,7 @@ const APJAuth = (function() {
     const isPhoneValid = phone.replace(/\D/g, '').length >= 8;
     const isBirthdateValid = birthdate !== '';
     const isGenderValid = ['Masculino', 'Femenino', 'Otro'].includes(gender);
-    const isShirtSizeValid = shirtSize !== '';
+    const isShirtSizeValid = APJShirtSize.isValid(shirtSize);
 
     // Show/hide password mismatch error
     const confirmPasswordField = document.getElementById('register-confirm_password');
@@ -630,7 +646,7 @@ const APJAuth = (function() {
         phone: fullPhone,
         birthdate: document.getElementById('register-birthdate').value,
         gender: document.getElementById('register-gender').value,
-        shirt_size: document.getElementById('register-shirt_size').value,
+        shirt_size: registerShirtBinding ? registerShirtBinding.getValue() : '',
         country_iso: countryIso
       };
 

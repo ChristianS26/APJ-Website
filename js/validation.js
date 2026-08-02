@@ -73,15 +73,9 @@ const APJValidation = (function() {
    * Validate shirt size - Required (all sizes with gender suffix)
    */
   function isValidShirtSize(size) {
-    if (!size || typeof size !== 'string') return false;
-    if (size.trim() === '') return false;
-
-    const allSizes = [
-      'XS-MUJER', 'S-MUJER', 'M-MUJER', 'L-MUJER',
-      'XS-HOMBRE', 'S-HOMBRE', 'M-HOMBRE', 'L-HOMBRE',
-      'XL-HOMBRE', '2XL-HOMBRE', '3XL-HOMBRE', '4XL-HOMBRE', '5XL-HOMBRE', '6XL-HOMBRE'
-    ];
-    return allSizes.includes(size.toUpperCase());
+    // Delegado a APJShirtSize para no mantener dos catalogos: este tenia "-MUJER" y las
+    // apps escriben "-DAMA", asi que un valor legitimo guardado desde la app se caia aqui.
+    return APJShirtSize.isValid(size);
   }
 
   /**

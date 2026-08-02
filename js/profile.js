@@ -3,40 +3,11 @@
 const APJProfile = (function() {
   let originalUserData = null;
   let isProfilePage = false;
+  // Corte + talla encadenados. El catalogo vive en js/shirt-size.js, compartido con el
+  // registro: tenerlo duplicado aqui fue lo que dejo al perfil escribiendo "-MUJER"
+  // mientras las apps escribian "-DAMA".
+  let shirtBinding = null;
 
-  // Shirt sizes by gender
-  const SHIRT_SIZES = {
-    Femenino: [
-      { value: 'XS-MUJER', label: 'XS - Mujer' },
-      { value: 'S-MUJER', label: 'S - Mujer' },
-      { value: 'M-MUJER', label: 'M - Mujer' },
-      { value: 'L-MUJER', label: 'L - Mujer' }
-    ],
-    Masculino: [
-      { value: 'XS-HOMBRE', label: 'XS - Hombre' },
-      { value: 'S-HOMBRE', label: 'S - Hombre' },
-      { value: 'M-HOMBRE', label: 'M - Hombre' },
-      { value: 'L-HOMBRE', label: 'L - Hombre' },
-      { value: 'XL-HOMBRE', label: 'XL - Hombre' },
-      { value: '2XL-HOMBRE', label: '2XL - Hombre' },
-      { value: '3XL-HOMBRE', label: '3XL - Hombre' },
-      { value: '4XL-HOMBRE', label: '4XL - Hombre' },
-      { value: '5XL-HOMBRE', label: '5XL - Hombre' },
-      { value: '6XL-HOMBRE', label: '6XL - Hombre' }
-    ],
-    Otro: [
-      { value: 'XS-HOMBRE', label: 'XS' },
-      { value: 'S-HOMBRE', label: 'S' },
-      { value: 'M-HOMBRE', label: 'M' },
-      { value: 'L-HOMBRE', label: 'L' },
-      { value: 'XL-HOMBRE', label: 'XL' },
-      { value: '2XL-HOMBRE', label: '2XL' },
-      { value: '3XL-HOMBRE', label: '3XL' },
-      { value: '4XL-HOMBRE', label: '4XL' },
-      { value: '5XL-HOMBRE', label: '5XL' },
-      { value: '6XL-HOMBRE', label: '6XL' }
-    ]
-  };
 
   // Countries list
   const COUNTRIES = [
@@ -116,7 +87,15 @@ const APJProfile = (function() {
    * Bind event handlers
    */
   function bindEvents() {
-    // Gender change - update shirt sizes
+    shirtBinding = APJShirtSize.bind({
+      cutSelect: document.getElementById('profile-shirt_cut'),
+      sizeSelect: document.getElementById('profile-shirt_size'),
+      getGender: () => document.getElementById('profile-gender')?.value || '',
+      onChange: updateShirtCutHint,
+    });
+    shirtBinding?.reset();
+
+    // Gender change - proponer corte (sin restringirlo)
     document.getElementById('profile-gender')?.addEventListener('change', updateShirtSizes);
 
     // Profile form submit
@@ -199,34 +178,29 @@ const APJProfile = (function() {
     }
     document.getElementById('profile-phone').value = phoneNumber;
 
-    // Update shirt sizes based on gender and set value
-    updateShirtSizes();
-    setTimeout(() => {
-      document.getElementById('profile-shirt_size').value = user.shirt_size || '';
-    }, 0);
+    // Carga corte + talla desde lo guardado. parse() tolera "-MUJER" y las filas viejas
+    // sin corte, que antes dejaban el campo en blanco.
+    shirtBinding?.setValue(user.shirt_size);
   }
 
   /**
-   * Update shirt sizes dropdown based on selected gender
+   * Sincroniza el corte con el genero recien elegido.
+   *
+   * Antes esto filtraba el catalogo POR genero, asi que una mujer no podia elegir corte
+   * hombre — y como el corte dama llega hasta L, quien necesitaba XL se quedaba sin
+   * opcion. Ahora el genero solo propone; los dos cortes siguen disponibles.
    */
   function updateShirtSizes() {
-    const gender = document.getElementById('profile-gender').value;
-    const shirtSelect = document.getElementById('profile-shirt_size');
-    const currentValue = shirtSelect.value;
+    shirtBinding?.syncWithGender(document.getElementById('profile-gender').value);
+    updateShirtCutHint();
+  }
 
-    if (!gender) {
-      shirtSelect.innerHTML = '<option value="">Seleccionar genero primero</option>';
-      return;
-    }
-
-    const sizes = SHIRT_SIZES[gender] || SHIRT_SIZES.Otro;
-    shirtSelect.innerHTML = '<option value="">Seleccionar</option>' +
-      sizes.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
-
-    // Try to restore previous value if it's valid for new gender
-    if (currentValue && sizes.some(s => s.value === currentValue)) {
-      shirtSelect.value = currentValue;
-    }
+  function updateShirtCutHint() {
+    const hint = document.getElementById('profile-shirt_size-hint');
+    if (!hint) return;
+    hint.textContent = document.getElementById('profile-shirt_cut')?.value === 'DAMA'
+      ? 'El corte dama llega hasta L. Si necesitas una talla mayor, cambia a corte hombre.'
+      : '';
   }
 
   /**
@@ -277,7 +251,7 @@ const APJProfile = (function() {
       country_iso: countryIso,
       birthdate: document.getElementById('profile-birthdate').value,
       gender: document.getElementById('profile-gender').value,
-      shirt_size: document.getElementById('profile-shirt_size').value
+      shirt_size: shirtBinding ? shirtBinding.getValue() : ''
     };
 
     // Check if there are changes
