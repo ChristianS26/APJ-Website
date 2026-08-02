@@ -7,11 +7,11 @@
 
 const APJAdminRanking = (function () {
 
-  // Whitelist curado, en orden — espejo exacto de iOS (RankingListViewModel)
-  // y Android (RankingViewModel). NO es derivable de la DB: los IDs saltan
-  // (6 -> 20 -> 13 -> ...) y la app oculta cualquier otra categoria del
-  // ranking. Si quieres agregar/cambiar una categoria visible, hay que
-  // tocar las 3 plataformas a la vez para mantener paridad.
+  // Whitelist curado, en orden. La fuente de verdad ahora es la DB: las columnas
+  // `show_in_ranking` / `ranking_order` de `categories`, que Android e iOS leen via
+  // GET /api/categories/ranking. Esta lista es un espejo manual de esa consulta —
+  // si publicas o quitas una categoria en la DB, las apps se enteran solas pero
+  // este archivo hay que actualizarlo a mano.
   const RANKING_CATEGORIES = [
     { id: 1,  name: 'Primera' },
     { id: 2,  name: 'Segunda' },
@@ -24,6 +24,7 @@ const APJAdminRanking = (function () {
     { id: 14, name: 'Femenil 4ta' },
     { id: 15, name: 'Femenil 5ta' },
     { id: 19, name: 'Mixto +7' },
+    { id: 17, name: 'Mixto +9' },
   ];
 
   // Brackets ordenados de mayor a menor categoria. La promocion natural
@@ -33,7 +34,7 @@ const APJAdminRanking = (function () {
   const NATURAL_BRACKETS = [
     [1, 2, 3, 4, 5, 6, 20], // Masculino: Primera..Septima
     [13, 14, 15],            // Femenil 3ra..5ta
-    [19],                    // Mixto +7
+    [19, 17],                // Mixto: +7 (mas fuerte) -> +9
   ];
 
   // Devuelve el id de la categoria inmediatamente superior dentro del
