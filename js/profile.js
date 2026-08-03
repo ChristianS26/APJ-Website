@@ -242,6 +242,10 @@ const APJProfile = (function() {
     const [countryIso, dialCode] = countryCodeValue.split('|');
     const fullPhone = phone ? `${dialCode}${phone.replace(/\D/g, '')}` : '';
 
+    // El backend guarda birthdate en una columna DATE: mandar '' revienta el PATCH
+    // completo, asi que lo enviamos como null cuando el usuario no tiene fecha.
+    const birthdate = document.getElementById('profile-birthdate').value.trim();
+
     const userData = {
       uid: originalUserData.uid,
       first_name: document.getElementById('profile-first_name').value.trim(),
@@ -249,7 +253,7 @@ const APJProfile = (function() {
       email: originalUserData.email,
       phone: fullPhone,
       country_iso: countryIso,
-      birthdate: document.getElementById('profile-birthdate').value,
+      birthdate: birthdate || null,
       gender: document.getElementById('profile-gender').value,
       shirt_size: shirtBinding ? shirtBinding.getValue() : ''
     };
@@ -292,7 +296,7 @@ const APJProfile = (function() {
       newData.last_name !== (originalUserData.last_name || '') ||
       newData.phone !== originalPhone ||
       newData.country_iso !== (originalUserData.country_iso || '') ||
-      newData.birthdate !== (originalUserData.birthdate || '') ||
+      (newData.birthdate || '') !== (originalUserData.birthdate || '') ||
       newData.gender !== (originalUserData.gender || '') ||
       newData.shirt_size !== (originalUserData.shirt_size || '')
     );
