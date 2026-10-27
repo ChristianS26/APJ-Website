@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pago cancelado | APJ Padel</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#fbfbfd" />
+  <link rel="icon" href="/img/apj_icon_180.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apj_icon_180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-payment-result="cancel">
+  <main class="payment-return">
+    <img class="payment-return-logo" src="/img/apj_isotipo.png" alt="APJ Pádel" width="708" height="336" fetchpriority="high">
+
+    <h1>Pago cancelado</h1>
+    <p class="payment-return-message">No se hizo ningún cargo. Vuelve a la app para intentarlo de nuevo.</p>
+
+    <a id="open-app" class="btn btn-primary" href="lagartospadel://payment/cancel">Volver a la app</a>
+
+    <p id="open-app-hint" class="payment-return-hint">
+      ¿No se abrió? Toca el botón para regresar.
+    </p>
+  </main>
+
+  <script src="/js/payment-return.js"></script>
+</body>
+</html>

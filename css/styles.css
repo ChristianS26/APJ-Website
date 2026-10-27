@@ -4293,3 +4293,88 @@ body.admin-page textarea {
 /* Sobre fondo oscuro los tonos del dia quedan turbios. */
 :root[data-theme="dark"] .shirt-cut-icon--hombre { color: #7fb0ff; }
 :root[data-theme="dark"] .shirt-cut-icon--dama   { color: #ff8cc0; }
+
+/* ==========================================================================
+   Regreso de pago
+   pago/success.html y pago/cancel.html: Stripe Checkout manda aqui al jugador
+   al terminar y la pagina lo devuelve a la app. Casi siempre se ve un instante
+   antes de que la app tome el control; el boton es para cuando no lo hace.
+   Ver js/payment-return.js.
+   ========================================================================== */
+
+.payment-return {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+  /* Arriba y no al centro exacto: en un navegador embebido la mitad inferior
+     la tapan la barra y el pulgar. */
+  padding: clamp(48px, 14vh, 112px) 24px 40px;
+}
+
+.payment-return-logo {
+  width: 72px;
+  height: auto;
+  margin-bottom: 40px;
+}
+
+.payment-return h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  margin: 0 0 12px;
+}
+
+.payment-return-message {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.5;
+  margin: 0 0 32px;
+}
+
+.payment-return .btn {
+  align-self: stretch;
+  min-height: 52px;
+  font-size: 16px;
+  touch-action: manipulation;
+}
+
+/* El verde de marca con texto blanco queda en 3.2:1. Este es el unico boton de
+   la pagina y se lee de un vistazo, asi que va en el verde oscuro (5.1:1), fijo
+   en ambos temas: --primary-dark se aclara en oscuro. */
+.payment-return .btn-primary {
+  background: var(--apj-green-dark);
+  border-color: var(--apj-green-dark);
+  box-shadow: 0 6px 16px rgba(10, 127, 69, 0.22);
+}
+
+.payment-return .btn-primary:hover:not(:disabled) {
+  background: var(--apj-green-deep);
+  border-color: var(--apj-green-deep);
+}
+
+/* Solo aparece si la app no abrio sola: antes distrae de lo que esta pasando. */
+.payment-return-hint {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 20px 0 0;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 240ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 240ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.payment-return-hint.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.payment-return-hint strong {
+  color: var(--text);
+  font-weight: 600;
+}
