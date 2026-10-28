@@ -15,10 +15,8 @@ const APJAdminTorneoInscripciones = (function () {
   const detail = {
     team: null,
     entries: [],          // [{ name, payload }] — what gets saved
-    player: 'A',          // which player the new restriction is for
+    editing: null,        // 'A' | 'B' — player whose add-form is open
     type: 'play_only_day',
-    selectedDay: null,
-    selectedTime: '',
     saving: false,
   };
 
@@ -283,9 +281,9 @@ const APJAdminTorneoInscripciones = (function () {
     PLAY_FROM_TIME: 'play_from_time',
   };
   const TYPE_OPTIONS = [
-    { type: TYPES.PLAY_ONLY_DAY,  icon: '✅', label: 'Solo puede jugar un día específico' },
-    { type: TYPES.EXCLUDE_DAY,    icon: '🚫', label: 'No puede jugar un día específico' },
-    { type: TYPES.PLAY_FROM_TIME, icon: '🕐', label: 'Solo puede jugar a partir de cierta hora' },
+    { type: TYPES.PLAY_ONLY_DAY,  icon: '✅', label: 'Solo un día',  hint: 'Elige el único día en que puede jugar' },
+    { type: TYPES.EXCLUDE_DAY,    icon: '🚫', label: 'No puede',     hint: 'Elige el día en que no puede jugar' },
+    { type: TYPES.PLAY_FROM_TIME, icon: '🕐', label: 'Desde hora',   hint: 'Elige a partir de qué hora puede jugar' },
   ];
   // Fallback when the tournament has no time range configured: same slots the
   // Restricciones page offers (1 PM to midnight, every 30 min).
@@ -320,46 +318,38 @@ const APJAdminTorneoInscripciones = (function () {
     document.querySelectorAll('[data-ins-close]').forEach(btn => btn.addEventListener('click', closeDetail));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 
-    document.getElementById('ins-detail-entries')?.addEventListener('click', e => {
-      const btn = e.target.closest('[data-remove-entry]');
-      if (!btn) return;
-      const idx = parseInt(btn.getAttribute('data-remove-entry'), 10);
-      if (!Number.isInteger(idx)) return;
-      detail.entries.splice(idx, 1);
-      renderDetailEntries();
+    // Everything inside the body is re-rendered, so delegate from the container
+    const body = document.getElementById('ins-detail-body');
+    body?.addEventListener('click', e => {
+      const remove = e.target.closest('[data-remove-entry]');
+      if (remove) {
+        const idx = parseInt(remove.getAttribute('data-remove-entry'), 10);
+        if (Number.isInteger(idx)) detail.entries.splice(idx, 1);
+        return renderDetailBody();
+      }
+      const open = e.target.closest('[data-add-for]');
+      if (open) {
+        const key = open.getAttribute('data-add-for');
+        detail.editing = detail.editing === key ? null : key;
+        detail.type = templateDays().length > 0 ? TYPES.PLAY_ONLY_DAY : TYPES.PLAY_FROM_TIME;
+        return renderDetailBody();
+      }
+      const typeBtn = e.target.closest('[data-type]');
+      if (typeBtn) {
+        detail.type = typeBtn.getAttribute('data-type');
+        return renderDetailBody();
+      }
+      const day = e.target.closest('[data-iso]');
+      if (day) {
+        const iso = parseInt(day.getAttribute('data-iso'), 10);
+        const mode = detail.type === TYPES.EXCLUDE_DAY ? 'not' : 'only';
+        if (Number.isFinite(iso)) addEntry(JSON.stringify({ mode, days: [iso] }));
+      }
     });
-    document.getElementById('ins-detail-player')?.addEventListener('click', e => {
-      const btn = e.target.closest('[data-player]');
-      if (!btn) return;
-      detail.player = btn.getAttribute('data-player');
-      renderDetailPicker();
+    body?.addEventListener('change', e => {
+      if (e.target.id !== 'ins-detail-time' || !e.target.value) return;
+      addEntry(JSON.stringify({ time_from: e.target.value }));
     });
-    document.getElementById('ins-detail-types')?.addEventListener('click', e => {
-      const btn = e.target.closest('.restriction-type-btn');
-      if (!btn) return;
-      const t = btn.getAttribute('data-type');
-      if (!t || t === detail.type) return;
-      detail.type = t;
-      detail.selectedDay = null;
-      detail.selectedTime = '';
-      renderDetailPicker();
-    });
-    document.getElementById('ins-detail-days')?.addEventListener('click', e => {
-      const btn = e.target.closest('.day-chip');
-      if (!btn) return;
-      const iso = parseInt(btn.getAttribute('data-iso'), 10);
-      if (!Number.isFinite(iso)) return;
-      detail.selectedDay = detail.selectedDay === iso ? null : iso;
-      renderDetailPicker();
-    });
-    document.getElementById('ins-detail-times')?.addEventListener('click', e => {
-      const btn = e.target.closest('.time-chip');
-      if (!btn) return;
-      const t = btn.getAttribute('data-time') || '';
-      detail.selectedTime = detail.selectedTime === t ? '' : t;
-      renderDetailPicker();
-    });
-    document.getElementById('ins-detail-add')?.addEventListener('click', addDetailEntry);
     document.getElementById('ins-detail-save')?.addEventListener('click', saveDetail);
   }
 
@@ -368,19 +358,13 @@ const APJAdminTorneoInscripciones = (function () {
     if (!team) return;
     detail.team = team;
     detail.entries = parseEntries(team.restriction);
-    detail.player = 'A';
-    detail.type = templateDays().length > 0 ? TYPES.PLAY_ONLY_DAY : TYPES.PLAY_FROM_TIME;
-    detail.selectedDay = null;
-    detail.selectedTime = '';
+    detail.editing = null;
     detail.saving = false;
 
     document.getElementById('ins-detail-title').textContent = team.categoryName || 'Detalle de pareja';
-    document.getElementById('ins-detail-players').innerHTML = [
-      detailPlayerCard('Jugador A', team.playerA || {}, !!team.playerAPaid),
-      detailPlayerCard('Jugador B', team.playerB || {}, !!team.playerBPaid),
-    ].join('');
-    renderDetailEntries();
-    renderDetailPicker();
+    document.getElementById('ins-detail-subtitle').textContent =
+      `${nameOf(team.playerA || {})} y ${nameOf(team.playerB || {})}`;
+    renderDetailBody();
     setDetailSaving(false);
     document.getElementById('ins-detail-modal')?.classList.add('active');
   }
@@ -389,17 +373,6 @@ const APJAdminTorneoInscripciones = (function () {
     if (detail.saving) return;
     detail.team = null;
     document.getElementById('ins-detail-modal')?.classList.remove('active');
-  }
-
-  function detailPlayerCard(label, p, paid) {
-    const lines = [p.phone, p.email].filter(Boolean).map(v => `<span>${escapeHtml(v)}</span>`).join('');
-    return `
-      <div class="ins-detail-player">
-        <div class="ins-detail-player-label">${escapeHtml(label)}</div>
-        <div class="ins-detail-player-name">${escapeHtml(nameOf(p))}</div>
-        <div class="ins-detail-player-meta">${lines}</div>
-        ${pill(paid ? 'Pagado' : 'Pendiente', paid ? 'green' : 'gray')}
-      </div>`;
   }
 
   function parseEntries(raw) {
@@ -411,21 +384,102 @@ const APJAdminTorneoInscripciones = (function () {
     return entries.map(e => (e.name ? `${e.name}: ${e.payload}` : e.payload)).join(' / ');
   }
 
-  function renderDetailEntries() {
-    const wrap = document.getElementById('ins-detail-entries');
-    if (!wrap) return;
-    if (detail.entries.length === 0) {
-      wrap.innerHTML = '<p class="ins-detail-empty">Esta pareja no tiene restricciones.</p>';
-      return;
+  // Same name the registration flows prefix entries with.
+  function entryNameOf(p) {
+    return [p?.first_name, p?.last_name].filter(Boolean).join(' ').trim() || null;
+  }
+
+  function sameName(a, b) {
+    return !!a && !!b && a.trim().toLowerCase() === b.trim().toLowerCase();
+  }
+
+  // One block per player with their restrictions; entries whose name matches
+  // neither current player (legacy text, replaced player) go in "Otras".
+  function renderDetailBody() {
+    const team = detail.team;
+    const body = document.getElementById('ins-detail-body');
+    if (!team || !body) return;
+
+    const players = [['A', team.playerA || {}], ['B', team.playerB || {}]];
+    const indexed = detail.entries.map((entry, i) => ({ entry, i }));
+    const owned = new Set();
+
+    let html = players.map(([key, p]) => {
+      const name = entryNameOf(p);
+      const mine = indexed.filter(x => sameName(x.entry.name, name));
+      mine.forEach(x => owned.add(x.i));
+      const editing = detail.editing === key;
+      return `
+        <div class="ins-detail-player">
+          <div class="ins-detail-player-head">
+            <span class="ins-detail-player-name">${escapeHtml(nameOf(p))}</span>
+            <button type="button" class="ins-detail-add-btn${editing ? ' active' : ''}" data-add-for="${key}">
+              ${editing ? 'Cerrar' : '+ Agregar'}
+            </button>
+          </div>
+          ${renderEntryList(mine)}
+          ${editing ? renderAddForm() : ''}
+        </div>`;
+    }).join('');
+
+    const others = indexed.filter(x => !owned.has(x.i));
+    if (others.length > 0) {
+      html += `
+        <div class="ins-detail-player">
+          <div class="ins-detail-player-head"><span class="ins-detail-player-name">Otras</span></div>
+          ${renderEntryList(others, true)}
+        </div>`;
     }
-    wrap.innerHTML = detail.entries.map((entry, i) => `
-      <div class="ins-detail-entry">
-        <div class="ins-detail-entry-body">
-          <span class="ins-detail-entry-name">${escapeHtml(entry.name || 'Sin jugador')}</span>
-          <div class="ins-restriction-chips">${entryChips({ name: null, payload: entry.payload }).join('')}</div>
-        </div>
-        <button type="button" class="btn btn-outline btn-sm" data-remove-entry="${i}">Quitar</button>
-      </div>`).join('');
+    body.innerHTML = html;
+  }
+
+  function renderEntryList(items, showName) {
+    if (items.length === 0) return '<p class="ins-detail-empty">Sin restricciones</p>';
+    return `<div class="ins-detail-entries">${items.map(({ entry, i }) => {
+      const label = showName && entry.name ? `<span class="ins-detail-entry-name">${escapeHtml(entry.name)}</span>` : '';
+      return `
+        <span class="ins-detail-entry">
+          ${label}${entryChips({ name: null, payload: entry.payload }).join('')}
+          <button type="button" class="ins-detail-entry-remove" data-remove-entry="${i}" aria-label="Quitar restricción" title="Quitar">×</button>
+        </span>`;
+    }).join('')}</div>`;
+  }
+
+  function renderAddForm() {
+    const days = templateDays();
+    const times = templateTimes();
+    const options = TYPE_OPTIONS.filter(t => (t.type === TYPES.PLAY_FROM_TIME ? times.length > 0 : days.length > 0));
+    const current = options.find(t => t.type === detail.type) || options[0];
+    if (!current) return '<p class="ins-detail-empty">El torneo no tiene días ni horarios disponibles.</p>';
+
+    const segments = options.map(t => `
+      <button type="button" class="ins-detail-seg${t.type === current.type ? ' active' : ''}" data-type="${t.type}">
+        <span aria-hidden="true">${t.icon}</span> ${t.label}
+      </button>`).join('');
+
+    const picker = current.type === TYPES.PLAY_FROM_TIME
+      ? `<select id="ins-detail-time" class="form-select">
+           <option value="">Selecciona una hora</option>
+           ${times.map(t => `<option value="${t}">${escapeHtml(formatTimeLabel(t))}</option>`).join('')}
+         </select>`
+      : `<div class="ins-detail-days">${days.map(d =>
+          `<button type="button" class="ins-detail-day" data-iso="${d}">${ISO_DAY_NAMES[d] || d}</button>`).join('')}</div>`;
+
+    return `
+      <div class="ins-detail-form">
+        <div class="ins-detail-segs">${segments}</div>
+        <p class="ins-detail-hint">${escapeHtml(current.hint)}</p>
+        ${picker}
+      </div>`;
+  }
+
+  function addEntry(payload) {
+    const team = detail.team;
+    if (!team || !detail.editing) return;
+    const p = detail.editing === 'B' ? team.playerB : team.playerA;
+    detail.entries.push({ name: entryNameOf(p), payload });
+    detail.editing = null;
+    renderDetailBody();
   }
 
   // Days offered by the template: the tournament's configured days, or every
@@ -458,76 +512,6 @@ const APJAdminTorneoInscripciones = (function () {
       cur.setDate(cur.getDate() + 1);
     }
     return out;
-  }
-
-  function renderDetailPicker() {
-    const team = detail.team;
-    if (!team) return;
-
-    const playerWrap = document.getElementById('ins-detail-player');
-    if (playerWrap) {
-      playerWrap.innerHTML = [['A', team.playerA], ['B', team.playerB]].map(([key, p]) => {
-        const active = detail.player === key ? ' active' : '';
-        return `<button type="button" class="day-chip${active}" data-player="${key}">${escapeHtml(nameOf(p || {}))}</button>`;
-      }).join('');
-    }
-
-    const typesWrap = document.getElementById('ins-detail-types');
-    if (typesWrap) {
-      typesWrap.innerHTML = TYPE_OPTIONS.map(t => {
-        const active = detail.type === t.type ? ' active' : '';
-        return `
-          <button type="button" class="restriction-type-btn${active}" data-type="${t.type}">
-            <span class="restriction-type-icon">${t.icon}</span>
-            <span>${t.label}</span>
-          </button>`;
-      }).join('');
-    }
-
-    const showTime = detail.type === TYPES.PLAY_FROM_TIME;
-    document.getElementById('ins-detail-day-block')?.classList.toggle('hidden', showTime);
-    document.getElementById('ins-detail-time-block')?.classList.toggle('hidden', !showTime);
-
-    const daysWrap = document.getElementById('ins-detail-days');
-    if (daysWrap && !showTime) {
-      daysWrap.innerHTML = templateDays().map(d => {
-        const active = detail.selectedDay === d ? ' active' : '';
-        return `<button type="button" class="day-chip${active}" data-iso="${d}">${ISO_DAY_NAMES[d] || d}</button>`;
-      }).join('');
-    }
-    const timesWrap = document.getElementById('ins-detail-times');
-    if (timesWrap && showTime) {
-      timesWrap.innerHTML = templateTimes().map(t => {
-        const active = detail.selectedTime === t ? ' active' : '';
-        return `<button type="button" class="time-chip${active}" data-time="${t}">${escapeHtml(formatTimeLabel(t))}</button>`;
-      }).join('');
-    }
-
-    const addBtn = document.getElementById('ins-detail-add');
-    if (addBtn) addBtn.disabled = showTime ? !detail.selectedTime : detail.selectedDay == null;
-  }
-
-  // Same wire format as RestrictionPicker.serialize() on /inscripcion/.
-  function buildPayload() {
-    if (detail.type === TYPES.PLAY_FROM_TIME) {
-      return detail.selectedTime ? JSON.stringify({ time_from: detail.selectedTime }) : '';
-    }
-    if (detail.selectedDay == null) return '';
-    const mode = detail.type === TYPES.EXCLUDE_DAY ? 'not' : 'only';
-    return JSON.stringify({ mode, days: [detail.selectedDay] });
-  }
-
-  function addDetailEntry() {
-    const team = detail.team;
-    const payload = buildPayload();
-    if (!team || !payload) return;
-    const p = detail.player === 'B' ? team.playerB : team.playerA;
-    const name = [p?.first_name, p?.last_name].filter(Boolean).join(' ').trim() || null;
-    detail.entries.push({ name, payload });
-    detail.selectedDay = null;
-    detail.selectedTime = '';
-    renderDetailEntries();
-    renderDetailPicker();
   }
 
   async function saveDetail() {
