@@ -486,6 +486,16 @@ const APJApi = (function() {
     });
   }
 
+  // Admin: replaces the team's full restriction text ("NAME: {json} / ...").
+  // Pass '' or null to clear it.
+  async function updateTeamRestriction(teamId, restriction) {
+    return request(`/api/teams/${encodeURIComponent(teamId)}/restriction`, {
+      method: 'PATCH',
+      body: JSON.stringify({ restriction }),
+      redirectOnUnauth: false,
+    });
+  }
+
   // ----- Ranking (admin) -----
   // Backend mirrors what the mobile apps consume — no season filter so
   // the totals match what players see in the app (aggregated across seasons).
@@ -611,6 +621,7 @@ const APJApi = (function() {
     getTournamentRestrictionConfig,
     saveTournamentRestrictionConfig,
     getTeamsByTournamentGrouped,
+    updateTeamRestriction,
 
     // Error class
     ApiError

@@ -138,6 +138,44 @@
       background: rgba(99,102,241,0.12);
       white-space: nowrap;
     }
+    /* Clickable rows -> pair detail modal */
+    .ins-row { cursor: pointer; }
+    .ins-row:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+
+    .ins-detail-modal { max-width: 600px; }
+    .ins-detail-section + .ins-detail-section {
+      border-top: 1px solid var(--border);
+      margin-top: 20px; padding-top: 20px;
+    }
+    .ins-detail-section h3 { margin: 0 0 12px 0; font-size: 15px; font-weight: 600; }
+    .ins-detail-players { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ins-detail-player {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+      padding: 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg-3);
+    }
+    .ins-detail-player-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-secondary);
+    }
+    .ins-detail-player-name { font-weight: 600; }
+    .ins-detail-player-meta {
+      display: flex; flex-direction: column;
+      font-size: 12px; color: var(--text-secondary);
+    }
+    .ins-detail-entry {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 0;
+    }
+    .ins-detail-entry + .ins-detail-entry { border-top: 1px solid var(--border); }
+    .ins-detail-entry-body { display: flex; flex-direction: column; gap: 6px; }
+    .ins-detail-entry-name { font-size: 13px; font-weight: 600; }
+    .ins-detail-empty { margin: 0; color: var(--text-secondary); font-size: 13px; }
+    .ins-detail-add-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+    .ins-detail-modal .modal-footer { justify-content: flex-end; }
+    @media (max-width: 560px) {
+      .ins-detail-players { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body class="admin-page">
@@ -155,6 +193,49 @@
     <div class="profile-card">
       <div class="profile-card-body" style="text-align:center; color:var(--text-secondary); padding:48px 24px;">
         Selecciona un torneo arriba para ver sus inscripciones.
+      </div>
+    </div>
+  </div>
+  <!-- Pair detail modal -->
+  <div id="ins-detail-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ins-detail-title">
+    <div class="modal ins-detail-modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="ins-detail-title">Detalle de pareja</h2>
+        <button type="button" class="modal-close" data-ins-close aria-label="Cerrar">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="ins-detail-section">
+          <div id="ins-detail-players" class="ins-detail-players"></div>
+        </div>
+
+        <div class="ins-detail-section">
+          <h3>Restricciones</h3>
+          <div id="ins-detail-entries"></div>
+        </div>
+
+        <div class="ins-detail-section">
+          <h3>Agregar restricción</h3>
+          <p class="restriction-section-title" style="margin-top:0;">Jugador</p>
+          <div id="ins-detail-player" class="day-chips"></div>
+          <div id="ins-detail-types" class="restriction-type-options"></div>
+          <div id="ins-detail-day-block">
+            <p class="restriction-section-title">Día</p>
+            <div id="ins-detail-days" class="day-chips"></div>
+          </div>
+          <div id="ins-detail-time-block" class="hidden">
+            <p class="restriction-section-title">A partir de</p>
+            <div id="ins-detail-times" class="day-chips"></div>
+          </div>
+          <div class="ins-detail-add-row">
+            <button type="button" class="btn btn-outline btn-sm" id="ins-detail-add" disabled>+ Agregar</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-ins-close>Cancelar</button>
+        <button type="button" class="btn btn-primary" id="ins-detail-save">Guardar cambios</button>
       </div>
     </div>
   </div>
